@@ -1,0 +1,27 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/spfx-build/config.2.0.schema.json",
+  "version": "2.0",
+  "bundles": {
+    "foamchart-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/foamchart/FoamchartWebPart.js",
+          "manifest": "./src/webparts/foamchart/FoamchartWebPart.manifest.json"
+        }
+      ]
+    },
+    "foam-charts-non-react-web-part": {
+      "components": [
+        {
+          "entrypoint": "./lib/webparts/foamChartsNonReact/FoamChartsNonReactWebPart.js",
+          "manifest": "./src/webparts/foamChartsNonReact/FoamChartsNonReactWebPart.manifest.json"
+        }
+      ]
+    }
+  },
+  "externals": {},
+  "localizedResources": {
+    "FoamchartWebPartStrings": "lib/webparts/foamchart/loc/{locale}.js",
+    "FoamChartsNonReactWebPartStrings": "lib/webparts/foamChartsNonReact/loc/{locale}.js"
+  }
+}
