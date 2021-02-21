@@ -9,20 +9,11 @@
           "manifest": "./src/webparts/foamchart/FoamchartWebPart.manifest.json"
         }
       ]
-    },
-    "foam-charts-non-react-web-part": {
-      "components": [
-        {
-          "entrypoint": "./lib/webparts/foamChartsNonReact/FoamChartsNonReactWebPart.js",
-          "manifest": "./src/webparts/foamChartsNonReact/FoamChartsNonReactWebPart.manifest.json"
-        }
-      ]
     }
   },
   "externals": {},
   "localizedResources": {
     "FoamchartWebPartStrings": "lib/webparts/foamchart/loc/{locale}.js",
-    "FoamChartsNonReactWebPartStrings": "lib/webparts/foamChartsNonReact/loc/{locale}.js",
     "ControlStrings": "node_modules/@pnp/spfx-controls-react/lib/loc/{locale}.js"
   }
 }
