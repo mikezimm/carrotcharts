@@ -10,7 +10,7 @@ import { FoamTree } from "@carrotsearch/foamtree";
 import { IFoamTree, IFoamTreeDataObject } from '@mikezimm/npmfunctions/dist/IFoamTree';
 
 export default class Foamchart extends React.Component<IFoamchartProps, {}> {
-  private foamtree: IFoamTree = null;
+  private foamtree: any = null;
 
   public componentDidMount() {
 
@@ -21,11 +21,11 @@ export default class Foamchart extends React.Component<IFoamchartProps, {}> {
   public componentDidUpdate() {
 
   }
-  /*
+  
   public componentWillUnmount() {
     this.foamtree.dispose();
   }
-  */
+  /* */
   /*
   render() {
     return <div style={{height: "100%"}} ref={e => this.element = e}></div>;
