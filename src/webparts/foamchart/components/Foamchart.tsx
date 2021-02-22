@@ -75,7 +75,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, {}> {
         <div className={ styles.container }>
           <div className={ styles.row }>
             <div className={ styles.column }>
-                <div id='visualization' style={{height: "600px"}}></div>
+                <div id='visualization' style={{height: "300px", width: "600px"}}></div>
                 { this.foamtree }
             </div>
           </div>
