@@ -94,20 +94,19 @@ export function getFakeFoamTreeData( ) {
     let fg3 = getFakeLayer3();
 
     let thisFoamTree : IFoamTree = {
+        
         fadeDuration: 1500,
         layoutByWeightOrder: false,
         stacking: 'flattened',
         layout: 'relaxed',
-        dataObject: {
-          groups: getFakeFoamTreeGroups( 80, 1000, fakeGroups0 , fakeGroups1 ),
-        },
-
         // Show the relaxation
         relaxationVisible: true,
-
         // Make the relaxation last longer
         relaxationQualityThreshold: 0,
         relaxationMaxDuration: 15000,
+        dataObject: {
+          groups: getFakeFoamTreeGroups( 80, 1000, fakeGroups0 , fakeGroups1 ),
+        },
 
         groupSelectionOutlineShadowSize: 50,
 

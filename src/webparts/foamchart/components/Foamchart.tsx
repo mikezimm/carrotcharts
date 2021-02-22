@@ -10,11 +10,14 @@ import { FoamTree } from "@carrotsearch/foamtree";
 import { IFoamTree, IFoamTreeDataObject } from '@mikezimm/npmfunctions/dist/IFoamTree';
 
 export default class Foamchart extends React.Component<IFoamchartProps, {}> {
-  private foamtree: any = null;
+  private foamtree: IFoamTree = null;
 
   public componentDidMount() {
 
-      this.foamtree = getFakeFoamTreeData();
+      let foamtree : IFoamTree = getFakeFoamTreeData();
+      foamtree.id ="visualization";
+
+      this.foamtree = new FoamTree( foamtree );
 
   }
   
