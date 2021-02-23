@@ -28,7 +28,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
     //let fetchInfo  : any = buildFetchList( this.props.pageContext, this.props.webURL, this.props.listName, this.props.listTitle, false, [] );
 
     //returns:  fetchInfo = { fetchList: fetchList, selectedDropdowns: selectedDropdowns, };
-    let fetchInfo  : any = buildFetchList( this.props.pageContext, this.props.parentListWeb, this.props.listName, this.props.parentListTitle, false,
+    let fetchInfo  : any = buildFetchList( this.props.pageContext, this.props.parentListWeb, this.props.listName, this.props.parentListTitle, false, this.props.performance,
          this.props.dropDownColumns, this.props.searchColumns, this.props.metaColumns, [this.props.dateColumn], [this.props.valueColumn] );
 
     let errMessage = '';
@@ -142,7 +142,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
     if (reloadData === true) {
 
-      let fetchInfo  : any = buildFetchList( this.props.pageContext, this.props.parentListWeb, this.props.listName, this.props.parentListTitle, false,
+      let fetchInfo  : any = buildFetchList( this.props.pageContext, this.props.parentListWeb, this.props.listName, this.props.parentListTitle, false, this.props.performance,
         this.props.dropDownColumns, this.props.searchColumns, this.props.metaColumns, [this.props.dateColumn], [this.props.valueColumn] );
 
       this.setState({
@@ -233,13 +233,14 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
       //If you do not re-run it, the old list items will remain and new results get added to the list.
       //However the list will show correctly if you click on a pivot.
       //this.searchForItems( '', this.state.searchMeta, 0, 'meta' );
-      
+
       let foamtree : any = getFakeFoamTreeData();
       foamtree.id ="visualization";
 
       this.foamtree = new FoamTree( foamtree );
 
       return true;
+
     }
 
     private buildDataDropdownItems( fetchList: IFoamTreeList, allItems : IFoamItemInfo[] ) {

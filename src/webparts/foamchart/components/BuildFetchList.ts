@@ -93,7 +93,7 @@ import { IFoamTreeList } from './GetListData';
  *                                                                                                                                               
  */
 
-    export function buildFetchList( pageContext: PageContext, webURL: string, listName: string, listTitle: string, isLibrary: boolean, 
+    export function buildFetchList( pageContext: PageContext, webURL: string, listName: string, listTitle: string, isLibrary: boolean, performance : IPerformanceSettings,
         dropDownColumns : string[], searchColumns : string[], metaColumns : string[], expandDates : string[], otherColumns: string[] ) {
 
         //Copied from GridCharts for createFetchList
@@ -111,13 +111,6 @@ import { IFoamTreeList } from './GetListData';
         let dropDownSort : string[] = dropDownColumns.map( c => { let c1 = c.replace('>','') ; if ( c1.indexOf('-') === 0 ) { return 'dec' ; } else if ( c1.indexOf('+') === 0 ) { return 'asc' ; } else { return ''; } });
 
         dropDownColumns.map( c => { let c1 = c.replace('>','').replace('+','').replace('-','') ; searchColumns.push( c1 ) ; metaColumns.push( c1 ) ; allColumns.push( c1 ); selectedDropdowns.push('') ; });
-
-        let performance : IPerformanceSettings = {
-            fetchCount: 1000,
-            fetchCountMobile: 1000,
-            minDataDownload: false,
-            restFilter: '',
-        };
 
         let basicList : IZBasicList = createFetchList( webURL , null, listTitle, listName, isLibrary, performance, pageContext, allColumns, searchColumns, metaColumns, expandDates );
         //Have to do this to add dropDownColumns and dropDownSort to IZBasicList
