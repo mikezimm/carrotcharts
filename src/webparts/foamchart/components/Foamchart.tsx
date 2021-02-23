@@ -35,8 +35,8 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
     this.state = { 
 
           //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
-          WebpartHeight: this.props.WebpartElement ? this.props.WebpartElement.getBoundingClientRect().height : null,
-          WebpartWidth:  this.props.WebpartElement ? this.props.WebpartElement.getBoundingClientRect().width - 50 : null,
+          WebpartHeight: this.props.WebpartElement ? this.props.WebpartElement.getBoundingClientRect().height : 1,
+          WebpartWidth:  this.props.WebpartElement ? this.props.WebpartElement.getBoundingClientRect().width : 1,
 
           timeSliderScale: [ 'Weeks', 'Years', 'Months', 'WeekNo'],
           currentTimeScale: 'Weeks',
@@ -123,7 +123,6 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
     let refreshOnThese = [
       'setSize','setTab','otherTab','setTab','otherTab','setTab','otherTab','setTab','otherTab', '',
       'pivotSize', 'pivotFormat', 'pivotOptions', 'pivotTab', 'advancedPivotStyles', 'gridStyles',
-
     ];
 
     reloadOnThese.map( key => {
@@ -149,7 +148,6 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
         /*          */
         fetchList: fetchInfo.fetchList,
         selectedDropdowns: fetchInfo.selectedDropdowns,
-
       });
 
       getAllItems( fetchInfo.fetchList, this.addTheseItemsToState.bind(this), null, null );
@@ -170,16 +168,14 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
   public render(): React.ReactElement<IFoamchartProps> {
 
+    let x = this.state.WebpartWidth > 0 ? this.state.WebpartWidth + "px" : "500px";
+    let y = this.state.WebpartHeight > 0 ? this.state.WebpartHeight + "px" : "500px";
 
     return (
       <div className={ styles.foamchart }>
         <div className={ styles.container }>
-          <div className={ styles.row }>
-            <div className={ styles.column }>
-                <div id='visualization' style={{height: "500px", width: "800px"}}></div>
-                { this.foamtree }
-            </div>
-          </div>
+            <div id='visualization' style={{height: y, width:  x }}></div>
+            { this.foamtree }
         </div>
       </div>
     );
