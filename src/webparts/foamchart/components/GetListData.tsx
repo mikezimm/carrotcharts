@@ -97,7 +97,7 @@ import * as strings from 'FoamchartWebPartStrings';
 
 
 
-  export interface IFoamItemItemInfo extends IZBasicItemInfo {
+  export interface IFoamItemInfo extends IZBasicItemInfo {
 
     Title: string;
     Description: string;
@@ -124,7 +124,7 @@ import * as strings from 'FoamchartWebPartStrings';
 // This is what it was before I split off the other part
 export async function getAllItems( fetchList: IFoamTreeList, addTheseItemsToState: any, setProgress: any, markComplete: any ): Promise<void>{
 
-    let allItems : IFoamItemItemInfo[] = [];
+    let allItems : IFoamItemInfo[] = [];
     let errMessage = '';
 
     let sourceUserInfo: any = null;
@@ -137,7 +137,7 @@ export async function getAllItems( fetchList: IFoamTreeList, addTheseItemsToStat
 
     fetchList.sourceUserInfo = sourceUserInfo;
     //lists.getById(listGUID).webs.orderBy("Title", true).get().then(function(result) {
-    //let allItems : IFoamItemItemInfo[] = await sp.web.webs.get();
+    //let allItems : IFoamItemInfo[] = await sp.web.webs.get();
 
     let thisListWeb = Web(fetchList.webURL);
     let selColumns = fetchList.selectColumnsStr;
@@ -203,7 +203,7 @@ export async function getAllItems( fetchList: IFoamTreeList, addTheseItemsToStat
 //                                                                                     
 //     
 
-function buildMetaFromItem( theItem: IFoamItemItemInfo, fetchList: IFoamTreeList, ) {
+function buildMetaFromItem( theItem: IFoamItemInfo, fetchList: IFoamTreeList, ) {
     let meta: string[] = ['All'];
 
     fetchList.metaColumns.map( c=> {
@@ -249,7 +249,7 @@ function buildMetaFromItem( theItem: IFoamItemItemInfo, fetchList: IFoamTreeList
 //                                                                                                 
 //         
 
-function buildSearchStringFromItem ( theItem: IFoamItemItemInfo, fetchList: IFoamTreeList, ) {
+function buildSearchStringFromItem ( theItem: IFoamItemInfo, fetchList: IFoamTreeList, ) {
 
     let result = '';
     let delim = '|||';

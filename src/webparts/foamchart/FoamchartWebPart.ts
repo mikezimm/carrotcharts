@@ -103,7 +103,6 @@ import { IFoamchartProps } from './components/IFoamchartProps';
 
 export interface IFoamchartWebPartProps {
 
-  description: string;
     // 0 - Context
     pageContext: PageContext;
 
@@ -122,7 +121,7 @@ export interface IFoamchartWebPartProps {
     parentListWeb: string;
     fetchListFieldTitles: string;
 
-    //dateColumn: string;
+    dateColumn: string;
     //monthGap: string;
 
     valueColumn: string;
@@ -154,13 +153,13 @@ export interface IFoamchartWebPartProps {
     squareColor: string;
     emptyColor: string;
     backGroundColor: string;    
-
+*/
     advancedPivotStyles: boolean;
     pivotSize: string;
     pivotFormat: string;
     pivotOptions: string;
     pivotTab: string;
-*/
+
 
     fetchCount: number;
     fetchCountMobile: number;
@@ -239,6 +238,20 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
       });
     }
   
+    
+    public getUrlVars(): {} {
+      var vars = {};
+      vars = location.search
+      .slice(1)
+      .split('&')
+      .map(p => p.split('='))
+      .reduce((obj, pair) => {
+        const [key, value] = pair.map(decodeURIComponent);
+        return ({ ...obj, [key]: value }) ;
+      }, {});
+      return vars;
+    }
+
 
     /**
      * 2020-09-08:  Add for dynamic data refiners.   public getPropertyDefinitions():
@@ -292,13 +305,107 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
     }
 
 
+      /***
+ *         d8888b. d88888b d8b   db d8888b. d88888b d8888b. 
+ *         88  `8D 88'     888o  88 88  `8D 88'     88  `8D 
+ *         88oobY' 88ooooo 88V8o 88 88   88 88ooooo 88oobY' 
+ *         88`8b   88~~~~~ 88 V8o88 88   88 88~~~~~ 88`8b   
+ *         88 `88. 88.     88  V888 88  .8D 88.     88 `88. 
+ *         88   YD Y88888P VP   V8P Y8888D' Y88888P 88   YD 
+ *                                                          
+ *                                                          
+ */
+
   public render(): void {
 
+    if ( this.properties.fetchCount == null ) { this.properties.fetchCount = 1000 ;}
+
+    if ( this.properties.parentListWeb && this.properties.parentListWeb.length > 0 ) {} else { this.properties.parentListWeb = this.context.pageContext.web.serverRelativeUrl ; }
+
+    let showEarlyAccess : boolean = false;
+    
+    if ( window.location.origin.toLowerCase().indexOf('clickster.share') > -1 || window.location.origin.toLowerCase().indexOf('/autoliv/') > -1 ) {
+      showEarlyAccess = true;
+      this.properties.showEarlyAccess = true;
+    } else {
+      showEarlyAccess = this.properties.showEarlyAccess;
+    }
+    if ( this.properties.parentListWeb === '' ) {
+      
+    }
+    let tenant = this.context.pageContext.web.absoluteUrl.replace(this.context.pageContext.web.serverRelativeUrl,"");
+    let parentListWeb = this.properties.parentListWeb.indexOf('/sites/') === 0 ? tenant + this.properties.parentListWeb : this.properties.parentListWeb;
 
     const element: React.ReactElement<IFoamchartProps> = React.createElement(
       Foamchart,
       {
-        description: this.properties.description
+        
+        //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
+        WebpartElement:this.domElement,
+        foamtree: null,
+
+        // 0 - Context
+        pageContext: this.context.pageContext,
+        wpContext: this.context,
+
+        tenant: tenant,
+        urlVars: this.getUrlVars(),
+
+        // 2 - Source and destination list information
+        parentListWeb: parentListWeb,
+        parentListURL: null,
+        parentListTitle: this.properties.parentListTitle,
+        listName: null,
+              
+        allLoaded: null,
+
+        dateColumn: this.properties.dateColumn,
+        valueColumn: this.properties.valueColumn,
+        searchColumns: this.properties.searchColumns ? this.properties.searchColumns.split(',') : [], 
+
+        valueType: this.properties.valueType,
+        valueOperator: this.properties.valueOperator,
+        dropDownColumns: this.properties.dropDownColumns ? this.properties.dropDownColumns.split(',') : [],
+
+        metaColumns: this.properties.metaColumns ? this.properties.metaColumns.split(',') : [], 
+        enableSearch: this.properties.enableSearch,
+    
+        performance: {
+          fetchCount: this.properties.fetchCount,
+          fetchCountMobile: this.properties.fetchCountMobile,
+          restFilter: !this.properties.restFilter ? '' : this.properties.restFilter,
+          minDataDownload: this.properties.minDataDownload,
+        },
+    
+        parentListFieldTitles: null,
+
+        // 9 - Other web part options
+        WebpartHeight: this.domElement.getBoundingClientRect().height ,
+        WebpartWidth:  this.domElement.getBoundingClientRect().width - 50 ,
+    
+        // 1 - Analytics options  
+        useListAnalytics: this.properties.useListAnalytics,
+        analyticsWeb: strings.analyticsWeb,
+        analyticsList: strings.analyticsList,
+        
+        // 9 - Other web part options
+        webPartScenario: this.properties.webPartScenario, //Choice used to create mutiple versions of the webpart.
+        showEarlyAccess: showEarlyAccess,
+
+        pivotSize: this.properties.pivotSize,
+        pivotFormat: this.properties.pivotFormat,
+        pivotOptions: this.properties.pivotOptions,
+        pivotTab: 'Projects', //this.properties.pivotTab (was setTab in pivot-tiles)
+
+        // 6 - User Feedback:
+        //progress: IMyProgress,
+
+        /**
+         * 2020-09-08:  Add for dynamic data refiners.   onRefiner0Selected  -- callback to update main web part dynamic data props.
+         */
+
+        //For DD
+
       }
     );
 

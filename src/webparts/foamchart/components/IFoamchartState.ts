@@ -1,5 +1,4 @@
 
-
 /***
  *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b       .d88b.  d88888b d88888b d888888b  .o88b. d888888b  .d8b.  db      
  *      `88'   88'YbdP`88 88  `8D .8P  Y8. 88  `8D `~~88~~'      .8P  Y8. 88'     88'       `88'   d8P  Y8   `88'   d8' `8b 88      
@@ -11,13 +10,8 @@
  *                                                                                                                                  
  */
 
-import { Web, IList, IItem, Item } from "@pnp/sp/presets/all";
+import {    IDropdownOption,  } from "office-ui-fabric-react";
 
-import "@pnp/sp/webs";
-import "@pnp/sp/clientside-pages/web";
-import "@pnp/sp/site-users/web";
-
-import { PageContext } from '@microsoft/sp-page-context';
 
 /***
  *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b      d8b   db d8888b. .88b  d88.      d88888b db    db d8b   db  .o88b. d888888b d888888b  .d88b.  d8b   db .d8888. 
@@ -30,19 +24,15 @@ import { PageContext } from '@microsoft/sp-page-context';
  *                                                                                                                                                                              
  */
 
-import { doesObjectExistInArray, addItemToArrayIfItDoesNotExist, sortKeysByOtherKey } from '@mikezimm/npmfunctions/dist/arrayServices';
+import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeSpan, getGreeting,
+    getNicks, makeTheTimeObject, getTimeDelta, monthStr3, monthStr, weekday3, ITheTime, } from '@mikezimm/npmfunctions/dist/dateServices';
 
-import { makeTheTimeObject,  } from '@mikezimm/npmfunctions/dist/dateServices';
+import { IPickedWebBasic, IPickedList, IMyProgress,
+    IPivot, IMyPivots, ILink, IUser, IMyFonts, IMyIcons, IZBasicItemInfo, IMyPivCat
+    } from '@mikezimm/npmfunctions/dist/IReUsableInterfaces';
 
-import { getHelpfullError } from '@mikezimm/npmfunctions/dist/ErrorHandler';
-
-import { IPickedList, IPickedWebBasic, IMyPivots, IPivot,  ILink, IUser, IMyProgress, IMyIcons, IMyFonts, IChartSeries, 
-    ICharNote, IRefinerRules, RefineRuleValues, ICustViewDef, IRefinerStat, ICSSChartTypes, QuickCommandsTMT, IZBasicItemInfo } from '@mikezimm/npmfunctions/dist/IReUsableInterfaces';
-
-import { ensureUserInfo } from '@mikezimm/npmfunctions/dist/userServices';
-
-import { getExpandColumns, getSelectColumns, IZBasicList, IPerformanceSettings, createFetchList, } from '@mikezimm/npmfunctions/dist/getFunctions';
-
+    
+import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/IFoamTree';
 
 /***
  *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b      .d8888. d88888b d8888b. db    db d888888b  .o88b. d88888b .d8888. 
@@ -67,6 +57,7 @@ import { getExpandColumns, getSelectColumns, IZBasicList, IPerformanceSettings, 
  *                                                                                                                       
  */
 
+
  /***
  *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b       .o88b.  .d88b.  .88b  d88. d8888b.  .d88b.  d8b   db d88888b d8b   db d888888b 
  *      `88'   88'YbdP`88 88  `8D .8P  Y8. 88  `8D `~~88~~'      d8P  Y8 .8P  Y8. 88'YbdP`88 88  `8D .8P  Y8. 888o  88 88'     888o  88 `~~88~~' 
@@ -77,56 +68,63 @@ import { getExpandColumns, getSelectColumns, IZBasicList, IPerformanceSettings, 
  *                                                                                                                                               
  *                                                                                                                                               
  */
+import { IFoamTreeList, IFoamItemInfo } from './GetListData';
 
-import * as strings from 'FoamchartWebPartStrings';
+//Copied from GridchartsState
+export type ITimeScale  = 'Weeks' | 'Years' | 'Months' | "WeekNo";
 
-import { IFoamTreeList } from './GetListData';
 
- /***
- *    d88888b db    db d8888b.  .d88b.  d8888b. d888888b      d888888b d8b   db d888888b d88888b d8888b. d88888b  .d8b.   .o88b. d88888b .d8888. 
- *    88'     `8b  d8' 88  `8D .8P  Y8. 88  `8D `~~88~~'        `88'   888o  88 `~~88~~' 88'     88  `8D 88'     d8' `8b d8P  Y8 88'     88'  YP 
- *    88ooooo  `8bd8'  88oodD' 88    88 88oobY'    88            88    88V8o 88    88    88ooooo 88oobY' 88ooo   88ooo88 8P      88ooooo `8bo.   
- *    88~~~~~  .dPYb.  88~~~   88    88 88`8b      88            88    88 V8o88    88    88~~~~~ 88`8b   88~~~   88~~~88 8b      88~~~~~   `Y8b. 
- *    88.     .8P  Y8. 88      `8b  d8' 88 `88.    88           .88.   88  V888    88    88.     88 `88. 88      88   88 Y8b  d8 88.     db   8D 
- *    Y88888P YP    YP 88       `Y88P'  88   YD    YP         Y888888P VP   V8P    YP    Y88888P 88   YD YP      YP   YP  `Y88P' Y88888P `8888Y' 
- *                                                                                                                                               
- *                                                                                                                                               
- */
+export interface IFoamchartState {
+  selectedYear: number; //Used to determine selected Year Pivot
+  selectedUser: any; //Used to determine filter of items ( current user or everyone )
 
-    export function buildFetchList( pageContext: PageContext, webURL: string, listName: string, listTitle: string, isLibrary: boolean, 
-        dropDownColumns : string[], searchColumns : string[], metaColumns : string[], expandDates : string[], otherColumns: string[] ) {
+  selectedDropdowns: string[]; //array of selected choices for dropdowns
+  dropDownItems: IDropdownOption[][]; //array of array of options for selected dropdown fields
 
-        //Copied from GridCharts for createFetchList
-        let allColumns : string[] = otherColumns;  // "File/ServerRelativeUrl","File/Name"  File expanders here:  https://github.com/SharePoint/PnP-JS-Core/issues/778#issuecomment-380575103
+  foamTreeData: IFoamTree; //One IGridchartsDataPoint per date between lowest and highest date range for input data
 
-        if ( searchColumns.indexOf('Title') === 0 ) { searchColumns.push('Title'); }
-        
-        let selectedDropdowns: string[] = [];
-        //allColumns.push( this.props.dateColumn );
-        //allColumns.push( this.props.valueColumn );
+  timeSliderScale: ITimeScale[];
+  currentTimeScale: ITimeScale;
 
-        searchColumns.map( c => { allColumns.push( c ) ; });
-        metaColumns.map( c => { allColumns.push( c ) ; });
+  choiceSliderValue: number;
+  dropdownColumnIndex: number;
+  choiceSliderDropdown: number;
 
-        let dropDownSort : string[] = dropDownColumns.map( c => { let c1 = c.replace('>','') ; if ( c1.indexOf('-') === 0 ) { return 'dec' ; } else if ( c1.indexOf('+') === 0 ) { return 'asc' ; } else { return ''; } });
+  showChoiceSlider: boolean;
+  
+  breadCrumb: any[];
 
-        dropDownColumns.map( c => { let c1 = c.replace('>','').replace('+','').replace('-','') ; searchColumns.push( c1 ) ; metaColumns.push( c1 ) ; allColumns.push( c1 ); selectedDropdowns.push('') ; });
+  WebpartHeight?:  number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
+  WebpartWidth?:   number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
 
-        let performance : IPerformanceSettings = {
-            fetchCount: 1000,
-            fetchCountMobile: 1000,
-            minDataDownload: false,
-            restFilter: '',
-        };
+  allLoaded: boolean;
 
-        let basicList : IZBasicList = createFetchList( webURL , null, listTitle, listName, isLibrary, performance, pageContext, allColumns, searchColumns, metaColumns, expandDates );
-        //Have to do this to add dropDownColumns and dropDownSort to IZBasicList
-        let tempList : any = basicList;
-        tempList.dropDownColumns = dropDownColumns;
-        tempList.dropDownSort = dropDownSort;
-        let fetchList : IFoamTreeList = tempList;
+  bannerMessage: any;
 
-        console.log('buildFetchList fetchList', fetchList );
+  showTips: boolean;
 
-        return { fetchList: fetchList, selectedDropdowns: selectedDropdowns, };
-    }
+  searchCount: number;
+
+  searchText: string;
+  searchMeta: string[];
+
+  searchedItems: IFoamItemInfo[];
+  //stats: IStat[];
+  first20searchedItems: IFoamItemInfo[];
+
+  allItems: IFoamItemInfo[];
+
+//    viewType?: IViewType;
+
+  meta: string[];
+
+  errMessage: string | JSX.Element;
+
+  fetchList: IFoamTreeList;
+
+  pivotCats: IMyPivCat[][];
+
+  lastStateChange: string;
+  stateChanges: string[]; //Log of state changes into array
+
+}
