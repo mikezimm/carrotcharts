@@ -6,15 +6,17 @@ import { IFoamchartState } from './IFoamchartState';
 
 import { escape } from '@microsoft/sp-lodash-subset';
 
+import {    IDropdownOption,  } from "office-ui-fabric-react";
+
 import { getFakeFoamTreeData } from './FakeFoamTreeData';
 
 import { buildFetchList } from './BuildFetchList';
 
-import { IFoamTreeList } from './GetListData';
-
 import { FoamTree } from "@carrotsearch/foamtree";
 
 import { IFoamTree, IFoamTreeDataObject } from '@mikezimm/npmfunctions/dist/IFoamTree';
+
+import { getAllItems, IFoamTreeList, IFoamItemInfo } from './GetListData';
 
 export default class Foamchart extends React.Component<IFoamchartProps, IFoamchartState> {
   private foamtree: any = null;
@@ -90,10 +92,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
   public componentDidMount() {
 
-      let foamtree : any = getFakeFoamTreeData();
-      foamtree.id ="visualization";
-
-      this.foamtree = new FoamTree( foamtree );
+      getAllItems( this.state.fetchList, this.addTheseItemsToState.bind(this), null, null );
 
   }
   
@@ -110,8 +109,6 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
   public componentDidUpdate(prevProps) {
 
-
-    
     let reloadData : any = false;
     let refreshMe : any = false;
 
@@ -151,9 +148,12 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
       this.setState({
         /*          */
         fetchList: fetchInfo.fetchList,
-          selectedDropdowns: fetchInfo.selectedDropdowns,
+        selectedDropdowns: fetchInfo.selectedDropdowns,
 
       });
+
+      getAllItems( fetchInfo.fetchList, this.addTheseItemsToState.bind(this), null, null );
+
     }
 
   }
@@ -184,4 +184,185 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
       </div>
     );
   }
+
+
+
+  /***
+ *     .d8b.  d8888b. d8888b.      d888888b d888888b d88888b .88b  d88. .d8888.      d888888b  .d88b.       .d8888. d888888b  .d8b.  d888888b d88888b 
+ *    d8' `8b 88  `8D 88  `8D        `88'   `~~88~~' 88'     88'YbdP`88 88'  YP      `~~88~~' .8P  Y8.      88'  YP `~~88~~' d8' `8b `~~88~~' 88'     
+ *    88ooo88 88   88 88   88         88       88    88ooooo 88  88  88 `8bo.           88    88    88      `8bo.      88    88ooo88    88    88ooooo 
+ *    88~~~88 88   88 88   88         88       88    88~~~~~ 88  88  88   `Y8b.         88    88    88        `Y8b.    88    88~~~88    88    88~~~~~ 
+ *    88   88 88  .8D 88  .8D        .88.      88    88.     88  88  88 db   8D         88    `8b  d8'      db   8D    88    88   88    88    88.     
+ *    YP   YP Y8888D' Y8888D'      Y888888P    YP    Y88888P YP  YP  YP `8888Y'         YP     `Y88P'       `8888Y'    YP    YP   YP    YP    Y88888P 
+ *                                                                                                                                                    
+ *                                                                                                                                                    
+ */
+
+
+    private addTheseItemsToState( fetchList: IFoamTreeList, theseItems , errMessage : string, allNewData : boolean = true ) {
+
+      if ( theseItems.length < 300 ) {
+          console.log('addTheseItemsToState theseItems: ', theseItems);
+      } {
+          console.log('addTheseItemsToState theseItems: QTY: ', theseItems.length );
+      }
+
+      let allItems = allNewData === false ? this.state.allItems : theseItems;
+
+      let foamTreeData: IFoamTree = null; //this.buildGridData (fetchList, theseItems);
+
+      let dropDownItems : IDropdownOption[][] = allNewData === true ? this.buildDataDropdownItems( fetchList, allItems ) : this.state.dropDownItems ;
+
+      this.setState({
+        /*          */
+          allItems: allItems,
+          searchedItems: theseItems, //newFilteredItems,  //Replaced with theseItems to update when props change.
+          searchCount: theseItems.length,
+          dropDownItems: dropDownItems,
+          errMessage: errMessage,
+          searchText: '',
+          searchMeta: [],
+          fetchList: fetchList,
+          foamTreeData: foamTreeData,
+          allLoaded: true,
+
+      });
+
+      console.log('loadedState:', this.state );
+      //This is required so that the old list items are removed and it's re-rendered.
+      //If you do not re-run it, the old list items will remain and new results get added to the list.
+      //However the list will show correctly if you click on a pivot.
+      //this.searchForItems( '', this.state.searchMeta, 0, 'meta' );
+      
+      let foamtree : any = getFakeFoamTreeData();
+      foamtree.id ="visualization";
+
+      this.foamtree = new FoamTree( foamtree );
+
+      return true;
+    }
+
+    private buildDataDropdownItems( fetchList: IFoamTreeList, allItems : IFoamItemInfo[] ) {
+
+    let dropDownItems : IDropdownOption[][] = [];
+
+    this.props.dropDownColumns.map( ( col, colIndex ) => {
+
+      let actualColName = col.replace('>', '' ).replace('+', '' ).replace('-', '' );
+      let parentColName = colIndex > 0 && col.indexOf('>') > -1 ? this.props.dropDownColumns[colIndex - 1] : null;
+      parentColName = parentColName !== null ? parentColName.replace('>', '' ).replace('+', '' ).replace('-', '' ) : null;
+
+      let thisColumnChoices : IDropdownOption[] = [];
+      let foundChoices : string[] = [];
+      allItems.map( item => {
+        let thisItemsChoices = item[ actualColName ];
+        if ( actualColName.indexOf( '/') > -1 ) {
+          let parts = actualColName.split('/');
+          thisItemsChoices = item[ parts[0] ] ? item[ parts[0] ] [parts[1]] :  `. missing ${ parts[0] }`;
+        }
+        if ( parentColName !== null ) { thisItemsChoices = item[ parentColName ] + ' > ' + item[ actualColName ] ; }
+        if ( thisItemsChoices && thisItemsChoices.length > 0 ) {
+          if ( foundChoices.indexOf( thisItemsChoices ) < 0 ) {
+            if ( thisColumnChoices.length === 0 ) { thisColumnChoices.push( { key: '', text: '- all -' } ) ; }
+            thisColumnChoices.push( { key: thisItemsChoices, text: thisItemsChoices } ) ;
+            foundChoices.push( thisItemsChoices ) ;
+          }
+        }
+      });
+
+      dropDownItems.push( thisColumnChoices ) ;
+
+    });
+
+    return dropDownItems;
+
+    }
+
+
+
+    /***
+    *    d8888b. db    db d888888b db      d8888b.       d888b  d8888b. d888888b d8888b.      d8888b.  .d8b.  d888888b  .d8b.  
+    *    88  `8D 88    88   `88'   88      88  `8D      88' Y8b 88  `8D   `88'   88  `8D      88  `8D d8' `8b `~~88~~' d8' `8b 
+    *    88oooY' 88    88    88    88      88   88      88      88oobY'    88    88   88      88   88 88ooo88    88    88ooo88 
+    *    88~~~b. 88    88    88    88      88   88      88  ooo 88`8b      88    88   88      88   88 88~~~88    88    88~~~88 
+    *    88   8D 88b  d88   .88.   88booo. 88  .8D      88. ~8~ 88 `88.   .88.   88  .8D      88  .8D 88   88    88    88   88 
+    *    Y8888P' ~Y8888P' Y888888P Y88888P Y8888D'       Y888P  88   YD Y888888P Y8888D'      Y8888D' YP   YP    YP    YP   YP 
+    *                                                                                                                          
+    *                                                                                                                          
+    */
+
+
+   private buildGridData ( fetchList: IFoamTreeList, allItems : IFoamItemInfo[] ) {
+
+    let count = allItems.length;
+
+    let allDataPoints : any[] = [];
+
+    /**
+     * Get entire date range
+     * miliseconds for "2021-01-31" is 1612127321000
+     * 
+     * 1012127321000; 
+     * 1612127321000
+     */
+
+    let firstTime = 2512127321000; 
+    let lastTime = 1012127321000;
+    let firstDate = "";
+    let lastDate = "";
+
+    allItems.map( item => {
+      let theStartTimeMS = item['time' + this.props.dateColumn ].milliseconds;
+      let theStartTimeStr = item['time' + this.props.dateColumn ].theTime;
+
+      if ( theStartTimeMS > lastTime ) { 
+        lastTime = theStartTimeMS ; 
+        lastDate = theStartTimeStr ; }
+
+      if ( theStartTimeMS < firstTime ) { 
+        firstTime = theStartTimeMS ; 
+        firstDate = theStartTimeStr ; }
+
+    });
+
+    let startDate = new Date( firstDate );
+    // let gridStart = this.getOffSetDayOfWeek( firstDate, 7, 'prior' ); //This gets prior sunday
+
+    let valueOperator = this.props.valueOperator.toLowerCase() ;
+
+    allItems.map( item => {
+      let itemDateProp = item['time' + this.props.dateColumn ];
+      let itemDateDate = new Date( itemDateProp.theTime );
+      let itemDate = itemDateDate.toLocaleDateString();
+
+      item.dateNo = itemDateProp.date;
+      item.dayNo = itemDateProp.day;
+      item.week = itemDateProp.week;
+      item.month = itemDateProp.month;
+      item.year = itemDateProp.year;
+
+      item.meta.push( item.yearMonth ) ;
+      item.meta.push( item.yearWeek ) ;
+      item.meta.push( item.year.toString() ) ;
+
+      item.searchString += 'yearMonth=' + item.yearMonth + '|||' + 'yearWeek=' + item.yearWeek + '|||' + 'year=' + item.year + '|||' + 'week=' + item.week + '|||';
+
+      let valueColumn = item[ this.props.valueColumn ];
+      let valueType = typeof valueColumn;
+
+      if ( valueType === 'string' ) { valueColumn = parseFloat( valueColumn ) ; }
+      else if ( valueType === 'number' ) { valueColumn = parseFloat( valueColumn ) ; }
+      else if ( valueType === 'boolean' ) { valueColumn = valueColumn === true ? 1 : 0 ; }
+      else if ( valueType === 'object' ) { valueColumn = 0 ; }
+      else if ( valueType === 'undefined' ) { valueColumn = 0 ; }
+      else if ( valueType === 'function' ) { valueColumn = 0 ; }
+    });
+
+    let foamTree: IFoamTree = null;
+
+    return foamTree;
+
+    }
+
+
 }
