@@ -235,7 +235,29 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
       this.foamtree = new FoamTree( foamtree );
 
-      this.cycleFoamTree(1,5);
+      setTimeout( () =>  {
+        let newFoamtree : any = getFakeFoamTreeData();
+        newFoamtree.id ="visualization";
+        console.log('foamtree.dataObject.groups', newFoamtree.dataObject.groups);
+
+        //https://get.carrotsearch.com/foamtree/latest/api/#redraw
+        //this.foamtree.redraw(true, newFoamtree.dataObject.groups);
+        this.foamtree.set("dataObject", newFoamtree.dataObject);
+
+      }, 3000);
+
+      setTimeout( () =>  {
+        let newFoamtree : any = getFakeFoamTreeData();
+        newFoamtree.id ="visualization";
+        console.log('foamtree.dataObject.groups', newFoamtree.dataObject.groups);
+
+        //https://get.carrotsearch.com/foamtree/latest/api/#redraw
+        //this.foamtree.redraw(true, newFoamtree.dataObject.groups);
+        this.foamtree.set("dataObject", newFoamtree.dataObject);
+
+      }, 6000);
+
+      //this.cycleFoamTree(1,5);
       return true;
 
     }
@@ -249,9 +271,19 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
           let newFoamtree : any = getFakeFoamTreeData();
           newFoamtree.id ="visualization";
           console.log('foamtree.dataObject.groups', newFoamtree.dataObject.groups);
-          this.foamtree.redraw(true, newFoamtree.dataObject.groups);
+
+          //https://get.carrotsearch.com/foamtree/latest/api/#redraw
+          //this.foamtree.redraw(true, newFoamtree.dataObject.groups);
+
+          //https://get.carrotsearch.com/foamtree/latest/api/#update
+          //this.foamtree.update(newFoamtree.dataObject.groups);
+          //this.foamtree.open( iteration.toString() ) ;
+
+          this.foamtree.set("selection", [ iteration.toString(), newFoamtree.dataObject.groups[iteration] ]);
+
           iteration ++;
           this.cycleFoamTree( iteration, max );
+          
         }, 3000);
 
       } else { 
