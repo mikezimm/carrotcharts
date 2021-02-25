@@ -84,7 +84,7 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfun
         fg3.push( groupProducts );
 
     });
-    console.log('getFakeLayer3', fg3 );
+    //console.log('getFakeLayer3', fg3 );
 
     return fg3;
  }
@@ -120,7 +120,7 @@ export function getFakeFoamTreeData( ) {
 
       };
 
-      console.log('thisFoamTree', thisFoamTree );
+      //console.log('thisFoamTree', thisFoamTree );
       return thisFoamTree;
 
 }
