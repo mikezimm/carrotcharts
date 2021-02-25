@@ -235,8 +235,33 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
       this.foamtree = new FoamTree( foamtree );
 
+      this.cycleFoamTree(1,5);
       return true;
 
+    }
+
+    private cycleFoamTree( iteration: number = 1, max: number ) {
+
+      if ( iteration <= max ) {
+
+        setTimeout( () =>  {
+
+          let newFoamtree : any = getFakeFoamTreeData();
+          newFoamtree.id ="visualization";
+          console.log('foamtree', newFoamtree);
+          this.foamtree.redraw(true, newFoamtree.dataObject.groups);
+          iteration ++;
+          this.cycleFoamTree( iteration, max );
+        }, 3000);
+
+      } else { 
+        return ;
+      }
+
+    }
+
+    private reCycleFoamTree( iteration: number = 1, max: number ) {
+      this.cycleFoamTree( iteration, max );
     }
 
     private buildDataDropdownItems( fetchList: IFoamTreeList, allItems : IFoamItemInfo[] ) {

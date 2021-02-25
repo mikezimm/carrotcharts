@@ -103,7 +103,7 @@ export function getFakeFoamTreeData( ) {
         relaxationVisible: true,
         // Make the relaxation last longer
         relaxationQualityThreshold: 0,
-        relaxationMaxDuration: 15000,
+        relaxationMaxDuration: 5000,
         dataObject: {
           groups: getFakeFoamTreeGroups( 80, 1000, fakeGroups0 , fakeGroups1 ),
         },
@@ -114,6 +114,7 @@ export function getFakeFoamTreeData( ) {
         groupFillType: "plain",
         groupLabelMinFontSize: 20,
         titleBarMinFontSize: 20,
+
 
         //rolloutStartPoint: 'bottomright',
 
