@@ -120,8 +120,28 @@ export function getFakeFoamTreeData( ) {
 
       };
 
+      let preConfigFoamTree : any = {
+        exposeDuration: 400,
+        exposeEasing: "linear",
+        groupLabelFontFamily: "Oxygen",
+        rolloutEasing: "squareInOut",
+        rolloutScalingStrength: -0.3,
+        rolloutRotationStrength: 0,
+        pullbackEasing: "squareInOut",
+        pullbackDuration: 2000,
+        pullbackScalingStrength: -0.3,
+        pullbackRotationStrength: 0,
+        pullbackPolygonDelay: 0.1,
+        fadeDuration: 0,
+        attributionPosition: 45,
+
+        dataObject: {
+            groups: getFakeFoamTreeGroups( 80, 1000, fakeGroups0 , fakeGroups1 ),
+          },
+
+      }
       //console.log('thisFoamTree', thisFoamTree );
-      return thisFoamTree;
+      return preConfigFoamTree;
 
 }
 

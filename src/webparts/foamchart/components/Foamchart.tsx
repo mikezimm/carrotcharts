@@ -234,7 +234,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
       foamtree.id ="visualization";
 
       this.foamtree = new FoamTree( foamtree );
-
+/*
       setTimeout( () =>  {
         let newFoamtree : any = getFakeFoamTreeData();
         newFoamtree.id ="visualization";
@@ -256,8 +256,8 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
         this.foamtree.set("dataObject", newFoamtree.dataObject);
 
       }, 6000);
-
-      //this.cycleFoamTree(1,5);
+*/
+      this.cycleFoamTree(1,5);
       return true;
 
     }
@@ -273,13 +273,15 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
           console.log('foamtree.dataObject.groups', newFoamtree.dataObject.groups);
 
           //https://get.carrotsearch.com/foamtree/latest/api/#redraw
-          //this.foamtree.redraw(true, newFoamtree.dataObject.groups);
+          this.foamtree.set("dataObject", newFoamtree.dataObject);
+//          console.log('dataObject',this.foamtree.get("dataObject"));
 
+          console.log('groups',this.foamtree.get("groups"));
           //https://get.carrotsearch.com/foamtree/latest/api/#update
           //this.foamtree.update(newFoamtree.dataObject.groups);
           //this.foamtree.open( iteration.toString() ) ;
 
-          this.foamtree.set("selection", [ iteration.toString(), newFoamtree.dataObject.groups[iteration] ]);
+//          this.foamtree.set("selection", [ iteration.toString(), newFoamtree.dataObject.groups[iteration] ]);
 
           iteration ++;
           this.cycleFoamTree( iteration, max );
