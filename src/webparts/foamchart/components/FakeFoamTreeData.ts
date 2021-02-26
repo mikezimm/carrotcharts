@@ -90,22 +90,24 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfun
  }
 
 
-export function getFakeFoamTreeData( ) {
+export function getFakeFoamTreeData( useFlatEU : boolean, weightFlatness: number ) {
     let fg3 = getFakeLayer3();
+
+    let groups = useFlatEU === false ? getFakeFoamTreeGroups( weightFlatness, 1000, fakeGroups0 , fakeGroups1 ) : getFakeFoamTreeGroups( weightFlatness, 1000, fakeGroups1[1] );
 
     let thisFoamTree : IFoamTree = {
         
         fadeDuration: 1500,
         layoutByWeightOrder: false,
         stacking: 'flattened',
-        layout: 'relaxed',
+        layout: 'squarified',//squarified, ordered, relaxed
         // Show the relaxation
         relaxationVisible: true,
         // Make the relaxation last longer
         relaxationQualityThreshold: 0,
         relaxationMaxDuration: 5000,
         dataObject: {
-          groups: getFakeFoamTreeGroups( 80, 1000, fakeGroups0 , fakeGroups1 ),
+          groups: groups,
         },
 
         groupSelectionOutlineShadowSize: 50,
@@ -115,7 +117,7 @@ export function getFakeFoamTreeData( ) {
         groupLabelMinFontSize: 20,
         titleBarMinFontSize: 20,
 
-
+        groupGrowingDuration: 300,
         //rolloutStartPoint: 'bottomright',
 
       };
@@ -134,12 +136,15 @@ export function getFakeFoamTreeData( ) {
         pullbackPolygonDelay: 0.1,
         fadeDuration: 0,
         attributionPosition: 45,
+        relaxationVisible: true,
+        groupGrowingDuration: 500,
+        layout: 'relaxed',//squarified, ordered, relaxed
 
         dataObject: {
-            groups: getFakeFoamTreeGroups( 80, 1000, fakeGroups0 , fakeGroups1 ),
+            groups: groups,
           },
 
-      }
+      };
       //console.log('thisFoamTree', thisFoamTree );
       return preConfigFoamTree;
 

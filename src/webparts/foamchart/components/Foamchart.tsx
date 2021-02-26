@@ -230,7 +230,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
       //However the list will show correctly if you click on a pivot.
       //this.searchForItems( '', this.state.searchMeta, 0, 'meta' );
 
-      let foamtree : any = getFakeFoamTreeData();
+      let foamtree : any = getFakeFoamTreeData( true, .1 );
       foamtree.id ="visualization";
 
       this.foamtree = new FoamTree( foamtree );
@@ -257,7 +257,28 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
       }, 6000);
 */
-      this.cycleFoamTree(1,5);
+
+      //const timeout = useRef();
+/*
+      const update = () => {
+        const dataObject = foamtree.get("dataObject");
+
+        dataObject.groups.forEach((g) => {
+          g.weight *= Math.random() + 0.5;
+        });
+
+        foamtree.update();
+//        timeout = setTimeout(update, 2000);
+        this.foamtree = setTimeout(update, 2000);
+      };
+      update();
+
+
+
+      return true;
+            */
+
+      this.cycleFoamTree(1,10);
       return true;
 
     }
@@ -266,27 +287,27 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
       if ( iteration <= max ) {
 
-        setTimeout( () =>  {
-
-          let newFoamtree : any = getFakeFoamTreeData();
-          newFoamtree.id ="visualization";
-          console.log('foamtree.dataObject.groups', newFoamtree.dataObject.groups);
-
-          //https://get.carrotsearch.com/foamtree/latest/api/#redraw
-          this.foamtree.set("dataObject", newFoamtree.dataObject);
-//          console.log('dataObject',this.foamtree.get("dataObject"));
-
-          console.log('groups',this.foamtree.get("groups"));
-          //https://get.carrotsearch.com/foamtree/latest/api/#update
-          //this.foamtree.update(newFoamtree.dataObject.groups);
-          //this.foamtree.open( iteration.toString() ) ;
-
-//          this.foamtree.set("selection", [ iteration.toString(), newFoamtree.dataObject.groups[iteration] ]);
-
-          iteration ++;
-          this.cycleFoamTree( iteration, max );
+        const update = () => {
+          const dataObject = this.foamtree.get("dataObject");
           
-        }, 3000);
+          let theBigOne = dataObject.groups[ Math.floor(Math.random() * dataObject.groups.length) ];
+
+          dataObject.groups.forEach((g) => {
+            if ( g.label === theBigOne.label ) {
+              g.weight = ( 1 + Math.random() ) * ( iteration === max ? 30 : 3 ) ;
+            } else { g.weight = ( 1 + Math.random() ) ; }
+          });
+  
+          this.foamtree.update();
+          setTimeout( () =>  {
+            iteration ++;
+            this.cycleFoamTree( iteration, max );
+          }, 200);
+        };
+
+        update();
+
+
 
       } else { 
         return ;
