@@ -234,55 +234,29 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
       foamtree.id ="visualization";
 
       this.foamtree = new FoamTree( foamtree );
-/*
-      setTimeout( () =>  {
-        let newFoamtree : any = getFakeFoamTreeData();
-        newFoamtree.id ="visualization";
-        console.log('foamtree.dataObject.groups', newFoamtree.dataObject.groups);
-
-        //https://get.carrotsearch.com/foamtree/latest/api/#redraw
-        //this.foamtree.redraw(true, newFoamtree.dataObject.groups);
-        this.foamtree.set("dataObject", newFoamtree.dataObject);
-
-      }, 3000);
-
-      setTimeout( () =>  {
-        let newFoamtree : any = getFakeFoamTreeData();
-        newFoamtree.id ="visualization";
-        console.log('foamtree.dataObject.groups', newFoamtree.dataObject.groups);
-
-        //https://get.carrotsearch.com/foamtree/latest/api/#redraw
-        //this.foamtree.redraw(true, newFoamtree.dataObject.groups);
-        this.foamtree.set("dataObject", newFoamtree.dataObject);
-
-      }, 6000);
-*/
-
-      //const timeout = useRef();
-/*
-      const update = () => {
-        const dataObject = foamtree.get("dataObject");
-
-        dataObject.groups.forEach((g) => {
-          g.weight *= Math.random() + 0.5;
-        });
-
-        foamtree.update();
-//        timeout = setTimeout(update, 2000);
-        this.foamtree = setTimeout(update, 2000);
-      };
-      update();
-
-
-
-      return true;
-            */
 
       this.cycleFoamTree(1,10);
       return true;
 
     }
 
+    /**
+     * 
+     * 
+     * Another implimentation from this react sample:  https://github.com/atlanteh/react-native-slot-machine
+     * 
+      constructor(props) {
+          super(props);
+          this.state = {duration: 4000, slot1: 1234, slot2: 'hello', slot3: '2351'};
+      }
+
+      componentDidMount() {
+          setTimeout(() => this.setState({duration: 1000, slot1: '4321', slot2: 'world', slot3: '1234'}), 5000);
+          setTimeout(() => this.setState({duration: 4000, slot1: '1234', slot2: 'hello', slot3: '2351'}), 7000);
+          setTimeout(() => this.refs.slot.spinTo('prize'), 12000);
+      }
+     */
+    
     private cycleFoamTree( iteration: number = 1, max: number ) {
 
       if ( iteration <= max ) {
