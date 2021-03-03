@@ -163,26 +163,28 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
   public render(): React.ReactElement<IFoamchartProps> {
 
+    let foamControl = this.state.allLoaded !== true ? null : <Foamcontrol  
+        WebpartElement = { this.props.WebpartElement }   //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
+
+        foamTreeData = { this.state.allLoaded === true ? true : false } //
+        generateSample = {true }  //Gets random sample data
+
+        pageContext = { this.props.pageContext }
+        wpContext = {this.props.wpContext }
+
+        tenant = {this.props.tenant }
+        urlVars = { [] }
+
+        // 1 - Analytics options
+        WebpartHeight = { this.state.WebpartHeight }    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
+        WebpartWidth = { this.state.WebpartWidth }     //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/</div>
+      />;
+
+
     return (
       <div className={ styles.foamchart }>
         <div className={ styles.container }>
-
-        <Foamcontrol  
-            WebpartElement = { this.props.WebpartElement }   //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
-
-            foamTreeData = { null } //
-            generateSample = {true }  //Gets random sample data
-
-            pageContext = { this.props.pageContext }
-            wpContext = {this.props.wpContext }
-        
-            tenant = {this.props.tenant }
-            urlVars = { [] }
-
-            // 1 - Analytics options
-            WebpartHeight = { this.state.WebpartHeight }    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
-            WebpartWidth = { this.state.WebpartWidth }     //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/</div>
-          ></Foamcontrol>
+          { foamControl }
         </div>
       </div>
     );

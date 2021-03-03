@@ -112,8 +112,8 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
     private addTheseItemsToState( ) {
 
-      this.setState({    });
-          //let foamtree : IFoamTree
+      //this.setState({    });
+      //let foamtree : IFoamTree
 
       let foamtree : any = getFakeFoamTreeData( true, .1 );
       foamtree.id ="visualization";
@@ -121,8 +121,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
       this.foamtree = new FoamTree( foamtree );
   
       this.cycleFoamTree(1,10);
-
-
+      
       return true;
 
     }
