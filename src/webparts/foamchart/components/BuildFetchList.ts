@@ -93,14 +93,14 @@ import { IFoamTreeList } from './GetListData';
  *                                                                                                                                               
  */
 
-    export function buildFetchList( pageContext: PageContext, webURL: string, listName: string, listTitle: string, isLibrary: boolean, dropDownColumns : any[] ) {
+    export function buildFetchList( pageContext: PageContext, webURL: string, listName: string, listTitle: string, isLibrary: boolean, performance : IPerformanceSettings,
+        dropDownColumns : string[], searchColumns : string[], metaColumns : string[], expandDates : string[], otherColumns: string[] ) {
 
         //Copied from GridCharts for createFetchList
-        let allColumns : string[] = [];  // "File/ServerRelativeUrl","File/Name"  File expanders here:  https://github.com/SharePoint/PnP-JS-Core/issues/778#issuecomment-380575103
+        let allColumns : string[] = otherColumns;  // "File/ServerRelativeUrl","File/Name"  File expanders here:  https://github.com/SharePoint/PnP-JS-Core/issues/778#issuecomment-380575103
 
-        let searchColumns : string[] = ['Title'];
-        let metaColumns : string[] = [];
-        let expandDates : string[] = [];
+        if ( searchColumns.indexOf('Title') === 0 ) { searchColumns.push('Title'); }
+        
         let selectedDropdowns: string[] = [];
         //allColumns.push( this.props.dateColumn );
         //allColumns.push( this.props.valueColumn );
@@ -112,19 +112,14 @@ import { IFoamTreeList } from './GetListData';
 
         dropDownColumns.map( c => { let c1 = c.replace('>','').replace('+','').replace('-','') ; searchColumns.push( c1 ) ; metaColumns.push( c1 ) ; allColumns.push( c1 ); selectedDropdowns.push('') ; });
 
-        let performance : IPerformanceSettings = {
-            fetchCount: 1000,
-            fetchCountMobile: 1000,
-            minDataDownload: false,
-            restFilter: '',
-        };
-
         let basicList : IZBasicList = createFetchList( webURL , null, listTitle, listName, isLibrary, performance, pageContext, allColumns, searchColumns, metaColumns, expandDates );
         //Have to do this to add dropDownColumns and dropDownSort to IZBasicList
         let tempList : any = basicList;
         tempList.dropDownColumns = dropDownColumns;
         tempList.dropDownSort = dropDownSort;
         let fetchList : IFoamTreeList = tempList;
+
+        console.log('buildFetchList fetchList', fetchList );
 
         return { fetchList: fetchList, selectedDropdowns: selectedDropdowns, };
     }
