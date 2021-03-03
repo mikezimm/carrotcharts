@@ -6,7 +6,7 @@ import { IFoamchartState } from './IFoamchartState';
 
 import { escape } from '@microsoft/sp-lodash-subset';
 
-import {    IDropdownOption,  } from "office-ui-fabric-react";
+import { IDropdownOption,  } from "office-ui-fabric-react";
 
 import { getFakeFoamTreeData } from './FakeFoamTreeData';
 
@@ -18,8 +18,9 @@ import { IFoamTree, IFoamTreeDataObject } from '@mikezimm/npmfunctions/dist/IFoa
 
 import { getAllItems, IFoamTreeList, IFoamItemInfo } from './GetListData';
 
+import Foamcontrol from './FoamComponent/FoamControl';
+
 export default class Foamchart extends React.Component<IFoamchartProps, IFoamchartState> {
-  private foamtree: any = null;
 
   public constructor(props:IFoamchartProps){
     super(props);
@@ -157,25 +158,31 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
   }
   
   public componentWillUnmount() {
-    this.foamtree.dispose();
+
   }
-  /* */
-  /*
-  render() {
-    return <div style={{height: "100%"}} ref={e => this.element = e}></div>;
-  }
-  */
 
   public render(): React.ReactElement<IFoamchartProps> {
-
-    let x = this.state.WebpartWidth > 0 ? this.state.WebpartWidth + "px" : "500px";
-    let y = this.state.WebpartHeight > 0 ? this.state.WebpartHeight + "px" : "500px";
 
     return (
       <div className={ styles.foamchart }>
         <div className={ styles.container }>
-            <div id='visualization' style={{height: y, width:  x }}></div>
-            { this.foamtree }
+
+        <Foamcontrol  
+            WebpartElement = { this.props.WebpartElement }   //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
+
+            foamTreeData = { null } //
+            generateSample = {true }  //Gets random sample data
+
+            pageContext = { this.props.pageContext }
+            wpContext = {this.props.wpContext }
+        
+            tenant = {this.props.tenant }
+            urlVars = { [] }
+
+            // 1 - Analytics options
+            WebpartHeight = { this.state.WebpartHeight }    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
+            WebpartWidth = { this.state.WebpartWidth }     //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/</div>
+          ></Foamcontrol>
         </div>
       </div>
     );
@@ -224,18 +231,6 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
       });
 
-      console.log('loadedState:', this.state );
-      //This is required so that the old list items are removed and it's re-rendered.
-      //If you do not re-run it, the old list items will remain and new results get added to the list.
-      //However the list will show correctly if you click on a pivot.
-      //this.searchForItems( '', this.state.searchMeta, 0, 'meta' );
-
-      let foamtree : any = getFakeFoamTreeData( true, .1 );
-      foamtree.id ="visualization";
-
-      this.foamtree = new FoamTree( foamtree );
-
-      this.cycleFoamTree(1,10);
       return true;
 
     }
@@ -257,42 +252,6 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
       }
      */
     
-    private cycleFoamTree( iteration: number = 1, max: number ) {
-
-      if ( iteration <= max ) {
-
-        const update = () => {
-          const dataObject = this.foamtree.get("dataObject");
-          
-          let theBigOne = dataObject.groups[ Math.floor(Math.random() * dataObject.groups.length) ];
-
-          dataObject.groups.forEach((g) => {
-            if ( g.label === theBigOne.label ) {
-              g.weight = ( 1 + Math.random() ) * ( iteration === max ? 30 : 3 ) ;
-            } else { g.weight = ( 1 + Math.random() ) ; }
-          });
-  
-          this.foamtree.update();
-          setTimeout( () =>  {
-            iteration ++;
-            this.cycleFoamTree( iteration, max );
-          }, 200);
-        };
-
-        update();
-
-
-
-      } else { 
-        return ;
-      }
-
-    }
-
-    private reCycleFoamTree( iteration: number = 1, max: number ) {
-      this.cycleFoamTree( iteration, max );
-    }
-
     private buildDataDropdownItems( fetchList: IFoamTreeList, allItems : IFoamItemInfo[] ) {
 
     let dropDownItems : IDropdownOption[][] = [];
