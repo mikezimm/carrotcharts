@@ -56,8 +56,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
     let refreshMe : any = false;
 
     let refreshOnThese = [
-      'setSize','setTab','otherTab','setTab','otherTab','setTab','otherTab','setTab','otherTab', '',
-      'pivotSize', 'pivotFormat', 'pivotOptions', 'pivotTab', 'advancedPivotStyles', 'gridStyles',
+      'dataKey',
     ];
 
     if (reloadData === false) {
@@ -73,7 +72,8 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
   }
   
   public componentWillUnmount() {
-    this.foamtree.dispose();
+    //this.foamtree.dispose();
+    this.cycleFoamTree(1,10);
   }
   /* */
   /*
@@ -121,7 +121,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
       this.foamtree = new FoamTree( foamtree );
   
       this.cycleFoamTree(1,10);
-      
+
       return true;
 
     }

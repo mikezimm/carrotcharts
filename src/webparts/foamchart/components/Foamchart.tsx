@@ -1,24 +1,37 @@
 import * as React from 'react';
-import styles from './Foamchart.module.scss';
-import { IFoamchartProps } from './IFoamchartProps';
-import { IFoamchartState } from './IFoamchartState';
 
+import { IconButton, IIconProps, IContextualMenuProps, Stack, Link } from 'office-ui-fabric-react';
 
 import { escape } from '@microsoft/sp-lodash-subset';
 
 import { IDropdownOption,  } from "office-ui-fabric-react";
 
+import { FoamTree } from "@carrotsearch/foamtree";
+
+
+
+
+import { IFoamTree, IFoamTreeDataObject } from '@mikezimm/npmfunctions/dist/IFoamTree';
+
+
+
+
 import { getFakeFoamTreeData } from './FakeFoamTreeData';
 
 import { buildFetchList } from './BuildFetchList';
 
-import { FoamTree } from "@carrotsearch/foamtree";
-
-import { IFoamTree, IFoamTreeDataObject } from '@mikezimm/npmfunctions/dist/IFoamTree';
-
 import { getAllItems, IFoamTreeList, IFoamItemInfo } from './GetListData';
 
+
+
 import Foamcontrol from './FoamComponent/FoamControl';
+import stylesB from './CreateButtons.module.scss';
+
+
+import styles from './Foamchart.module.scss';
+import { IFoamchartProps } from './IFoamchartProps';
+import { IFoamchartState } from './IFoamchartState';
+
 
 export default class Foamchart extends React.Component<IFoamchartProps, IFoamchartState> {
 
@@ -39,6 +52,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
           WebpartHeight: this.props.WebpartElement ? this.props.WebpartElement.getBoundingClientRect().height : 1,
           WebpartWidth:  this.props.WebpartElement ? this.props.WebpartElement.getBoundingClientRect().width : 1,
 
+          dataKey: 'x',
           timeSliderScale: [ 'Weeks', 'Years', 'Months', 'WeekNo'],
           currentTimeScale: 'Weeks',
 
@@ -166,6 +180,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
     let foamControl = this.state.allLoaded !== true ? null : <Foamcontrol  
         WebpartElement = { this.props.WebpartElement }   //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
 
+        dataKey = { this.state.dataKey }
         foamTreeData = { this.state.allLoaded === true ? true : false } //
         generateSample = {true }  //Gets random sample data
 
@@ -180,10 +195,34 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
         WebpartWidth = { this.state.WebpartWidth }     //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/</div>
       />;
 
+      const defCommandIconStyles : any = {
+        root: {padding:'10px !important', height: 32},//color: 'green' works here
+        icon: { 
+          fontSize: 18,
+          fontWeight: "normal",
+          margin: '0px 2px',
+          color: '#00457e', //This will set icon color
+       },
+      };
+
+      let button = <div className= {stylesB.buttons} id={ 'NoID' }>
+      <IconButton iconProps={{ iconName: 'Cat' }} 
+        title= { 'titleText'} 
+        //uniqueId= { titleText } 
+        //data= { titleText } 
+        //key= { titleText } 
+        //ariaLabel= { titleText } 
+        disabled={false} 
+        checked={false}
+        onClick={ this._onClick.bind(this) }
+        styles={ defCommandIconStyles }
+        />
+      </div>;
 
     return (
       <div className={ styles.foamchart }>
         <div className={ styles.container }>
+          { button }
           { foamControl }
         </div>
       </div>
@@ -191,6 +230,9 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
   }
 
 
+  private _onClick () {
+    this.setState({ dataKey: this.state.dataKey + '1' });
+  }
 
   /***
  *     .d8b.  d8888b. d8888b.      d888888b d888888b d88888b .88b  d88. .d8888.      d888888b  .d88b.       .d8888. d888888b  .d8b.  d888888b d88888b 
