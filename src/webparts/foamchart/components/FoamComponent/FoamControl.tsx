@@ -54,7 +54,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
     let refreshMe : any = false;
 
-    this.tryFoamTree1x( );
+    this.tryForEachGroup( );
     return;
     
     let refreshOnThese = [
@@ -100,7 +100,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
     let x = this.props.WebpartWidth > 0 ? this.props.WebpartWidth + "px" : "500px";
     let y = this.props.WebpartHeight > 0 ? this.props.WebpartHeight + "px" : "500px";
 
-    let foamBox =  <div><div className={ styles.container }><button onClick={ this.tryFoamTree1x.bind(this) } style={{marginRight:'20px'}}>tryFoamTree1x</button>
+    let foamBox =  <div><div className={ styles.container }><button onClick={ this.tryForEachGroup.bind(this) } style={{marginRight:'20px'}}>tryForEachGroup</button>
           <button onClick={ this.trySetGroups.bind(this) } style={{marginRight:'20px'}}>trySetGroups</button>
           <button onClick={ this.trySetObject.bind(this) } style={{marginRight:'20px'}}>trySetObject</button>
           <button onClick={ this.tryUpdate.bind(this) } style={{marginRight:'20px'}}>tryUpdate</button>
@@ -111,7 +111,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
         </div></div>;
 
     return (
-      <div className={ styles.foamchart }>
+      <div className={ styles.foamchart } style={{background: 'yellow', padding: '15px'}}>
           { foamBox }
       </div>
     );
@@ -121,7 +121,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
   /**
    * This will "resize" existing groups and animate as I want
    */
-    private tryFoamTree1x(  ) {
+    private tryForEachGroup(  ) {
 
         let dataObject = this.foamtree.get("dataObject");
         let theBigOne = dataObject.groups[ Math.floor(Math.random() * dataObject.groups.length) ];
