@@ -30,4 +30,4 @@ export const FoamFunction: React.FunctionComponent<IFoamcontrolProps> = (props: 
       </div>
     );
 
-}
+};

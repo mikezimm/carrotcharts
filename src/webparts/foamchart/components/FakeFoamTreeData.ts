@@ -69,8 +69,8 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfun
  *                                                                                                                                               
  */
 
- let fakeGroups0 = ['Americas', 'Europe', 'Asia'];
- let fakeGroups1 = [ ['US','Canada','Mexico','Brazil'], ['Sweden','Germany','France','Romania','Spain','Austria','Italy','Switzerland','England'], ['China','Japan','Thailand','India'] ];
+ export const fakeGroups0 = ['Americas', 'Europe', 'Asia'];
+ export const fakeGroups1 = [ ['US','Canada','Mexico','Brazil'], ['Sweden','Germany','France','Romania','Spain','Austria','Italy','Switzerland','England'], ['China','Japan','Thailand','India'] ];
 
  let products = ['AB','SB','SW'];
 

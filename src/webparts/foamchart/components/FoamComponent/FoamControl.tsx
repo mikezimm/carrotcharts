@@ -11,7 +11,7 @@ import { IFoamTree, IFoamTreeDataObject } from '@mikezimm/npmfunctions/dist/IFoa
 
 import { IFoamTreeList, IFoamItemInfo } from '../GetListData';
 
-import { getFakeFoamTreeData } from '../FakeFoamTreeData';
+import { getFakeFoamTreeData, getFakeFoamTreeGroups, fakeGroups1 } from '../FakeFoamTreeData';
 
 export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoamcontrolState> {
   private foamtree: any = null;
@@ -54,7 +54,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
     let refreshMe : any = false;
 
-    this.cycleFoamTree1x( );
+    this.tryFoamTree1x( );
     return;
     
     let refreshOnThese = [
@@ -86,7 +86,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
   
   public componentWillUnmount() {
     //this.foamtree.dispose();
-    //this.cycleFoamTree(1,10);
+    //this.tryFoamTree(1,10);
   }
   /* */
   /*
@@ -100,30 +100,31 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
     let x = this.props.WebpartWidth > 0 ? this.props.WebpartWidth + "px" : "500px";
     let y = this.props.WebpartHeight > 0 ? this.props.WebpartHeight + "px" : "500px";
 
+    let foamBox =  <div><div className={ styles.container }><button onClick={ this.tryFoamTree1x.bind(this) } style={{marginRight:'20px'}}>tryFoamTree1x</button>
+          <button onClick={ this.trySetGroups.bind(this) } style={{marginRight:'20px'}}>trySetGroups</button>
+          <button onClick={ this.trySetObject.bind(this) } style={{marginRight:'20px'}}>trySetObject</button>
+          <button onClick={ this.tryUpdate.bind(this) } style={{marginRight:'20px'}}>tryUpdate</button>
+          <button onClick={ this.tryAttach.bind(this) } style={{marginRight:'20px'}}>tryAttach</button>
+          <button onClick={ this.tryNew.bind(this) } style={{marginRight:'20px'}}>tryNew</button>
+          <div id='visualization' style={{height: y, width:  x }}></div>
+          { this.foamtree }
+        </div></div>;
+
     return (
       <div className={ styles.foamchart }>
-        <div className={ styles.container }>
-            <div id='visualization' style={{height: y, width:  x }}></div>
-            { this.foamtree }
-        </div>
+          { foamBox }
       </div>
     );
   }
-
-
-  private _onClick() {
-    this.cycleFoamTree1x( );
-    //alert('Hi!');
-  }
-
   
-  private cycleFoamTree1x(  ) {
+ 
+  /**
+   * This will "resize" existing groups and animate as I want
+   */
+    private tryFoamTree1x(  ) {
 
-      const update = () => {
-        const dataObject = this.foamtree.get("dataObject");
-        
+        let dataObject = this.foamtree.get("dataObject");
         let theBigOne = dataObject.groups[ Math.floor(Math.random() * dataObject.groups.length) ];
-
         dataObject.groups.forEach((g) => {
           if ( g.label === theBigOne.label ) {
             g.weight = ( 1 + Math.random() ) * ( 30 ) ;
@@ -131,12 +132,59 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
         });
 
         this.foamtree.update();
-      };
 
-      update();
+    }
 
+    /**
+     * This gets new data and reanimates by "undrawing" current data and the redrawing with new data... not like a resizing.
+     * Seems to do same thing as trySetObject
+     */
+    private trySetGroups(  ) {
+        const newGroups = getFakeFoamTreeGroups( 90, 1000, fakeGroups1[1] );
+        this.foamtree.set({
+          fadeDuration: 1500,
+          relaxationVisible: true,
+          relaxationQualityThreshold: 0,
+          relaxationMaxDuration: 1000,
+          dataObject: {
+            groups: newGroups
+          }
+        });
+    }
 
-  }
+    /**
+     * This gets new data and reanimates by "undrawing" current data and the redrawing with new data... not like a resizing.
+     * Seems to do same thing as trySetGroups
+     */
+    private trySetObject( ) {
+      const newFoamTree = getFakeFoamTreeData( true , 900 );
+      this.foamtree.set(newFoamTree);
+    }
+
+    /**
+     * This gets new group data but does not redraw or animate
+     */
+    private tryUpdate(  ) {
+      const newGroups = getFakeFoamTreeGroups( 90, 1000, fakeGroups1[1] );
+      this.foamtree.update( newGroups );
+    }
+
+    /**
+     * This gets new group data but does not redraw or animate
+     */
+    private tryAttach(  ) {
+      const newGroups = getFakeFoamTreeGroups( 90, 1000, fakeGroups1[1] );
+      this.foamtree.attach( newGroups, 0 );
+    }
+
+    /**
+     * This wipes the entire foam chart box element
+     */
+    private tryNew( ) {
+      let foamtree : any = getFakeFoamTreeData( true, .1 );
+      foamtree.id ="visualization";
+      this.foamtree = new FoamTree( foamtree );
+    }
 
   /***
  *     .d8b.  d8888b. d8888b.      d888888b d888888b d88888b .88b  d88. .d8888.      d888888b  .d88b.       .d8888. d888888b  .d8b.  d888888b d88888b 
@@ -174,13 +222,13 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
       }
 
   
-      //this.cycleFoamTree(1,10);
+      //this.tryFoamTree(1,10);
 
       return true;
 
     }
     
-    private cycleFoamTree( iteration: number = 1, max: number ) {
+    private tryFoamTree( iteration: number = 1, max: number ) {
 
       if ( iteration <= max ) {
 
@@ -198,7 +246,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
           this.foamtree.update();
           setTimeout( () =>  {
             iteration ++;
-            this.cycleFoamTree( iteration, max );
+            this.tryFoamTree( iteration, max );
           }, 200);
         };
 
