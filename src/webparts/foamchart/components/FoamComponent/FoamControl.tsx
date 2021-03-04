@@ -54,6 +54,9 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
     let refreshMe : any = false;
 
+    this.cycleFoamTree1x( );
+    return;
+    
     let refreshOnThese = [
       'dataKey',
     ];
@@ -108,6 +111,32 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
   }
 
 
+  private _onClick() {
+    this.cycleFoamTree1x( );
+    //alert('Hi!');
+  }
+
+  
+  private cycleFoamTree1x(  ) {
+
+      const update = () => {
+        const dataObject = this.foamtree.get("dataObject");
+        
+        let theBigOne = dataObject.groups[ Math.floor(Math.random() * dataObject.groups.length) ];
+
+        dataObject.groups.forEach((g) => {
+          if ( g.label === theBigOne.label ) {
+            g.weight = ( 1 + Math.random() ) * ( 30 ) ;
+          } else { g.weight = ( 1 + Math.random() ) ; }
+        });
+
+        this.foamtree.update();
+      };
+
+      update();
+
+
+  }
 
   /***
  *     .d8b.  d8888b. d8888b.      d888888b d888888b d88888b .88b  d88. .d8888.      d888888b  .d88b.       .d8888. d888888b  .d8b.  d888888b d88888b 
