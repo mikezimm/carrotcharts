@@ -52,28 +52,38 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
   public componentDidUpdate(prevProps) {
 
-    let reloadData : any = false;
     let refreshMe : any = false;
 
     let refreshOnThese = [
       'dataKey',
     ];
 
-    if (reloadData === false) {
+    if (refreshMe === false) {
       refreshOnThese.map( key => {
         if ( prevProps[key] !== this.props[key] ) { refreshMe = true; }
       });
     }
 
-    if (reloadData === true) {
-      this.addTheseItemsToState();
+    if (refreshMe === true) {
+      //this.addTheseItemsToState();
+
+      if ( this.foamtree = null ) {
+        this.foamtree = new FoamTree(  this.props.foamTreeData );
+      } else {
+        const dataObject = this.foamtree.get("dataObject");
+
+        dataObject.groups = this.props.foamTreeData.groups;
+
+        this.foamtree.update();
+      }
+
     }
 
   }
   
   public componentWillUnmount() {
     //this.foamtree.dispose();
-    this.cycleFoamTree(1,10);
+    //this.cycleFoamTree(1,10);
   }
   /* */
   /*
@@ -115,12 +125,27 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
       //this.setState({    });
       //let foamtree : IFoamTree
 
-      let foamtree : any = getFakeFoamTreeData( true, .1 );
-      foamtree.id ="visualization";
+      if ( this.props.foamTreeData !== null && this.props.generateSample !== true ) {
+        let foamtree : any = this.props.foamTreeData ;
+        foamtree.id ="visualization";
+        this.foamtree = new FoamTree( foamtree );
+
+      } else if ( this.props.generateSample === true ) {
+        let foamtree : any = getFakeFoamTreeData( true, .1 );
+        foamtree.id ="visualization";
+        this.foamtree = new FoamTree( foamtree );
+
+      } else if ( this.props.foamTreeData === null ) {
+        let foamtree : any = getFakeFoamTreeData( true, .1 );
+        foamtree.id ="visualization";
+        this.foamtree = new FoamTree( foamtree );
+
+      } else { 
+        
+      }
+
   
-      this.foamtree = new FoamTree( foamtree );
-  
-      this.cycleFoamTree(1,10);
+      //this.cycleFoamTree(1,10);
 
       return true;
 
