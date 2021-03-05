@@ -12,7 +12,7 @@ import { FoamTree } from "@carrotsearch/foamtree";
 
 
 import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/IFoamTree';
-
+import { doesObjectExistInArray, doesObjectExistInArrayInt } from '@mikezimm/npmfunctions/dist/arrayServices';
 
 
 
@@ -260,10 +260,10 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
       let allItems = allNewData === false ? this.state.allItems : theseItems;
 
-      let x = this.buildGroupData( fetchList, allItems );
+      let foamTreeData = this.buildGroupData( fetchList, allItems );
 
       //let foamTreeData: IFoamTree = null; //this.buildGridData (fetchList, theseItems);
-      let foamTreeData : any = getFakeFoamTreeData( true, 90 );
+      // let foamTreeData : any = getFakeFoamTreeData( true, 90 );
       foamTreeData.id ="visualization";
       let dropDownItems : IDropdownOption[][] = allNewData === true ? this.buildDataDropdownItems( fetchList, allItems ) : this.state.dropDownItems ;
 
@@ -410,32 +410,92 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
     //Get first group tier
     let hiearchy = ['Story', 'Chapter'];
-    let tHI = 0; //This Hiearchy Index
-    let result = this.buildHiearchyGroups( allItems, groupsXStrings, hiearchy, tHI );
+    let start = new Date();
 
-    let foamTree: IFoamTree = null;
+    let result = this.buildHiearchyGroups( allItems, [], hiearchy, 0 );
+    let finalGroups = this.buildGroupWeights ( result.allItems, result.groups, 0 ) ;
 
+    let end = new Date();
+    alert( 'process time (ms) = ' + ( end.getTime() - start.getTime() ) );
+
+    let foamTree : IFoamTree = getFakeFoamTreeData( true, 90 );
+    foamTree.dataObject.groups = finalGroups; 
     return foamTree;
 
   }
 
-  private buildHiearchyGroups ( allItems: IFoamItemInfo[], groupsXStrings: string[][], hiearchy: string[], tHI: number ) {
+  private buildGroupWeights ( allItems: IFoamItemInfo[], groups: IFoamTreeGroup[], tHI: number ) { //removed hiearchy: string[], 
 
-    hiearchy.map( h => { groupsXStrings.push( [] ); } ) ;
+    allItems.map( item => {
+
+      if ( item.groupIndexs.length > 0 ) {
+        groups[ item.groupIndexs[0] ] .weight ++;
+    
+      }
+      if ( item.groupIndexs.length > 1 ) {
+        groups[ item.groupIndexs[0] ].groups[ item.groupIndexs[1] ] .weight ++;
+
+      }
+      if ( item.groupIndexs.length > 2 ) {
+        groups[ item.groupIndexs[0] ].groups[ item.groupIndexs[1] ].groups[ item.groupIndexs[2] ] .weight ++;
+
+      }
+
+    }); 
+
+    return groups;
+
+  }
+
+  private buildHiearchyGroups ( allItems: IFoamItemInfo[], groups: IFoamTreeGroup[], hiearchy: string[], tHI: number ) {
+
     allItems.map( item => {
       item.groupIndexs = [];
-      let thisHiearchyValue = item[hiearchy[ tHI ]];
-      if ( thisHiearchyValue ) {
-        let thisGroupIndex = groupsXStrings[ tHI ].indexOf( thisHiearchyValue ) ;
-        if ( thisGroupIndex < 0 ) {
-          groupsXStrings[ tHI ].push( thisHiearchyValue );
-          thisGroupIndex = groupsXStrings[ tHI ].length -1;
-        }
-        item.groupIndexs.push( thisGroupIndex );
-      }
+      let result = this.buildHiearchyGroupsForItem(item, groups, hiearchy, tHI );
+      groups = result.groups;
+      item = result.item;
     }); 
-    console.log( 'buildHiearchyGroups' , allItems, groupsXStrings );
-    return { allItems: allItems, groupsXStrings: groupsXStrings }
+
+    console.log( 'buildHiearchyGroups' , allItems, groups );
+    return { allItems: allItems, groups: groups } ;
+
+  }
+
+  //groups.push( this.createDefaultGroup( h ) ); }
+  private createDefaultGroup( label: any, weight: number = 0 ) {
+    if ( typeof label !== 'string' ) { label = label.toString(); }
+    let newGroup : IFoamTreeGroup = { label: label, weight: 0 , groups: [] };
+    return newGroup;
+  }
+
+  private buildHiearchyGroupsForItem ( item: IFoamItemInfo, groups: IFoamTreeGroup[], hiearchy: string[], tHI: number ) {
+
+    let thisHiearchyValue : any = item[hiearchy[ tHI ]];
+    //if ( thisHiearchyValue === undefined ) { thisHiearchyValue = 'undefined' ; } else if ( thisHiearchyValue === null ) { thisHiearchyValue = 'null' ; }
+    if ( thisHiearchyValue === undefined ) { thisHiearchyValue = 'No ' + hiearchy[ tHI ] ; } else if ( thisHiearchyValue === null ) { thisHiearchyValue = 'No ' + hiearchy[ tHI ] ; }
+    if ( thisHiearchyValue ) {
+
+      //This returns boolean (false) or string of the index number.... switch to any so typescript doesn't balk.
+      let thisGroupIndex : number = doesObjectExistInArrayInt(groups, 'label', thisHiearchyValue, true ) ; // groups[ tHI ].indexOf( thisHiearchyValue ) ;
+      if ( thisGroupIndex < 0 ) {
+        groups.push( this.createDefaultGroup( thisHiearchyValue ) );
+        thisGroupIndex = groups.length -1;
+      }
+      item.groupIndexs.push( thisGroupIndex );
+      let childGroups = groups[ thisGroupIndex ].groups ;
+
+      if ( ( tHI + 1 ) < hiearchy.length ) { 
+        let result = this.buildHiearchyGroupsForItem(item, childGroups, hiearchy, tHI + 1,  ) ; 
+        item = result.item;
+        groups['groups'] = result.groups;
+
+      }
+    }
+
+    return { item: item, groups: groups } ;
+
   }
 
 }
+
+

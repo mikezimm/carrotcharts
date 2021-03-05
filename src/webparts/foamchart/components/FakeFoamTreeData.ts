@@ -139,6 +139,7 @@ export function getFakeFoamTreeData( useFlatEU : boolean, weightFlatness: number
         relaxationVisible: true,
         groupGrowingDuration: 500,
         layout: 'relaxed',//squarified, ordered, relaxed
+        //stacking: 'flattened',
 
         dataObject: {
             groups: groups,
