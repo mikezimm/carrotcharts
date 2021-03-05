@@ -45,7 +45,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
     let fetchInfo  : any = buildFetchList( this.props.pageContext, this.props.parentListWeb, this.props.listName, this.props.parentListTitle, false, this.props.performance,
          this.props.dropDownColumns, this.props.searchColumns, this.props.metaColumns, [this.props.dateColumn], [this.props.valueColumn] );
 
-    let foamtree : any = getFakeFoamTreeData( true, .1 );
+    let foamtree : any = getFakeFoamTreeData( true, 90 );
 
     let errMessage = '';
     this.state = { 
@@ -209,6 +209,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
       let button = <div className= {stylesB.buttons} id={ 'NoID' }>
       <IconButton iconProps={{ iconName: 'Cat' }} 
+        text= { 'parent component' }
         title= { 'titleText'} 
         //uniqueId= { titleText } 
         //data= { titleText } 
@@ -233,7 +234,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
 
   private _onClick () {
-    let foamtree : any = getFakeFoamTreeData( true, .1 );
+    let foamtree : any = getFakeFoamTreeData( true, 90 );
     this.setState({ dataKey: this.state.dataKey + '1', foamTreeData: foamtree });
   }
 

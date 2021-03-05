@@ -97,7 +97,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
   public render(): React.ReactElement<IFoamcontrolProps> {
 
-    let x = this.props.WebpartWidth > 0 ? this.props.WebpartWidth + "px" : "500px";
+    let x = this.props.WebpartWidth > 0 ? ( this.props.WebpartWidth -30 ) + "px" : "500px";
     let y = this.props.WebpartHeight > 0 ? this.props.WebpartHeight + "px" : "500px";
 
     let foamBox =  <div><div className={ styles.container }><button onClick={ this.tryForEachGroup.bind(this) } style={{marginRight:'20px'}}>tryForEachGroup</button>
@@ -111,26 +111,60 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
         </div></div>;
 
     return (
-      <div className={ styles.foamchart } style={{background: 'yellow', padding: '15px'}}>
+      <div className={ styles.foamchart } style={{background: 'gray', padding: '15px'}}>
           { foamBox }
       </div>
     );
   }
   
- 
+  private getTotalGroupWeight ( groups: any[] ) {
+    let total = 0 ;
+    groups.map( g=> { if ( g.weight ) { total += g.weight ;} });
+    return total;
+  } 
+
+ private consoleDataObject( caller: string, obj: string ) {
+  let thisDataObject = null;
+  let groups : any[] = [];
+  if ( obj === 'full' ) {
+    thisDataObject = this.foamtree.get();
+    groups = thisDataObject.dataObject.groups;
+
+  } else {
+    thisDataObject = this.foamtree.get(obj);
+    groups = obj === 'dataObject' ? thisDataObject.groups : [];
+
+  }
+  console.log('object - ' + caller, this.getTotalGroupWeight( groups ), thisDataObject );
+  return;
+ }
   /**
    * This will "resize" existing groups and animate as I want
    */
     private tryForEachGroup(  ) {
-
+        this.consoleDataObject( 'tryForEachGroup Before', 'full' );
         let dataObject = this.foamtree.get("dataObject");
         let theBigOne = dataObject.groups[ Math.floor(Math.random() * dataObject.groups.length) ];
+        let priorTotal = 0;
+        let newTotal = 0;
         dataObject.groups.forEach((g) => {
           if ( g.label === theBigOne.label ) {
+            priorTotal += g.weight;
             g.weight = ( 1 + Math.random() ) * ( 30 ) ;
-          } else { g.weight = ( 1 + Math.random() ) ; }
+            newTotal += g.weight;
+          } else { 
+            priorTotal += g.weight;
+            g.weight = ( 1 + Math.random() ) ; 
+            newTotal += g.weight;
+          }
         });
 
+        let newPriorRatio = priorTotal !== 0 ? newTotal / priorTotal : 1;
+        console.log('tryForEachGroup totals:', priorTotal, newTotal, newPriorRatio, dataObject.groups );
+        dataObject.groups.forEach((g) => {
+          g.weight = g.weight / newPriorRatio;
+        });
+        console.log('tryForEachGroup - newGroups' , dataObject.groups );
         this.foamtree.update();
 
     }
@@ -140,6 +174,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
      * Seems to do same thing as trySetObject
      */
     private trySetGroups(  ) {
+      this.consoleDataObject( 'trySetGroups Before', 'full' );
         const newGroups = getFakeFoamTreeGroups( 90, 1000, fakeGroups1[1] );
         this.foamtree.set({
           fadeDuration: 1500,
@@ -150,6 +185,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
             groups: newGroups
           }
         });
+      this.consoleDataObject( 'trySetGroups After', 'full' );
     }
 
     /**
@@ -157,33 +193,42 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
      * Seems to do same thing as trySetGroups
      */
     private trySetObject( ) {
-      const newFoamTree = getFakeFoamTreeData( true , 900 );
+      this.consoleDataObject( 'trySetObject Before', 'dataObject' );
+      const newFoamTree = getFakeFoamTreeData( true , 90 );
       this.foamtree.set(newFoamTree);
+      this.consoleDataObject( 'trySetObject After', 'dataObject' );
     }
 
     /**
      * This gets new group data but does not redraw or animate
      */
     private tryUpdate(  ) {
+      this.consoleDataObject( 'tryUpdate Before', 'dataObject' );
       const newGroups = getFakeFoamTreeGroups( 90, 1000, fakeGroups1[1] );
       this.foamtree.update( newGroups );
+      this.consoleDataObject( 'tryUpdate After', 'dataObject' );
     }
 
     /**
      * This gets new group data but does not redraw or animate
      */
     private tryAttach(  ) {
+      this.consoleDataObject( 'tryAttach Before', 'dataObject' );
       const newGroups = getFakeFoamTreeGroups( 90, 1000, fakeGroups1[1] );
-      this.foamtree.attach( newGroups, 0 );
+      this.foamtree.attach( newGroups, 1 );
+      this.consoleDataObject( 'tryAttach After', 'dataObject' );
     }
 
     /**
      * This wipes the entire foam chart box element
      */
     private tryNew( ) {
-      let foamtree : any = getFakeFoamTreeData( true, .1 );
+      this.consoleDataObject( 'tryNew Before', 'dataObject' );
+      let foamtree : any = getFakeFoamTreeData( true, 90 );
       foamtree.id ="visualization";
-      this.foamtree = new FoamTree( foamtree );
+      //this.foamtree = foamtree;                 //Causes this error in consoleDataObject:  this.foamtree.get is not a function
+      this.foamtree = new FoamTree( foamtree );   // Causes this error in consoleDataObject:  Uncaught FoamTree: visualization already embedded in the element.
+      this.consoleDataObject( 'tryNew After', 'dataObject' );
     }
 
   /***
@@ -201,24 +246,30 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
       //this.setState({    });
       //let foamtree : IFoamTree
-
+      
       if ( this.props.foamTreeData !== null && this.props.generateSample !== true ) {
-        let foamtree : any = this.props.foamTreeData ;
+        let foamtree : any = this.props.foamTreeData ; 
         foamtree.id ="visualization";
         this.foamtree = new FoamTree( foamtree );
+        console.log('FoamControl addItemsToState 1:', foamtree );
+
 
       } else if ( this.props.generateSample === true ) {
-        let foamtree : any = getFakeFoamTreeData( true, .1 );
+        let foamtree : any = getFakeFoamTreeData( true, 90 );
         foamtree.id ="visualization";
         this.foamtree = new FoamTree( foamtree );
+        console.log('FoamControl addItemsToState 2:', foamtree );
 
       } else if ( this.props.foamTreeData === null ) {
-        let foamtree : any = getFakeFoamTreeData( true, .1 );
+        let foamtree : any = getFakeFoamTreeData( true, 90 );
         foamtree.id ="visualization";
         this.foamtree = new FoamTree( foamtree );
+        console.log('FoamControl addItemsToState 3:', foamtree );
+        this.consoleDataObject( 'FoamControl addItemsToState 3', 'full' );
 
       } else { 
-        
+        console.log('FoamControl addItemsToState 4:','Did nothing' );
+
       }
 
   
