@@ -11,7 +11,7 @@ import { FoamTree } from "@carrotsearch/foamtree";
 
 
 
-import { IFoamTree, IFoamTreeDataObject } from '@mikezimm/npmfunctions/dist/IFoamTree';
+import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/IFoamTree';
 
 
 
@@ -260,6 +260,8 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
       let allItems = allNewData === false ? this.state.allItems : theseItems;
 
+      let x = this.buildGroupData( fetchList, allItems );
+
       //let foamTreeData: IFoamTree = null; //this.buildGridData (fetchList, theseItems);
       let foamTreeData : any = getFakeFoamTreeData( true, 90 );
       foamTreeData.id ="visualization";
@@ -351,11 +353,14 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
     */
 
 
-   private buildGridData ( fetchList: IFoamTreeList, allItems : IFoamItemInfo[] ) {
+   private buildGroupData ( fetchList: IFoamTreeList, allItems : IFoamItemInfo[] ) {
 
     let count = allItems.length;
 
     let allDataPoints : any[] = [];
+
+    let groups: IFoamTreeGroup[] = [];
+    let groupsXStrings: string[][] = [];
 
     /**
      * Get entire date range
@@ -384,27 +389,13 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
     });
 
-    let startDate = new Date( firstDate );
-    // let gridStart = this.getOffSetDayOfWeek( firstDate, 7, 'prior' ); //This gets prior sunday
-
     let valueOperator = this.props.valueOperator.toLowerCase() ;
 
     allItems.map( item => {
-      let itemDateProp = item['time' + this.props.dateColumn ];
-      let itemDateDate = new Date( itemDateProp.theTime );
-      let itemDate = itemDateDate.toLocaleDateString();
 
-      item.dateNo = itemDateProp.date;
-      item.dayNo = itemDateProp.day;
-      item.week = itemDateProp.week;
-      item.month = itemDateProp.month;
-      item.year = itemDateProp.year;
+      //item.meta.push( item.year.toString() ) ;
 
-      item.meta.push( item.yearMonth ) ;
-      item.meta.push( item.yearWeek ) ;
-      item.meta.push( item.year.toString() ) ;
-
-      item.searchString += 'yearMonth=' + item.yearMonth + '|||' + 'yearWeek=' + item.yearWeek + '|||' + 'year=' + item.year + '|||' + 'week=' + item.week + '|||';
+      //item.searchString += 'yearMonth=' + item.yearMonth + '|||' + 'yearWeek=' + item.yearWeek + '|||' + 'year=' + item.year + '|||' + 'week=' + item.week + '|||';
 
       let valueColumn = item[ this.props.valueColumn ];
       let valueType = typeof valueColumn;
@@ -417,11 +408,34 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
       else if ( valueType === 'function' ) { valueColumn = 0 ; }
     });
 
+    //Get first group tier
+    let hiearchy = ['Story', 'Chapter'];
+    let tHI = 0; //This Hiearchy Index
+    let result = this.buildHiearchyGroups( allItems, groupsXStrings, hiearchy, tHI );
+
     let foamTree: IFoamTree = null;
 
     return foamTree;
 
-    }
+  }
 
+  private buildHiearchyGroups ( allItems: IFoamItemInfo[], groupsXStrings: string[][], hiearchy: string[], tHI: number ) {
+
+    hiearchy.map( h => { groupsXStrings.push( [] ); } ) ;
+    allItems.map( item => {
+      item.groupIndexs = [];
+      let thisHiearchyValue = item[hiearchy[ tHI ]];
+      if ( thisHiearchyValue ) {
+        let thisGroupIndex = groupsXStrings[ tHI ].indexOf( thisHiearchyValue ) ;
+        if ( thisGroupIndex < 0 ) {
+          groupsXStrings[ tHI ].push( thisHiearchyValue );
+          thisGroupIndex = groupsXStrings[ tHI ].length -1;
+        }
+        item.groupIndexs.push( thisGroupIndex );
+      }
+    }); 
+    console.log( 'buildHiearchyGroups' , allItems, groupsXStrings );
+    return { allItems: allItems, groupsXStrings: groupsXStrings }
+  }
 
 }
