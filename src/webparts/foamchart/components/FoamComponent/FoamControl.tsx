@@ -18,7 +18,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
   public constructor(props:IFoamcontrolProps){
     super(props);
-
+    console.log( 'CONSTRUCTOR this.props.foamTreeData', this.props.foamTreeData );
     let errMessage = '';
     this.state = { 
 
@@ -34,6 +34,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
   }
 
   public componentDidMount() {
+    console.log( 'DID MOUNT this.props.foamTreeData', this.props.foamTreeData );
     this.addTheseItemsToState();
     return true;
 
@@ -53,7 +54,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
   public componentDidUpdate(prevProps) {
 
     let refreshMe : any = false;
-
+    console.log( 'DID UPDATE this.props.foamTreeData', this.props.foamTreeData );
     this.tryForEachGroup( );
     return;
     
@@ -85,6 +86,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
   }
   
   public componentWillUnmount() {
+    console.log( 'WILL UNMOUNT this.props.foamTreeData', this.props.foamTreeData );
     //this.foamtree.dispose();
     //this.tryFoamTree(1,10);
   }
