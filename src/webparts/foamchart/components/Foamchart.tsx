@@ -260,8 +260,9 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
       let allItems = allNewData === false ? this.state.allItems : theseItems;
 
-      let foamTreeData: IFoamTree = null; //this.buildGridData (fetchList, theseItems);
-
+      //let foamTreeData: IFoamTree = null; //this.buildGridData (fetchList, theseItems);
+      let foamTreeData : any = getFakeFoamTreeData( true, 90 );
+      foamTreeData.id ="visualization";
       let dropDownItems : IDropdownOption[][] = allNewData === true ? this.buildDataDropdownItems( fetchList, allItems ) : this.state.dropDownItems ;
 
       this.setState({
