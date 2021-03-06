@@ -144,6 +144,7 @@ export function getFakeFoamTreeData( useFlatEU : boolean, weightFlatness: number
         dataObject: {
             groups: groups,
           },
+         
 
       };
       //console.log('thisFoamTree', thisFoamTree );
