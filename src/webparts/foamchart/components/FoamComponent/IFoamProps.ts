@@ -9,7 +9,8 @@
  *                                                                                                                                  
  *                                                                                                                                  
  */
-
+import { PageContext } from '@microsoft/sp-page-context';
+import { WebPartContext } from '@microsoft/sp-webpart-base';
 
 /***
  *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b      d8b   db d8888b. .88b  d88.      d88888b db    db d8b   db  .o88b. d888888b d888888b  .d88b.  d8b   db .d8888. 
@@ -22,6 +23,13 @@
  *                                                                                                                                                                              
  */
 
+import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeSpan, getGreeting,
+  getNicks, makeTheTimeObject, getTimeDelta, monthStr3, monthStr, weekday3, ITheTime} from '@mikezimm/npmfunctions/dist/dateServices';
+
+import { IPerformanceSettings,  } from '@mikezimm/npmfunctions/dist/getFunctions';
+
+import { FoamTree, IFoamTree } from "@carrotsearch/foamtree";
+
 /***
  *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b      .d8888. d88888b d8888b. db    db d888888b  .o88b. d88888b .d8888. 
  *      `88'   88'YbdP`88 88  `8D .8P  Y8. 88  `8D `~~88~~'      88'  YP 88'     88  `8D 88    88   `88'   d8P  Y8 88'     88'  YP 
@@ -33,6 +41,7 @@
  *                                                                                                                                 
  */
 
+ 
 
  /***
  *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b      db   db d88888b db      d8888b. d88888b d8888b. .d8888. 
@@ -56,7 +65,6 @@
  *                                                                                                                                               
  */
 
-import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/IFoamTree';
 
 /***
  *    d88888b db    db d8888b.  .d88b.  d8888b. d888888b      d888888b d8b   db d888888b d88888b d8888b. d88888b  .d8b.   .o88b. d88888b .d8888. 
@@ -69,121 +77,24 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfun
  *                                                                                                                                               
  */
 
- export const fakeGroups0 = ['Americas', 'Europe', 'Asia'];
- export const fakeGroups1 = [ ['US','Canada','Mexico','Brazil'], ['Sweden','Germany','France','Romania','Spain','Austria','Italy','Switzerland','England'], ['China','Japan','Thailand','India'] ];
 
- let products = ['AB','SB','SW'];
+export interface IFoamcontrolProps {
 
- function getFakeLayer3() {
-    let fg3 : [][][] = [];
-    fakeGroups1.map( ( group1, index1 )  => {
-        let groupProducts = [];
-        products.map( ( group0, index2 )  => {
-            groupProducts.push( group0 );
-        });
-        fg3.push( groupProducts );
+      WebpartElement?: HTMLElement;   //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
 
-    });
-    //console.log('getFakeLayer3', fg3 );
+      foamTreeData: IFoamTree; //
+      dataKey: string; //Unique identifier to generate a refresh in component did update 
+      
+      generateSample?: boolean;  //Gets random sample data
 
-    return fg3;
- }
+      pageContext?: PageContext;
+      wpContext?: WebPartContext;
+  
+      tenant?: string;
+      urlVars?: {};
 
-
-export function getFakeFoamTreeData( useFlatEU : boolean, weightFlatness: number ) {
-    let fg3 = getFakeLayer3();
-
-    let groups = useFlatEU === false ? getFakeFoamTreeGroups( weightFlatness, 1000, fakeGroups0 , fakeGroups1 ) : getFakeFoamTreeGroups( weightFlatness, 1000, fakeGroups1[1] );
-
-    let thisFoamTree : IFoamTree = {
-        
-        fadeDuration: 1500,
-        layoutByWeightOrder: false,
-        stacking: 'flattened',
-        layout: 'squarified',//squarified, ordered, relaxed
-        // Show the relaxation
-        relaxationVisible: true,
-        // Make the relaxation last longer
-        relaxationQualityThreshold: 0,
-        relaxationMaxDuration: 5000,
-        dataObject: {
-          groups: groups,
-        },
-
-        groupSelectionOutlineShadowSize: 50,
-
-        // For faster rendering
-        groupFillType: "plain",
-        groupLabelMinFontSize: 20,
-        titleBarMinFontSize: 20,
-
-        groupGrowingDuration: 300,
-        //rolloutStartPoint: 'bottomright',
-
-      };
-
-      let preConfigFoamTree : any = {
-        exposeDuration: 400,
-        exposeEasing: "linear",
-        groupLabelFontFamily: "Oxygen",
-        rolloutEasing: "squareInOut",
-        rolloutScalingStrength: -0.3,
-        rolloutRotationStrength: 0,
-        pullbackEasing: "squareInOut",
-        pullbackDuration: 2000,
-        pullbackScalingStrength: -0.3,
-        pullbackRotationStrength: 0,
-        pullbackPolygonDelay: 0.1,
-        fadeDuration: 0,
-        attributionPosition: 45,
-        relaxationVisible: true,
-        groupGrowingDuration: 500,
-        layout: 'relaxed',//squarified, ordered, relaxed
-        //stacking: 'flattened',
-
-        dataObject: {
-            groups: groups,
-          },
-         
-
-      };
-      //console.log('thisFoamTree', thisFoamTree );
-      return preConfigFoamTree;
+      // 1 - Analytics options
+      WebpartHeight?:  number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
+      WebpartWidth?:   number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
 
 }
-
-export function getFakeFoamTreeGroups( weightFlatness: number, maxWeight: number, thisLayer: string[], childLayers?: string[][] ) {
-    let arr : IFoamTreeGroup[] = [];
-    thisLayer.map ( ( group0, index ) => {
-        let thisGroup : IFoamTreeGroup = {
-            label: group0,
-            weight: getWeight( weightFlatness, maxWeight ),
-
-        };
-        if ( childLayers !== null && childLayers != undefined && childLayers.length > 0 ) { 
-            thisGroup.groups = getFakeFoamTreeGroups( weightFlatness, maxWeight, childLayers[index] ) ;
-            let childrenWeight = 0;
-            thisGroup.groups.map( g => { childrenWeight += g.weight ; });
-            thisGroup.weight = childrenWeight;
-        }
-
-        arr.push( thisGroup );
-    }) ;
-    return arr;
-  }
-
-  /**
-   * 
-   * @param weightFlatness:  number 1 to 99
-   * 90 represents the range is between 10 and 99 % of the max;
-   * 
-   * 
-   */
-  function getWeight( weightFlatness: number, maxWeight: number ) {
-
-    let maxDownAdjust = weightFlatness * maxWeight / 100;
-    let weight : number = maxWeight - ( Math.random() ) * maxDownAdjust ;
-
-    return weight;
-
-  }

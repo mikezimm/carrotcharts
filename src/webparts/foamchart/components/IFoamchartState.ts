@@ -83,6 +83,8 @@ export interface IFoamchartState {
 
   foamTreeData: IFoamTree; //One IGridchartsDataPoint per date between lowest and highest date range for input data
 
+  dataKey: string;
+  
   timeSliderScale: ITimeScale[];
   currentTimeScale: ITimeScale;
 

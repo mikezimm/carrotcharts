@@ -1,25 +1,41 @@
 import * as React from 'react';
-import styles from './Foamchart.module.scss';
-import { IFoamchartProps } from './IFoamchartProps';
-import { IFoamchartState } from './IFoamchartState';
 
+import { IconButton, IIconProps, IContextualMenuProps, Stack, Link } from 'office-ui-fabric-react';
 
 import { escape } from '@microsoft/sp-lodash-subset';
 
-import {    IDropdownOption,  } from "office-ui-fabric-react";
+import { IDropdownOption,  } from "office-ui-fabric-react";
+
+import { FoamTree } from "@carrotsearch/foamtree";
+
+
+
+
+import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/IFoamTree';
+import { doesObjectExistInArray, doesObjectExistInArrayInt } from '@mikezimm/npmfunctions/dist/arrayServices';
+import { minInfinity, maxInfinity } from '@mikezimm/npmfunctions/dist/columnTypes';
+
+
+
 
 import { getFakeFoamTreeData } from './FakeFoamTreeData';
 
 import { buildFetchList } from './BuildFetchList';
 
-import { FoamTree } from "@carrotsearch/foamtree";
-
-import { IFoamTree, IFoamTreeDataObject } from '@mikezimm/npmfunctions/dist/IFoamTree';
-
 import { getAllItems, IFoamTreeList, IFoamItemInfo } from './GetListData';
 
+
+
+import Foamcontrol from './FoamComponent/FoamControl';
+import stylesB from './CreateButtons.module.scss';
+
+
+import styles from './Foamchart.module.scss';
+import { IFoamchartProps } from './IFoamchartProps';
+import { IFoamchartState } from './IFoamchartState';
+
+
 export default class Foamchart extends React.Component<IFoamchartProps, IFoamchartState> {
-  private foamtree: any = null;
 
   public constructor(props:IFoamchartProps){
     super(props);
@@ -31,6 +47,8 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
     let fetchInfo  : any = buildFetchList( this.props.pageContext, this.props.parentListWeb, this.props.listName, this.props.parentListTitle, false, this.props.performance,
          this.props.dropDownColumns, this.props.searchColumns, this.props.metaColumns, [this.props.dateColumn], [this.props.valueColumn] );
 
+    let foamtree : any = getFakeFoamTreeData( true, 90 );
+
     let errMessage = '';
     this.state = { 
 
@@ -38,6 +56,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
           WebpartHeight: this.props.WebpartElement ? this.props.WebpartElement.getBoundingClientRect().height : 1,
           WebpartWidth:  this.props.WebpartElement ? this.props.WebpartElement.getBoundingClientRect().width : 1,
 
+          dataKey: 'x',
           timeSliderScale: [ 'Weeks', 'Years', 'Months', 'WeekNo'],
           currentTimeScale: 'Weeks',
 
@@ -53,7 +72,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
           selectedDropdowns: fetchInfo.selectedDropdowns,
           dropDownItems: [],
 
-          foamTreeData: null,
+          foamTreeData: foamtree,
 
           fetchList: fetchInfo.fetchList,
 
@@ -157,31 +176,69 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
   }
   
   public componentWillUnmount() {
-    this.foamtree.dispose();
+
   }
-  /* */
-  /*
-  render() {
-    return <div style={{height: "100%"}} ref={e => this.element = e}></div>;
-  }
-  */
 
   public render(): React.ReactElement<IFoamchartProps> {
 
-    let x = this.state.WebpartWidth > 0 ? this.state.WebpartWidth + "px" : "500px";
-    let y = this.state.WebpartHeight > 0 ? this.state.WebpartHeight + "px" : "500px";
+    let foamControl = this.state.allLoaded !== true ? null : <Foamcontrol  
+        WebpartElement = { this.props.WebpartElement }   //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
+
+        dataKey = { this.state.dataKey }
+        foamTreeData = { this.state.allLoaded === true ? this.state.foamTreeData : null } //
+        generateSample = { false }  //Gets random sample data
+
+        pageContext = { this.props.pageContext }
+        wpContext = {this.props.wpContext }
+
+        tenant = {this.props.tenant }
+        urlVars = { [] }
+
+        // 1 - Analytics options
+        WebpartHeight = { this.state.WebpartHeight }    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
+        WebpartWidth = { this.state.WebpartWidth }     //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/</div>
+      />;
+
+      const defCommandIconStyles : any = {
+        root: {padding:'10px !important', height: 32},//color: 'green' works here
+        icon: { 
+          fontSize: 18,
+          fontWeight: "normal",
+          margin: '0px 2px',
+          color: '#00457e', //This will set icon color
+       },
+      };
+
+      let button = <div className= {stylesB.buttons} id={ 'NoID' }>
+      <IconButton iconProps={{ iconName: 'Cat' }} 
+        text= { 'parent component' }
+        title= { 'titleText'} 
+        //uniqueId= { titleText } 
+        //data= { titleText } 
+        //key= { titleText } 
+        //ariaLabel= { titleText } 
+        disabled={false} 
+        checked={false}
+        onClick={ this._onClick.bind(this) }
+        styles={ defCommandIconStyles }
+        />
+      </div>;
 
     return (
       <div className={ styles.foamchart }>
         <div className={ styles.container }>
-            <div id='visualization' style={{height: y, width:  x }}></div>
-            { this.foamtree }
+          { button }
+          { foamControl }
         </div>
       </div>
     );
   }
 
 
+  private _onClick () {
+    let foamtree : any = getFakeFoamTreeData( true, 90 );
+    this.setState({ dataKey: this.state.dataKey + '1', foamTreeData: foamtree });
+  }
 
   /***
  *     .d8b.  d8888b. d8888b.      d888888b d888888b d88888b .88b  d88. .d8888.      d888888b  .d88b.       .d8888. d888888b  .d8b.  d888888b d88888b 
@@ -205,8 +262,11 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
       let allItems = allNewData === false ? this.state.allItems : theseItems;
 
-      let foamTreeData: IFoamTree = null; //this.buildGridData (fetchList, theseItems);
+      let foamTreeData = this.buildGroupData( fetchList, allItems );
 
+      //let foamTreeData: IFoamTree = null; //this.buildGridData (fetchList, theseItems);
+      // let foamTreeData : any = getFakeFoamTreeData( true, 90 );
+      foamTreeData.id ="visualization";
       let dropDownItems : IDropdownOption[][] = allNewData === true ? this.buildDataDropdownItems( fetchList, allItems ) : this.state.dropDownItems ;
 
       this.setState({
@@ -224,18 +284,6 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
       });
 
-      console.log('loadedState:', this.state );
-      //This is required so that the old list items are removed and it's re-rendered.
-      //If you do not re-run it, the old list items will remain and new results get added to the list.
-      //However the list will show correctly if you click on a pivot.
-      //this.searchForItems( '', this.state.searchMeta, 0, 'meta' );
-
-      let foamtree : any = getFakeFoamTreeData( true, .1 );
-      foamtree.id ="visualization";
-
-      this.foamtree = new FoamTree( foamtree );
-
-      this.cycleFoamTree(1,10);
       return true;
 
     }
@@ -257,42 +305,6 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
       }
      */
     
-    private cycleFoamTree( iteration: number = 1, max: number ) {
-
-      if ( iteration <= max ) {
-
-        const update = () => {
-          const dataObject = this.foamtree.get("dataObject");
-          
-          let theBigOne = dataObject.groups[ Math.floor(Math.random() * dataObject.groups.length) ];
-
-          dataObject.groups.forEach((g) => {
-            if ( g.label === theBigOne.label ) {
-              g.weight = ( 1 + Math.random() ) * ( iteration === max ? 30 : 3 ) ;
-            } else { g.weight = ( 1 + Math.random() ) ; }
-          });
-  
-          this.foamtree.update();
-          setTimeout( () =>  {
-            iteration ++;
-            this.cycleFoamTree( iteration, max );
-          }, 200);
-        };
-
-        update();
-
-
-
-      } else { 
-        return ;
-      }
-
-    }
-
-    private reCycleFoamTree( iteration: number = 1, max: number ) {
-      this.cycleFoamTree( iteration, max );
-    }
-
     private buildDataDropdownItems( fetchList: IFoamTreeList, allItems : IFoamItemInfo[] ) {
 
     let dropDownItems : IDropdownOption[][] = [];
@@ -343,11 +355,14 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
     */
 
 
-   private buildGridData ( fetchList: IFoamTreeList, allItems : IFoamItemInfo[] ) {
+   private buildGroupData ( fetchList: IFoamTreeList, allItems : IFoamItemInfo[] ) {
 
     let count = allItems.length;
 
     let allDataPoints : any[] = [];
+
+    let groups: IFoamTreeGroup[] = [];
+    let groupsXStrings: string[][] = [];
 
     /**
      * Get entire date range
@@ -376,27 +391,14 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
     });
 
-    let startDate = new Date( firstDate );
-    // let gridStart = this.getOffSetDayOfWeek( firstDate, 7, 'prior' ); //This gets prior sunday
-
     let valueOperator = this.props.valueOperator.toLowerCase() ;
 
+/*
     allItems.map( item => {
-      let itemDateProp = item['time' + this.props.dateColumn ];
-      let itemDateDate = new Date( itemDateProp.theTime );
-      let itemDate = itemDateDate.toLocaleDateString();
 
-      item.dateNo = itemDateProp.date;
-      item.dayNo = itemDateProp.day;
-      item.week = itemDateProp.week;
-      item.month = itemDateProp.month;
-      item.year = itemDateProp.year;
+      //item.meta.push( item.year.toString() ) ;
 
-      item.meta.push( item.yearMonth ) ;
-      item.meta.push( item.yearWeek ) ;
-      item.meta.push( item.year.toString() ) ;
-
-      item.searchString += 'yearMonth=' + item.yearMonth + '|||' + 'yearWeek=' + item.yearWeek + '|||' + 'year=' + item.year + '|||' + 'week=' + item.week + '|||';
+      //item.searchString += 'yearMonth=' + item.yearMonth + '|||' + 'yearWeek=' + item.yearWeek + '|||' + 'year=' + item.year + '|||' + 'week=' + item.week + '|||';
 
       let valueColumn = item[ this.props.valueColumn ];
       let valueType = typeof valueColumn;
@@ -409,11 +411,143 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
       else if ( valueType === 'function' ) { valueColumn = 0 ; }
     });
 
-    let foamTree: IFoamTree = null;
+    */
 
+    //Get first group tier
+    let hiearchy = ['Story', 'Chapter'];
+    let start = new Date();
+
+    let result = this.buildHiearchyGroups( allItems, [], hiearchy, 0 );
+    let finalGroups = this.buildGroupWeights ( result.allItems, result.groups, 0, 'sum' ) ;
+    console.log('finalGroups: ', finalGroups );
+    let end = new Date();
+    console.log( 'CALCULATION TIME (ms) = ' + ( end.getTime() - start.getTime() ) );
+
+    let foamTree : IFoamTree = getFakeFoamTreeData( true, 90 );
+    foamTree.dataObject.groups = finalGroups; 
     return foamTree;
 
+  }
+
+  private updateStandardValues ( thisGroupX: IFoamTreeGroup, valueColumn: number ) {
+
+    thisGroupX.weight ++ ;
+    thisGroupX.count ++ ;
+    thisGroupX.sum = thisGroupX.sum ? thisGroupX.sum + valueColumn : valueColumn;
+    thisGroupX.min = !thisGroupX.min || valueColumn < thisGroupX.min ? valueColumn : thisGroupX.min;
+    thisGroupX.max = !thisGroupX.max || valueColumn > thisGroupX.max ? valueColumn : thisGroupX.max;
+
+    return thisGroupX;
+  }
+
+  private buildGroupWeights ( allItems: IFoamItemInfo[], groups: IFoamTreeGroup[], tHI: number, operator: string ) { //removed hiearchy: string[], 
+
+    allItems.map( item => {
+
+      //Copied section from GridCharts VVVV
+      let valueColumn = item[ this.props.valueColumn ];
+      let valueType = typeof valueColumn;
+
+      if ( valueType === 'string' ) { valueColumn = parseFloat( valueColumn ) ; }
+      else if ( valueType === 'number' ) { valueColumn = parseFloat( valueColumn ) ; }
+      else if ( valueType === 'boolean' ) { valueColumn = valueColumn === true ? 1 : 0 ; }
+      else if ( valueType === 'object' ) { valueColumn = 0 ; }
+      else if ( valueType === 'undefined' ) { valueColumn = 0 ; }
+      else if ( valueType === 'function' ) { valueColumn = 0 ; }
+      //Copied section from GridCharts ^^^^
+
+      let thisGroup0 = null;
+      let thisGroup1 = null;
+      let thisGroup2 = null;
+
+      if ( item.groupIndexs.length > 0 ) {
+        thisGroup0 = groups[ item.groupIndexs[0] ] ;
+        thisGroup0 = this.updateStandardValues( thisGroup0, valueColumn );
+
+      }
+      if ( item.groupIndexs.length > 1 ) {
+        thisGroup1 = thisGroup0.groups[ item.groupIndexs[1] ] ;
+        thisGroup1 = this.updateStandardValues( thisGroup1, valueColumn );
+      }
+      if ( item.groupIndexs.length > 2 ) {
+        thisGroup2 = thisGroup1.groups[ item.groupIndexs[2] ] ;
+        thisGroup2 = this.updateStandardValues( thisGroup2, valueColumn );
+
+      }
+
+    }); 
+
+    groups = this.updateGroupAvg( groups ) ;
+    groups = this.setGroupWeight( groups, operator ) ;
+    return groups;
+
+  }
+
+  private setGroupWeight( groups: IFoamTreeGroup[], operator: string ) {
+    groups.map( group => {
+      group.weight = group[operator];
+      if ( group.groups.length > 0 ) { group.groups = this.setGroupWeight( group.groups, operator ) ; }
+    });
+    return groups;
+  }
+
+  private updateGroupAvg( groups: IFoamTreeGroup[] ) {
+    groups.map( group => {
+      if ( group.count > 0 ) { group.avg = group.sum / group.count; } 
+      if ( group.groups.length > 0 ) { group.groups = this.updateGroupAvg( group.groups ) ; }
+    });
+    return groups;
+  }
+
+  private buildHiearchyGroups ( allItems: IFoamItemInfo[], groups: IFoamTreeGroup[], hiearchy: string[], tHI: number ) {
+
+    allItems.map( item => {
+      item.groupIndexs = [];
+      let result = this.buildHiearchyGroupsForItem(item, groups, hiearchy, tHI );
+      groups = result.groups;
+      item = result.item;
+    }); 
+
+    console.log( 'buildHiearchyGroups' , allItems, groups );
+    return { allItems: allItems, groups: groups } ;
+
+  }
+
+  //groups.push( this.createDefaultGroup( h ) ); }
+  private createDefaultGroup( label: any, weight: number = 0, count: number = 0, sum: number = 0, avg: number = 0, min: number = maxInfinity, max: number = minInfinity ) {
+    if ( typeof label !== 'string' ) { label = label.toString(); }
+    let newGroup : IFoamTreeGroup = { label: label, weight: weight, count: count, sum: sum, avg: avg, min: min , groups: [] };
+    return newGroup;
+  }
+
+  private buildHiearchyGroupsForItem ( item: IFoamItemInfo, groups: IFoamTreeGroup[], hiearchy: string[], tHI: number ) {
+
+    let thisHiearchyValue : any = item[hiearchy[ tHI ]];
+    //if ( thisHiearchyValue === undefined ) { thisHiearchyValue = 'undefined' ; } else if ( thisHiearchyValue === null ) { thisHiearchyValue = 'null' ; }
+    if ( thisHiearchyValue === undefined ) { thisHiearchyValue = 'No ' + hiearchy[ tHI ] ; } else if ( thisHiearchyValue === null ) { thisHiearchyValue = 'No ' + hiearchy[ tHI ] ; }
+    if ( thisHiearchyValue ) {
+
+      //This returns boolean (false) or string of the index number.... switch to any so typescript doesn't balk.
+      let thisGroupIndex : number = doesObjectExistInArrayInt(groups, 'label', thisHiearchyValue, true ) ; // groups[ tHI ].indexOf( thisHiearchyValue ) ;
+      if ( thisGroupIndex < 0 ) {
+        groups.push( this.createDefaultGroup( thisHiearchyValue ) );
+        thisGroupIndex = groups.length -1;
+      }
+      item.groupIndexs.push( thisGroupIndex );
+      let childGroups = groups[ thisGroupIndex ].groups ;
+
+      if ( ( tHI + 1 ) < hiearchy.length ) { 
+        let result = this.buildHiearchyGroupsForItem(item, childGroups, hiearchy, tHI + 1,  ) ; 
+        item = result.item;
+        groups['groups'] = result.groups;
+
+      }
     }
 
+    return { item: item, groups: groups } ;
+
+  }
 
 }
+
+
