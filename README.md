@@ -51,6 +51,7 @@ Version|Date|Comments
 ## Additional Installs
 ```bash
 npm install @carrotsearch/foamtree
+npm install @mikezimm/npmfunctions@0.0.34
 ```
 
 > Include any additional steps as needed.
