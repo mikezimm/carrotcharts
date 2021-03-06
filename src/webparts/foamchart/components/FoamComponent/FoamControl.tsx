@@ -7,7 +7,7 @@ import { escape } from '@microsoft/sp-lodash-subset';
 
 import { FoamTree } from "@carrotsearch/foamtree";
 
-import { IFoamTree, IFoamTreeDataObject } from '@mikezimm/npmfunctions/dist/IFoamTree';
+import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/IFoamTree';
 
 import { IFoamTreeList, IFoamItemInfo } from '../GetListData';
 
@@ -108,6 +108,11 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
           <button onClick={ this.tryUpdate.bind(this) } style={{marginRight:'20px'}}>tryUpdate</button>
           <button onClick={ this.tryAttach.bind(this) } style={{marginRight:'20px'}}>tryAttach</button>
           <button onClick={ this.tryNew.bind(this) } style={{marginRight:'20px'}}>tryNew</button>
+
+          <button onClick={ this.showSum.bind(this) } style={{marginRight:'20px'}}>Sum</button>
+          <button onClick={ this.showCount.bind(this) } style={{marginRight:'20px'}}>Count</button>
+          <button onClick={ this.showAvg.bind(this) } style={{marginRight:'20px'}}>Avg</button>
+
           <div id='visualization' style={{height: y, width:  x }}></div>
           { this.foamtree }
         </div></div>;
@@ -125,7 +130,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
     return total;
   } 
 
- private consoleDataObject( caller: string, obj: string ) {
+ private consoleDataObject( caller: string, obj: string, oldKeySummary: any ) {
   let thisDataObject = null;
   let groups : any[] = [];
   if ( obj === 'full' ) {
@@ -137,14 +142,74 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
     groups = obj === 'dataObject' ? thisDataObject.groups : [];
 
   }
-  console.log('object - ' + caller, this.getTotalGroupWeight( groups ), thisDataObject );
-  return;
+
+  let keySummary: any = {};
+
+  let compareTypes = ['string','number','boolean'];
+  let ignoreKeys = ['element'];
+  Object.keys( thisDataObject ).map( key => {
+    let keyType = typeof thisDataObject[key];
+    if ( compareTypes.indexOf( keyType ) > -1 && ignoreKeys.indexOf( key ) < 0 ) { 
+      keySummary[key] = thisDataObject[key];
+    } 
+  });
+
+  keySummary = JSON.parse( JSON.stringify( keySummary ) ) ;
+
+  let keyChanges : any = {};
+  if ( oldKeySummary !== null ) {
+    Object.keys( thisDataObject ).map( key => {
+      if ( thisDataObject[key] !== oldKeySummary[key] ) { 
+        let keyChange = oldKeySummary[key] + ' >>> ' + thisDataObject[key];
+        let ignoreCompares = ['undefined >>> null', 'undefined >>> function(){}','undefined >>> [object HTMLDivElement]','undefined >>> [object Object]','undefined >>> '];
+        if ( ignoreCompares.indexOf( keyChange ) < 0 && keyChange.indexOf( 'undefined >>> function' ) < 0 ) { 
+          keyChanges[key] = keyChange ;
+         }
+      } 
+    });
+  }
+
+  console.log('object - ' + caller, this.getTotalGroupWeight( groups ), keySummary, thisDataObject );
+  if ( Object.keys( keyChanges ).length > 0 ) {
+    console.log('CHANGES to object - ' + caller, keyChanges );
+  }
+
+  return keySummary;
  }
+
+  /**
+   * This will change summary operator of existing data... ie count, sum, avg, min, max
+   */
+  
+  private showCount() { this.switchGroupWeights('count'); }
+  private showSum() { this.switchGroupWeights('sum'); }
+  private showMin() { this.switchGroupWeights('min'); }
+  private showMax() { this.switchGroupWeights('max'); }
+  private showAvg() { this.switchGroupWeights('avg'); }
+
+  private switchGroupWeights( operator: string  ) {
+    let keySummary = this.consoleDataObject( 'switchGroupWeights Before', 'full', null );
+    let dataObject = this.foamtree.get("dataObject");
+    dataObject.groups = this.setGroupWeight( dataObject.groups, operator );
+    console.log('tryForEachGroup - newGroups' , dataObject.groups );
+    this.foamtree.update();
+    this.foamtree.redraw();
+    this.consoleDataObject( 'switchGroupWeights After', 'full', keySummary );
+  }
+
+  private setGroupWeight( groups: IFoamTreeGroup[], operator: string ) {
+    groups.map( group => {
+      group.weight = group[operator];
+      if ( group.groups.length > 0 ) { group.groups = this.setGroupWeight( group.groups, operator ) ; }
+    });
+    return groups;
+  }
+
   /**
    * This will "resize" existing groups and animate as I want
    */
     private tryForEachGroup(  ) {
-        this.consoleDataObject( 'tryForEachGroup Before', 'full' );
+        this.consoleDataObject( 'tryForEachGroup Before', 'full', null );
         let dataObject = this.foamtree.get("dataObject");
         let theBigOne = dataObject.groups[ Math.floor(Math.random() * dataObject.groups.length) ];
         let priorTotal = 0;
@@ -176,7 +241,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
      * Seems to do same thing as trySetObject
      */
     private trySetGroups(  ) {
-      this.consoleDataObject( 'trySetGroups Before', 'full' );
+      this.consoleDataObject( 'trySetGroups Before', 'full', null );
         const newGroups = getFakeFoamTreeGroups( 90, 1000, fakeGroups1[1] );
         this.foamtree.set({
           fadeDuration: 1500,
@@ -187,7 +252,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
             groups: newGroups
           }
         });
-      this.consoleDataObject( 'trySetGroups After', 'full' );
+      this.consoleDataObject( 'trySetGroups After', 'full', null );
     }
 
     /**
@@ -195,42 +260,42 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
      * Seems to do same thing as trySetGroups
      */
     private trySetObject( ) {
-      this.consoleDataObject( 'trySetObject Before', 'dataObject' );
+      this.consoleDataObject( 'trySetObject Before', 'dataObject', null );
       const newFoamTree = getFakeFoamTreeData( true , 90 );
       this.foamtree.set(newFoamTree);
-      this.consoleDataObject( 'trySetObject After', 'dataObject' );
+      this.consoleDataObject( 'trySetObject After', 'dataObject', null );
     }
 
     /**
      * This gets new group data but does not redraw or animate
      */
     private tryUpdate(  ) {
-      this.consoleDataObject( 'tryUpdate Before', 'dataObject' );
+      this.consoleDataObject( 'tryUpdate Before', 'dataObject', null );
       const newGroups = getFakeFoamTreeGroups( 90, 1000, fakeGroups1[1] );
       this.foamtree.update( newGroups );
-      this.consoleDataObject( 'tryUpdate After', 'dataObject' );
+      this.consoleDataObject( 'tryUpdate After', 'dataObject', null );
     }
 
     /**
      * This gets new group data but does not redraw or animate
      */
     private tryAttach(  ) {
-      this.consoleDataObject( 'tryAttach Before', 'dataObject' );
+      this.consoleDataObject( 'tryAttach Before', 'dataObject', null );
       const newGroups = getFakeFoamTreeGroups( 90, 1000, fakeGroups1[1] );
       this.foamtree.attach( newGroups, 1 );
-      this.consoleDataObject( 'tryAttach After', 'dataObject' );
+      this.consoleDataObject( 'tryAttach After', 'dataObject', null );
     }
 
     /**
      * This wipes the entire foam chart box element
      */
     private tryNew( ) {
-      this.consoleDataObject( 'tryNew Before', 'dataObject' );
+      this.consoleDataObject( 'tryNew Before', 'dataObject', null );
       let foamtree : any = getFakeFoamTreeData( true, 90 );
       foamtree.id ="visualization";
       //this.foamtree = foamtree;                 //Causes this error in consoleDataObject:  this.foamtree.get is not a function
       this.foamtree = new FoamTree( foamtree );   // Causes this error in consoleDataObject:  Uncaught FoamTree: visualization already embedded in the element.
-      this.consoleDataObject( 'tryNew After', 'dataObject' );
+      this.consoleDataObject( 'tryNew After', 'dataObject', null );
     }
 
   /***
@@ -266,15 +331,27 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
         foamtree.id ="visualization";
         this.foamtree = new FoamTree( foamtree );
         console.log('FoamControl addItemsToState 3:', foamtree );
-        this.consoleDataObject( 'FoamControl addItemsToState 3', 'full' );
+        this.consoleDataObject( 'FoamControl addItemsToState 3', 'full', null );
 
       } else { 
         console.log('FoamControl addItemsToState 4:','Did nothing' );
 
       }
 
-  
-      //this.tryFoamTree(1,10);
+             /*
+        vars.labelColor = {
+          model: "rgb",
+          r: 0, g: 0, b: 0
+        };
+        */
+      /*  */
+      this.foamtree.set("groupLabelDecorator", (opts, params, vars) => {
+        vars.labelText += " (" +
+          params.group.weight.toFixed(1) + ")";
+
+      });
+      this.foamtree.redraw();
+      
 
       return true;
 

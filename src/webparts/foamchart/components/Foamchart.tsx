@@ -13,6 +13,8 @@ import { FoamTree } from "@carrotsearch/foamtree";
 
 import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/IFoamTree';
 import { doesObjectExistInArray, doesObjectExistInArrayInt } from '@mikezimm/npmfunctions/dist/arrayServices';
+import { minInfinity, maxInfinity } from '@mikezimm/npmfunctions/dist/columnTypes';
+
 
 
 
@@ -391,6 +393,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
     let valueOperator = this.props.valueOperator.toLowerCase() ;
 
+/*
     allItems.map( item => {
 
       //item.meta.push( item.year.toString() ) ;
@@ -408,15 +411,17 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
       else if ( valueType === 'function' ) { valueColumn = 0 ; }
     });
 
+    */
+
     //Get first group tier
     let hiearchy = ['Story', 'Chapter'];
     let start = new Date();
 
     let result = this.buildHiearchyGroups( allItems, [], hiearchy, 0 );
-    let finalGroups = this.buildGroupWeights ( result.allItems, result.groups, 0 ) ;
-
+    let finalGroups = this.buildGroupWeights ( result.allItems, result.groups, 0, 'sum' ) ;
+    console.log('finalGroups: ', finalGroups );
     let end = new Date();
-    alert( 'process time (ms) = ' + ( end.getTime() - start.getTime() ) );
+    console.log( 'CALCULATION TIME (ms) = ' + ( end.getTime() - start.getTime() ) );
 
     let foamTree : IFoamTree = getFakeFoamTreeData( true, 90 );
     foamTree.dataObject.groups = finalGroups; 
@@ -424,27 +429,74 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
   }
 
-  private buildGroupWeights ( allItems: IFoamItemInfo[], groups: IFoamTreeGroup[], tHI: number ) { //removed hiearchy: string[], 
+  private updateStandardValues ( thisGroupX: IFoamTreeGroup, valueColumn: number ) {
+
+    thisGroupX.weight ++ ;
+    thisGroupX.count ++ ;
+    thisGroupX.sum = thisGroupX.sum ? thisGroupX.sum + valueColumn : valueColumn;
+    thisGroupX.min = !thisGroupX.min || valueColumn < thisGroupX.min ? valueColumn : thisGroupX.min;
+    thisGroupX.max = !thisGroupX.max || valueColumn > thisGroupX.max ? valueColumn : thisGroupX.max;
+
+    return thisGroupX;
+  }
+
+  private buildGroupWeights ( allItems: IFoamItemInfo[], groups: IFoamTreeGroup[], tHI: number, operator: string ) { //removed hiearchy: string[], 
 
     allItems.map( item => {
 
+      //Copied section from GridCharts VVVV
+      let valueColumn = item[ this.props.valueColumn ];
+      let valueType = typeof valueColumn;
+
+      if ( valueType === 'string' ) { valueColumn = parseFloat( valueColumn ) ; }
+      else if ( valueType === 'number' ) { valueColumn = parseFloat( valueColumn ) ; }
+      else if ( valueType === 'boolean' ) { valueColumn = valueColumn === true ? 1 : 0 ; }
+      else if ( valueType === 'object' ) { valueColumn = 0 ; }
+      else if ( valueType === 'undefined' ) { valueColumn = 0 ; }
+      else if ( valueType === 'function' ) { valueColumn = 0 ; }
+      //Copied section from GridCharts ^^^^
+
+      let thisGroup0 = null;
+      let thisGroup1 = null;
+      let thisGroup2 = null;
+
       if ( item.groupIndexs.length > 0 ) {
-        groups[ item.groupIndexs[0] ] .weight ++;
-    
-      }
-      if ( item.groupIndexs.length > 1 ) {
-        groups[ item.groupIndexs[0] ].groups[ item.groupIndexs[1] ] .weight ++;
+        thisGroup0 = groups[ item.groupIndexs[0] ] ;
+        thisGroup0 = this.updateStandardValues( thisGroup0, valueColumn );
 
       }
+      if ( item.groupIndexs.length > 1 ) {
+        thisGroup1 = thisGroup0.groups[ item.groupIndexs[1] ] ;
+        thisGroup1 = this.updateStandardValues( thisGroup1, valueColumn );
+      }
       if ( item.groupIndexs.length > 2 ) {
-        groups[ item.groupIndexs[0] ].groups[ item.groupIndexs[1] ].groups[ item.groupIndexs[2] ] .weight ++;
+        thisGroup2 = thisGroup1.groups[ item.groupIndexs[2] ] ;
+        thisGroup2 = this.updateStandardValues( thisGroup2, valueColumn );
 
       }
 
     }); 
 
+    groups = this.updateGroupAvg( groups ) ;
+    groups = this.setGroupWeight( groups, operator ) ;
     return groups;
 
+  }
+
+  private setGroupWeight( groups: IFoamTreeGroup[], operator: string ) {
+    groups.map( group => {
+      group.weight = group[operator];
+      if ( group.groups.length > 0 ) { group.groups = this.setGroupWeight( group.groups, operator ) ; }
+    });
+    return groups;
+  }
+
+  private updateGroupAvg( groups: IFoamTreeGroup[] ) {
+    groups.map( group => {
+      if ( group.count > 0 ) { group.avg = group.sum / group.count; } 
+      if ( group.groups.length > 0 ) { group.groups = this.updateGroupAvg( group.groups ) ; }
+    });
+    return groups;
   }
 
   private buildHiearchyGroups ( allItems: IFoamItemInfo[], groups: IFoamTreeGroup[], hiearchy: string[], tHI: number ) {
@@ -462,9 +514,9 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
   }
 
   //groups.push( this.createDefaultGroup( h ) ); }
-  private createDefaultGroup( label: any, weight: number = 0 ) {
+  private createDefaultGroup( label: any, weight: number = 0, count: number = 0, sum: number = 0, avg: number = 0, min: number = maxInfinity, max: number = minInfinity ) {
     if ( typeof label !== 'string' ) { label = label.toString(); }
-    let newGroup : IFoamTreeGroup = { label: label, weight: 0 , groups: [] };
+    let newGroup : IFoamTreeGroup = { label: label, weight: weight, count: count, sum: sum, avg: avg, min: min , groups: [] };
     return newGroup;
   }
 
