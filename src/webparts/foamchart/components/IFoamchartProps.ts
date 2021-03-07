@@ -70,6 +70,7 @@ export interface IFoamchartProps {
 
       allLoaded: boolean;
 
+      carrotCats: string[];
       dateColumn: string;
       valueColumn: string;
       searchColumns: string[];

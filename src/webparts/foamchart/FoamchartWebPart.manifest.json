@@ -17,45 +17,41 @@
   "preconfiguredEntries": [{
       "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Other
       "group": { "default": "Other" },
-      "title": { "default": "foamchart-TMT (Beta Testing)" },
-      "description": { "default": "Show list data as HeatMap of TMT by day of week.  Mimics Github Contributor chart" },
+      "title": { "default": "FPS foamchart-TMT (Beta Testing)" },
+      "description": { "default": "Show list data as HeatMap of TMT by day of week.  Mimics Github Contributor chart by Fuzzy Paws Solutions." },
       "officeFabricIconFontName": "WebAppBuilderFragment",
       "properties": {
         "description": "foamchart-TMT",
         "parentListWeb": "/sites/Templates/Tmt/",
         "parentListTitle": "TrackMyTime",
-  
+        "listDefinition": "",
+
         "dateColumn": "StartTime",
-        "monthGap": "1",
-        "squareCustom": "transparent,#ebedf0,#c6e48b,#7bc96f,#196127",
-        "cellColor": "green",
   
         "valueColumn": "Hours",
         "valueType": "Number",
         "valueOperator": "Sum",
         "minDataDownload": true,
         "showEarlyAccess": true,
-        "scaleMethod": "blink",
         "fetchCount": 2000,
         "enableSearch": true,
+        "carrotCats": "Story,Chapter",
         "dropDownColumns": "+Story,+>Chapter,+User/Title"
       }
     },
     {
       "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Other
       "group": { "default": "Other" },
-      "title": { "default": "foamchart-Documents (Beta Testing)" },
-      "description": { "default": "Show list data as HeatMap Documents by day of week.  Mimics Github Contributor chart" },
+      "title": { "default": "FPS foamchart-Documents (Beta Testing)" },
+      "description": { "default": "Show list data as HeatMap Documents by day of week.  Mimics Github Contributor chart by Fuzzy Paws Solutions." },
       "officeFabricIconFontName": "WebAppBuilderFragment",
       "properties": {
         "description": "foamchart-Documents",
         "parentListWeb": "",
         "parentListTitle": "Documents",
-  
+        "listDefinition": "",
+
         "dateColumn": "Modified",
-        "monthGap": "1",
-        "squareCustom": "transparent,#ebedf0,#c6e48b,#7bc96f,#196127",
-        "cellColor": "green",
   
         "valueColumn": "Id",
         "valueType": "Number",
@@ -65,24 +61,23 @@
         "scaleMethod": "blink",
         "fetchCount": 2000,
         "enableSearch": true,
+        "carrotCats": "Editor/Title,Modified",
         "dropDownColumns": "+Author/Title,+Editor/Title"
       }
     },
     {
       "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Other
       "group": { "default": "Other" },
-      "title": { "default": "foamchart-ACH Turnover (Beta Testing)" },
-      "description": { "default": "Show list data as HeatMap Documents by day of week.  Mimics Github Contributor chart" },
+      "title": { "default": "FPS foamchart-ACH Turnover (Beta Testing)" },
+      "description": { "default": "Show list data as HeatMap Documents by day of week.  Mimics Github Contributor chart by Fuzzy Paws Solutions." },
       "officeFabricIconFontName": "WebAppBuilderFragment",
       "properties": {
         "description": "foamchart-ACH Turnover",
         "parentListWeb": "/sites/WebpartDev",
         "parentListTitle": "ACH Turnover",
-  
+        "listDefinition": "",
+
         "dateColumn": "zzzDate1",
-        "monthGap": "1",
-        "squareCustom": "transparent,#ebedf0,#c6e48b,#7bc96f,#196127",
-        "cellColor": "green",
   
         "valueColumn": "zzzNumber05",
         "valueType": "Number",
@@ -92,6 +87,7 @@
         "scaleMethod": "blink",
         "fetchCount": 5000,
         "enableSearch": true,
+        "carrotCats": "Cell/Shift",
         "dropDownColumns": "+zzzChoice1,+zzzItemCategory"
       }
     }]

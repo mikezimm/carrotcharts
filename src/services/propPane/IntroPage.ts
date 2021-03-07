@@ -5,6 +5,7 @@ import { IPropertyPanePage, PropertyPaneLabel, IPropertyPaneLabelProps,
   IPropertyPaneDropdownProps, IPropertyPaneDropdownOption, PropertyPaneToggle, 
   IPropertyPaneConfiguration, PropertyPaneButton, PropertyPaneButtonType, PropertyPaneSlider,
 } from "@microsoft/sp-property-pane";
+import { PropertyPaneWebPartInformation } from '@pnp/spfx-property-controls/lib/PropertyPaneWebPartInformation';
 
 
 import * as strings from 'FoamchartWebPartStrings';
@@ -19,6 +20,8 @@ import { PropertyFieldSitePicker } from '@pnp/spfx-property-controls/lib/Propert
 import { PropertyFieldListPicker, PropertyFieldListPickerOrderBy } from '@pnp/spfx-property-controls/lib/PropertyFieldListPicker';
 
 import { PropertyFieldColorPicker, PropertyFieldColorPickerStyle } from '@pnp/spfx-property-controls/lib/PropertyFieldColorPicker';
+
+import { fpsLogo326 } from '@mikezimm/npmfunctions/dist/SVGIcons/fpsLogo326';
 
 /*
 
@@ -72,12 +75,25 @@ import { PropertyFieldColorPicker, PropertyFieldColorPickerStyle } from '@pnp/sp
     */
 
 export class IntroPage {
-  public getPropertyPanePage(webPartProps: IFoamchartWebPartProps, context, onPropertyPaneFieldChanged ): IPropertyPanePage { //_onClickCreateTime, _onClickCreateProject, _onClickUpdateTitles
+  public getPropertyPanePage(webPartProps: IFoamchartWebPartProps, context, onPropertyPaneFieldChanged, _getListDefintions ): IPropertyPanePage { //_onClickCreateTime, _onClickCreateProject, _onClickUpdateTitles
 
     let webAbsoluteUrl = context.pageContext.web.absoluteUrl;
 
     if ( webPartProps.sites && webPartProps.sites.length > 0 && webPartProps.sites[0].url && webPartProps.sites[0].url.length > 0 ) { webAbsoluteUrl = webPartProps.sites[0].url ; }
     let selectedUrl = "Site Url: " + webAbsoluteUrl.slice(webAbsoluteUrl.indexOf('/sites/'));
+
+
+    //2021-03-06:  For PreConfigProps lookup, copied from Drilldown7 VVVVVVV
+    let theListChoices : IPropertyPaneDropdownOption[] = [];
+
+    //Tried checking but for some reason this returns false when the promise for .newMap was actually resolved.
+    //if ( webPartProps.newMap && webPartProps.newMap.length > 0 ) {
+      theListChoices.push ( { key: 'na', text: 'na' } );
+      theListChoices = theListChoices.concat(  webPartProps.newMap.map( d => {
+        return { key: d.Title, text: d.Title };
+      }) );
+    //2021-03-06:  For PreConfigProps lookup, copied from Drilldown7 ^^^^^
+
 
     return <IPropertyPanePage>
     { // <page1>
@@ -89,24 +105,59 @@ export class IntroPage {
         { groupName: 'Web Part Info',
           isCollapsed: true ,
           groupFields: [
-            PropertyPaneLabel('About Text', {
-              text: 'This webpart displays summary of list/library items in date grid format.'
-            }),
+            PropertyPaneWebPartInformation({
+              description: `<img src='${fpsLogo326}'/>`,
+              key: 'webPartInfoId'
+            }) ,
+            PropertyPaneWebPartInformation({
+              description: `<p><i>"If you change the way you look at things, the things you look at change."</i></p>`,
+              key: 'webPartInfoId2'
+            }) ,
+/*
+            PropertyPanePropertyEditor({
+              webpart: this,
+              key: 'propertyEditor'
+            })  ,
+ */
+            PropertyPaneWebPartInformation({
+              description: `<h4>This webpart looks at data in a whole new way.</h4>
+              <p>Use it to show data in a fun animated way allowing drill down and smooth animation.</p>`,
+              key: 'webPartInfoId3'
+            }) ,
 
             PropertyPaneLink('About Link' , {
-              text: 'Github Repo:  ' + links.gitRepoGridCharts.desc ,
-              href: links.gitRepoGridCharts.href,
-              target: links.gitRepoGridCharts.target,
+              text: 'Github Repo:  ' + links.gitRepoCarrotCharts.desc ,
+              href: links.gitRepoCarrotCharts.href,
+              target: links.gitRepoCarrotCharts.target,
             }),
 
             PropertyPaneLink('Issues Link' , {
-              text: 'Report Issues:  ' + links.gitRepoGridCharts.desc ,
-              href: links.gitRepoGridCharts.href  + '/issues',
-              target: links.gitRepoGridCharts.target,
+              text: 'Report Issues:  ' + links.gitRepoCarrotCharts.desc ,
+              href: links.gitRepoCarrotCharts.href  + '/issues',
+              target: links.gitRepoCarrotCharts.target,
             }),
 
           ]
         },
+        //2021-03-06:  For PreConfigProps lookup, copied from Drilldown7 VVVVVVV
+        {  groupName: 'Get pre-configured setup',
+            isCollapsed: false ,
+            groupFields: [
+              PropertyPaneToggle('definitionToggle', {
+                label: 'Lock list defintion - prevents accidently reseting props!',
+                offText: 'Off',
+                onText: 'On',
+              }),
+
+              PropertyPaneDropdown('listDefinition', <IPropertyPaneDropdownProps>{
+                label: 'Pre-defined setup choices',
+                options: theListChoices,
+                selectedKey: webPartProps.listDefinition != '' ? webPartProps.listDefinition : 'na',
+                disabled: webPartProps.definitionToggle,
+              }),
+            ]},
+            //2021-03-06:  For PreConfigProps lookup, copied from Drilldown7 ^^^^^^
+
 
         // 2 - Source and destination list information    
         { groupName: 'Your list info',
@@ -181,7 +232,12 @@ export class IntroPage {
         { groupName: 'Search settings',
         isCollapsed: true ,
         groupFields: [
- 
+  
+          PropertyPaneTextField('carrotCats', {
+            label: 'Hiearchy columns',
+            description: 'comma separated column names (3 max)'
+          }),
+
           PropertyPaneTextField('dropDownColumns', {
             label: 'Dropdown Columns',
             description: 'comma separated column names'
@@ -190,8 +246,8 @@ export class IntroPage {
           PropertyPaneTextField('searchColumns', {
             label: 'Search Columns',
             description: 'comma separated column names'
-          }),         
-          
+          }),
+
           PropertyPaneTextField('metaColumns', {
             label: 'Meta Columns',
             description: 'comma separated column names'
