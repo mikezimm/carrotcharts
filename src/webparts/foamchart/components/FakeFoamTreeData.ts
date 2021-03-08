@@ -90,13 +90,44 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfun
  }
 
 
+ export function getEmptyFoamTreeData(  ) {
+
+    let preConfigFoamTree : IFoamTree = {
+      id: "visualization",
+      //exposeDuration: 400, //This is not on IFoamTree yet
+      //exposeEasing: "linear", //This is not on IFoamTree yet
+      groupLabelFontFamily: "Oxygen",
+      rolloutEasing: "squareInOut",
+      rolloutScalingStrength: -0.3,
+      rolloutRotationStrength: 0,
+      pullbackEasing: "squareInOut",
+      pullbackDuration: 2000,
+      pullbackScalingStrength: -0.3,
+      pullbackRotationStrength: 0,
+      //pullbackPolygonDelay: 0.1, //This is not on IFoamTree yet
+      fadeDuration: 0,
+      //attributionPosition: 45, //This is not on IFoamTree yet
+      relaxationVisible: true,
+      groupGrowingDuration: 500,
+      layout: 'relaxed',//squarified, ordered, relaxed
+      //stacking: 'flattened',
+      dataObject: {
+          groups: [],
+        },
+    };
+    //console.log('thisFoamTree', thisFoamTree );
+    return preConfigFoamTree;
+
+}
+
+
 export function getFakeFoamTreeData( useFlatEU : boolean, weightFlatness: number ) {
     let fg3 = getFakeLayer3();
 
     let groups = useFlatEU === false ? getFakeFoamTreeGroups( weightFlatness, 1000, fakeGroups0 , fakeGroups1 ) : getFakeFoamTreeGroups( weightFlatness, 1000, fakeGroups1[1] );
 
     let thisFoamTree : IFoamTree = {
-        
+        id: "visualization",
         fadeDuration: 1500,
         layoutByWeightOrder: false,
         stacking: 'flattened',

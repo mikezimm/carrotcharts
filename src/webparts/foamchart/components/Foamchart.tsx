@@ -18,7 +18,7 @@ import { minInfinity, maxInfinity } from '@mikezimm/npmfunctions/dist/columnType
 
 
 
-import { getFakeFoamTreeData } from './FakeFoamTreeData';
+import { getFakeFoamTreeData, getEmptyFoamTreeData } from './FakeFoamTreeData';
 
 import { buildFetchList } from './BuildFetchList';
 
@@ -47,7 +47,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
     let fetchInfo  : any = buildFetchList( this.props.pageContext, this.props.parentListWeb, this.props.listName, this.props.parentListTitle, false, this.props.performance,
          this.props.dropDownColumns, this.props.searchColumns, this.props.metaColumns, [this.props.dateColumn], [this.props.valueColumn] );
 
-    let foamtree : IFoamTree = getFakeFoamTreeData( true, 90 );
+    let foamtree : IFoamTree = getEmptyFoamTreeData( );
     foamtree.dataObject.groups = [];
 
     let errMessage = '';
@@ -107,7 +107,6 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
     //  If you do not do this here, then you need to pass the entire function.bind(this) to functions.
     // this.onLinkClick = this.onLinkClick.bind(this);
 
-  
   }
 
   public componentDidMount() {
@@ -182,11 +181,12 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
   public render(): React.ReactElement<IFoamchartProps> {
 
-    let foamControl = <Foamcontrol  
+    let foamControl = this.state.allLoaded !== true ? null : <Foamcontrol  
         WebpartElement = { this.props.WebpartElement }   //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
 
         dataKey = { this.state.dataKey }
-        foamTreeData = { this.state.allLoaded === true ? this.state.foamTreeData : null } //
+        foamTreeData = { this.state.foamTreeData } //
+        allLoaded = { this.state.allLoaded }
         //foamTreeData = { this.state.foamTreeData } //
         generateSample = { false }  //Gets random sample data
 

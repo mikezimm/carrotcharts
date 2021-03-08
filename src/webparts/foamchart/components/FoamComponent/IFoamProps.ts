@@ -85,6 +85,8 @@ export interface IFoamcontrolProps {
       WebpartElement?: HTMLElement;   //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
 
       foamTreeData: IFoamTree; //
+      allLoaded: boolean;
+      
       dataKey: string; //Unique identifier to generate a refresh in component did update 
       
       generateSample?: boolean;  //Gets random sample data

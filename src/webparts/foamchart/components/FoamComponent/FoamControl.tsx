@@ -13,10 +13,11 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfun
 
 import { IFoamTreeList, IFoamItemInfo } from '../GetListData';
 
-import { getFakeFoamTreeData, getFakeFoamTreeGroups, fakeGroups1 } from '../FakeFoamTreeData';
+import { getFakeFoamTreeData, getFakeFoamTreeGroups, fakeGroups1, getEmptyFoamTreeData } from '../FakeFoamTreeData';
 
 export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoamcontrolState> {
-  private foamtree: any = null;
+  private foamtreeData: any = getEmptyFoamTreeData( );
+  private foamtree = null;
 
   public constructor(props:IFoamcontrolProps){
     super(props);
@@ -37,6 +38,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
   public componentDidMount() {
     console.log( 'DID MOUNT this.props.foamTreeData', this.props.foamTreeData );
+    this.foamtree = new FoamTree( this.foamtreeData );
     this.addTheseItemsToState();
     return true;
 
@@ -117,7 +119,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
     }
 */
 
-    let foamBox = this.props.foamTreeData === null ? null : <div><div className={ styles.container }><button onClick={ this.tryForEachGroup.bind(this) } style={{marginRight:'20px'}}>tryForEachGroup</button>
+    let foamBox = <div><div className={ styles.container }><button onClick={ this.tryForEachGroup.bind(this) } style={{marginRight:'20px'}}>tryForEachGroup</button>
           <button onClick={ this.trySetGroups.bind(this) } style={{marginRight:'20px'}}>trySetGroups</button>
           <button onClick={ this.trySetObject.bind(this) } style={{marginRight:'20px'}}>trySetObject</button>
           <button onClick={ this.tryUpdate.bind(this) } style={{marginRight:'20px'}}>tryUpdate</button>
@@ -328,48 +330,50 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
     private addTheseItemsToState( ) {
 
       //this.setState({    });
-      //let foamtree : IFoamTree
-      
-      if ( this.props.foamTreeData !== null && this.props.generateSample !== true ) {
-        let foamtree : any = this.props.foamTreeData ; 
-        foamtree.id ="visualization";
-        this.foamtree = new FoamTree( foamtree );
-        console.log('FoamControl addItemsToState 1:', foamtree );
 
-      } else if ( this.props.generateSample === true ) {
-        let foamtree : any = getFakeFoamTreeData( true, 90 );
-        foamtree.id ="visualization";
-        this.foamtree = new FoamTree( foamtree );
-        console.log('FoamControl addItemsToState 2:', foamtree );
-/*
-      } else if ( this.props.foamTreeData === null ) {
-        let foamtree : any = getFakeFoamTreeData( true, 90 );
-        foamtree.id ="visualization";
-        this.foamtree = new FoamTree( foamtree );
-        console.log('FoamControl addItemsToState 3:', foamtree );
-        this.consoleDataObject( 'FoamControl addItemsToState 3', 'full', null );
-*/
+      let groups: IFoamTreeGroup[] = [];
+      let groupsUpdated = false;
+
+      if ( this.props.generateSample === true ) {
+        groups = getFakeFoamTreeGroups( 90, 1000, fakeGroups1[1] );
+        groupsUpdated = true;
+
+      } else if ( this.props.foamTreeData.dataObject.groups.length > 0 ) {
+        groups = this.props.foamTreeData.dataObject.groups;
+        groupsUpdated = true;
+
       } else { 
-        console.log('FoamControl addItemsToState 4:','Did nothing' );
+        console.log('FoamControl addItemsToState 4:','Did nothing - could be because data has not yet loaded' );
 
       }
 
-             /*
-        vars.labelColor = {
-          model: "rgb",
-          r: 0, g: 0, b: 0
-        };
-        */
-      /*  */
-      if ( this.props.foamTreeData !== null) {
+
+      if ( groupsUpdated === true ) {
+
+        console.log( 'addItemsToState groups:', groups );
+        //This does show data once fetched.
+        this.foamtree.set({
+          dataObject: {
+            groups: groups
+          }
+        });
+
+        //this.foamtree.redraw(); //This does not redraw new groups data
+
+        /* VVVVV   This did not crash but did not update either    VVVVVVVVVVVVVV
+
+        const dataObject = this.foamtree.get("dataObject");
+        dataObject.groups = groups;
+        this.foamtree.update();
         this.foamtree.set("groupLabelDecorator", (opts, params, vars) => {
           vars.labelText += " (" +
             params.group.weight.toFixed(1) + ")";
 
         });
         this.foamtree.redraw();
+        */
       }
-      
+
 
       return true;
 
