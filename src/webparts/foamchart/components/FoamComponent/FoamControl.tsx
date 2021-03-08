@@ -125,6 +125,9 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
           <button onClick={ this.tryUpdate.bind(this) } style={{marginRight:'20px'}}>tryUpdate</button>
           <button onClick={ this.tryAttach.bind(this) } style={{marginRight:'20px'}}>tryAttach</button>
           <button onClick={ this.tryNew.bind(this) } style={{marginRight:'20px'}}>tryNew</button>
+          <button onClick={ this.resetState.bind(this) } style={{marginRight:'20px'}}>resetState</button>
+
+          <button onClick={ this.tryPropsData.bind(this) } style={{marginRight:'20px'}}>tryPropsData</button>         
 
           <button onClick={ this.showSum.bind(this) } style={{marginRight:'20px'}}>Sum</button>
           <button onClick={ this.showCount.bind(this) } style={{marginRight:'20px'}}>Count</button>
@@ -316,6 +319,28 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
       this.consoleDataObject( 'tryNew After', 'dataObject', null );
     }
 
+    /**
+     * This replaces the current data object with the one in props
+     */
+    private tryPropsData( ) {
+      this.consoleDataObject( 'tryNew Before', 'dataObject', null );
+      console.log( 'addItemsToState dataObject:', this.props.foamTreeData.dataObject );
+      let testDataObject : IFoamTreeDataObject = JSON.parse(JSON.stringify( this.props.foamTreeData.dataObject ));
+      this.foamtree.set({
+        dataObject: testDataObject,
+        //showZeroWeightGroups: false,
+        groupLabelDecorator: (opts, params, vars) => {
+          vars.labelText += " (" +
+            ( params.group.weight ? params.group.weight.toFixed(1) : '-' ) + ")";
+
+        }
+      });
+      this.consoleDataObject( 'tryNew After', 'dataObject', null );
+    }
+
+    private resetState() {
+      this.setState ({});
+    }
   /***
  *     .d8b.  d8888b. d8888b.      d888888b d888888b d88888b .88b  d88. .d8888.      d888888b  .d88b.       .d8888. d888888b  .d8b.  d888888b d88888b 
  *    d8' `8b 88  `8D 88  `8D        `88'   `~~88~~' 88'     88'YbdP`88 88'  YP      `~~88~~' .8P  Y8.      88'  YP `~~88~~' d8' `8b `~~88~~' 88'     
@@ -350,28 +375,51 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
       if ( groupsUpdated === true ) {
 
-        console.log( 'addItemsToState groups:', groups );
+        /*     
         //This does show data once fetched.
+        
+        console.log( 'addItemsToState groups:', groups );
         this.foamtree.set({
           dataObject: {
             groups: groups
+          },
+          groupLabelDecorator: (opts, params, vars) => {
+            vars.labelText += " (" +
+              params.group.weight.toFixed(1) + ")";
+  
           }
         });
-
+        */
+ 
+        /*   //This does show data once fetched.
+        console.log( 'addItemsToState dataObject:', this.props.foamTreeData.dataObject );
+        this.foamtree.set("dataObject", this.props.foamTreeData.dataObject);
+        //this.foamtree.update();  //update is not required if using set("dataObject",....)
         //this.foamtree.redraw(); //This does not redraw new groups data
+        */
+
+        /*   */   
+        //This does show data once fetched.
+        
+        console.log( 'addItemsToState dataObject:', this.props.foamTreeData.dataObject );
+        let testDataObject : IFoamTreeDataObject = JSON.parse(JSON.stringify( this.props.foamTreeData.dataObject ));
+        this.foamtree.set({
+          dataObject: testDataObject,
+          //showZeroWeightGroups: false,
+          groupLabelDecorator: (opts, params, vars) => {
+            vars.labelText += " (" +
+              ( params.group.weight ? params.group.weight.toFixed(1) : '-' ) + ")";
+  
+          }
+        });
 
         /* VVVVV   This did not crash but did not update either    VVVVVVVVVVVVVV
 
         const dataObject = this.foamtree.get("dataObject");
         dataObject.groups = groups;
         this.foamtree.update();
-        this.foamtree.set("groupLabelDecorator", (opts, params, vars) => {
-          vars.labelText += " (" +
-            params.group.weight.toFixed(1) + ")";
-
-        });
         this.foamtree.redraw();
-        */
+        */ 
       }
 
 

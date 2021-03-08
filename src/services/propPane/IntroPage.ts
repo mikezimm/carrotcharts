@@ -171,6 +171,10 @@ export class IntroPage {
             label: 'Your List Title'
           }),
 
+          PropertyPaneTextField('carrotCats', {
+            label: 'Carrot Cats'
+          }),
+
           PropertyPaneTextField('valueColumn', {
             label: 'Value Column'
           }),
