@@ -98,7 +98,7 @@ export class IntroPage {
     return <IPropertyPanePage>
     { // <page1>
       header: {
-        description: 'About this webpart text'
+        description: ''
       },
       displayGroupsAsAccordion: true,
       groups: [
