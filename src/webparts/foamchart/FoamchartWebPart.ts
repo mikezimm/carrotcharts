@@ -588,7 +588,10 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
 
                 if ( potentialValue ) { //If value exists, continue
 
-                  potentialValue = potentialValue.replace('\"','"'); //Replace any cases where I copied the hashed characters from JSON file directly.
+                  let typeOfPotentialValue = typeof potentialValue;
+                  if ( typeOfPotentialValue === 'string') {
+                    potentialValue = potentialValue.replace('\"','"'); //Replace any cases where I copied the hashed characters from JSON file directly.
+                  }
 
                   if ( typeof this.properties[thisWebPartProp] === 'boolean') {
                     if ( potentialValue === "true" ) { potentialValue = true; }
