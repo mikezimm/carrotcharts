@@ -5,6 +5,8 @@ import { IFoamcontrolState } from './IFoamState';
 
 import { escape } from '@microsoft/sp-lodash-subset';
 
+import { Spinner, SpinnerSize, SpinnerLabelPosition } from 'office-ui-fabric-react/lib/Spinner';
+
 import { FoamTree } from "@carrotsearch/foamtree";
 
 import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/IFoamTree';
@@ -76,7 +78,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
       } else {
         const dataObject = this.foamtree.get("dataObject");
 
-        dataObject.groups = this.props.foamTreeData.groups;
+        dataObject.groups = this.props.foamTreeData.dataObject.groups;
 
         this.foamtree.update();
       }
@@ -87,7 +89,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
   
   public componentWillUnmount() {
     console.log( 'WILL UNMOUNT this.props.foamTreeData', this.props.foamTreeData );
-    //this.foamtree.dispose();
+    this.foamtree.dispose();
     //this.tryFoamTree(1,10);
   }
   /* */
@@ -101,6 +103,17 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
     let x = this.props.WebpartWidth > 0 ? ( this.props.WebpartWidth -30 ) + "px" : "500px";
     let y = this.props.WebpartHeight > 0 ? this.props.WebpartHeight + "px" : "500px";
+    let spinner = null;
+    if ( this.props.foamTreeData.dataObject.groups.length === 0 ) { 
+      y = '1px';
+      spinner = <div style={{ width: this.props.WebpartWidth, height: '500px', position: 'absolute', top: '50%', left: '42%' }}>
+      <Spinner 
+        size={SpinnerSize.large}
+        label={ 'Loading data' }
+        labelPosition='left'
+      ></Spinner>
+    </div> ;
+    }
 
     let foamBox =  <div><div className={ styles.container }><button onClick={ this.tryForEachGroup.bind(this) } style={{marginRight:'20px'}}>tryForEachGroup</button>
           <button onClick={ this.trySetGroups.bind(this) } style={{marginRight:'20px'}}>trySetGroups</button>
@@ -116,10 +129,13 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
           <div id='visualization' style={{height: y, width:  x }}></div>
           { this.foamtree }
         </div></div>;
+      
+
 
     return (
       <div className={ styles.foamchart } style={{background: 'gray', padding: '15px'}}>
           { foamBox }
+          { spinner }
       </div>
     );
   }

@@ -47,7 +47,8 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
     let fetchInfo  : any = buildFetchList( this.props.pageContext, this.props.parentListWeb, this.props.listName, this.props.parentListTitle, false, this.props.performance,
          this.props.dropDownColumns, this.props.searchColumns, this.props.metaColumns, [this.props.dateColumn], [this.props.valueColumn] );
 
-    let foamtree : any = getFakeFoamTreeData( true, 90 );
+    let foamtree : IFoamTree = getFakeFoamTreeData( true, 90 );
+    foamtree.dataObject.groups = [];
 
     let errMessage = '';
     this.state = { 
@@ -181,11 +182,12 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
   public render(): React.ReactElement<IFoamchartProps> {
 
-    let foamControl = this.state.allLoaded !== true ? null : <Foamcontrol  
+    let foamControl = <Foamcontrol  
         WebpartElement = { this.props.WebpartElement }   //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
 
         dataKey = { this.state.dataKey }
-        foamTreeData = { this.state.allLoaded === true ? this.state.foamTreeData : null } //
+        //foamTreeData = { this.state.allLoaded === true ? this.state.foamTreeData : null } //
+        foamTreeData = { this.state.foamTreeData } //
         generateSample = { false }  //Gets random sample data
 
         pageContext = { this.props.pageContext }

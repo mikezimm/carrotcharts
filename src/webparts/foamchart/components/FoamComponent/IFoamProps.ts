@@ -28,7 +28,9 @@ import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeS
 
 import { IPerformanceSettings,  } from '@mikezimm/npmfunctions/dist/getFunctions';
 
-import { FoamTree, IFoamTree } from "@carrotsearch/foamtree";
+import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/IFoamTree';
+
+//import { FoamTree, IFoamTree } from "@carrotsearch/foamtree";
 
 /***
  *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b      .d8888. d88888b d8888b. db    db d888888b  .o88b. d88888b .d8888. 
