@@ -57,11 +57,11 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
     let refreshMe : any = false;
     console.log( 'DID UPDATE this.props.foamTreeData', this.props.foamTreeData );
-    this.tryForEachGroup( );
-    return;
+    //this.tryForEachGroup( );
+    //return;
     
     let refreshOnThese = [
-      'dataKey',
+      'foamTreeData',
     ];
 
     if (refreshMe === false) {
@@ -73,8 +73,8 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
     if (refreshMe === true) {
       //this.addTheseItemsToState();
 
-      if ( this.foamtree = null ) {
-        this.foamtree = new FoamTree(  this.props.foamTreeData );
+      if ( this.foamtree === null ) {
+        this.addTheseItemsToState();
       } else {
         const dataObject = this.foamtree.get("dataObject");
 
@@ -103,6 +103,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
     let x = this.props.WebpartWidth > 0 ? ( this.props.WebpartWidth -30 ) + "px" : "500px";
     let y = this.props.WebpartHeight > 0 ? this.props.WebpartHeight + "px" : "500px";
+    /*
     let spinner = null;
     if ( this.props.foamTreeData.dataObject.groups.length === 0 ) { 
       y = '1px';
@@ -114,8 +115,9 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
       ></Spinner>
     </div> ;
     }
+*/
 
-    let foamBox =  <div><div className={ styles.container }><button onClick={ this.tryForEachGroup.bind(this) } style={{marginRight:'20px'}}>tryForEachGroup</button>
+    let foamBox = this.props.foamTreeData === null ? null : <div><div className={ styles.container }><button onClick={ this.tryForEachGroup.bind(this) } style={{marginRight:'20px'}}>tryForEachGroup</button>
           <button onClick={ this.trySetGroups.bind(this) } style={{marginRight:'20px'}}>trySetGroups</button>
           <button onClick={ this.trySetObject.bind(this) } style={{marginRight:'20px'}}>trySetObject</button>
           <button onClick={ this.tryUpdate.bind(this) } style={{marginRight:'20px'}}>tryUpdate</button>
@@ -129,13 +131,11 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
           <div id='visualization' style={{height: y, width:  x }}></div>
           { this.foamtree }
         </div></div>;
-      
-
 
     return (
       <div className={ styles.foamchart } style={{background: 'gray', padding: '15px'}}>
           { foamBox }
-          { spinner }
+          {  }
       </div>
     );
   }
@@ -341,14 +341,14 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
         foamtree.id ="visualization";
         this.foamtree = new FoamTree( foamtree );
         console.log('FoamControl addItemsToState 2:', foamtree );
-
+/*
       } else if ( this.props.foamTreeData === null ) {
         let foamtree : any = getFakeFoamTreeData( true, 90 );
         foamtree.id ="visualization";
         this.foamtree = new FoamTree( foamtree );
         console.log('FoamControl addItemsToState 3:', foamtree );
         this.consoleDataObject( 'FoamControl addItemsToState 3', 'full', null );
-
+*/
       } else { 
         console.log('FoamControl addItemsToState 4:','Did nothing' );
 
@@ -361,12 +361,14 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
         };
         */
       /*  */
-      this.foamtree.set("groupLabelDecorator", (opts, params, vars) => {
-        vars.labelText += " (" +
-          params.group.weight.toFixed(1) + ")";
+      if ( this.props.foamTreeData !== null) {
+        this.foamtree.set("groupLabelDecorator", (opts, params, vars) => {
+          vars.labelText += " (" +
+            params.group.weight.toFixed(1) + ")";
 
-      });
-      this.foamtree.redraw();
+        });
+        this.foamtree.redraw();
+      }
       
 
       return true;
