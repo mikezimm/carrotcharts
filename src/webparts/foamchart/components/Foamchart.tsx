@@ -24,7 +24,7 @@ import { buildFetchList } from './BuildFetchList';
 
 import { getAllItems, IFoamTreeList, IFoamItemInfo } from './GetListData';
 
-import { buildGroupData } from './FoamFunctions';
+import { buildGroupData } from './FoamComponent/FoamFunctions';
 
 
 import Foamcontrol from './FoamComponent/FoamControl';
@@ -49,7 +49,8 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
     this.props.carrotCats.map( c => { metaColumns.push( c ); });
 
     let fetchInfo  : any = buildFetchList( this.props.pageContext, this.props.parentListWeb, this.props.listName, this.props.parentListTitle, false, this.props.performance,
-         this.props.dropDownColumns, this.props.searchColumns, metaColumns, [this.props.dateColumn], [this.props.valueColumn] );
+         this.props.dropDownColumns, this.props.searchColumns, metaColumns, [this.props.dateColumn], [this.props.valueColumn],
+         this.props.carrotCats, this.props.dateColumn, this.props.valueColumn,this.props.valueType, this.props.valueOperator );
 
     let foamtree : IFoamTree = getEmptyFoamTreeData( );
     foamtree.dataObject.groups = [];
@@ -165,7 +166,8 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
     if (reloadData === true) {
 
       let fetchInfo  : any = buildFetchList( this.props.pageContext, this.props.parentListWeb, this.props.listName, this.props.parentListTitle, false, this.props.performance,
-        this.props.dropDownColumns, this.props.searchColumns, this.props.metaColumns, [this.props.dateColumn], [this.props.valueColumn] );
+        this.props.dropDownColumns, this.props.searchColumns, this.props.metaColumns, [this.props.dateColumn], [this.props.valueColumn] ,
+        this.props.carrotCats, this.props.dateColumn, this.props.valueColumn,this.props.valueType, this.props.valueOperator );
 
       this.setState({
         /*          */
@@ -268,7 +270,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
       let allItems = allNewData === false ? this.state.allItems : theseItems;
 
-      let foamTreeData = buildGroupData( fetchList, allItems, this.props.valueColumn, this.props.dateColumn, this.props.valueOperator, this.props.carrotCats );
+      let foamTreeData = buildGroupData( fetchList, allItems );
 
       //let foamTreeData: IFoamTree = null; //this.buildGridData (fetchList, theseItems);
       // let foamTreeData : any = getFakeFoamTreeData( true, 90 );

@@ -4,9 +4,9 @@ import { doesObjectExistInArray, doesObjectExistInArrayInt } from '@mikezimm/npm
 import { minInfinity, maxInfinity } from '@mikezimm/npmfunctions/dist/columnTypes';
 
 
-import { getFakeFoamTreeData, getEmptyFoamTreeData } from './FakeFoamTreeData';
+import { getFakeFoamTreeData, getEmptyFoamTreeData } from '../FakeFoamTreeData';
 
-import { getAllItems, IFoamTreeList, IFoamItemInfo } from './GetListData';
+import { getAllItems, IFoamTreeList, IFoamItemInfo } from '../GetListData';
 
 
     /***
@@ -21,7 +21,7 @@ import { getAllItems, IFoamTreeList, IFoamItemInfo } from './GetListData';
     */
 
 
-   export function buildGroupData ( fetchList: IFoamTreeList, allItems : IFoamItemInfo[], propSvalueColumn: string, propSdateColumn: string, propSvalueOperator: string, propScarrotCats: string[] ) {
+   export function buildGroupData ( fetchList: IFoamTreeList, allItems : IFoamItemInfo[] ) {
 
     let count = allItems.length;
 
@@ -44,8 +44,8 @@ import { getAllItems, IFoamTreeList, IFoamItemInfo } from './GetListData';
     let lastDate = "";
 
     allItems.map( item => {
-      let theStartTimeMS = item['time' + propSdateColumn ].milliseconds;
-      let theStartTimeStr = item['time' + propSdateColumn ].theTime;
+      let theStartTimeMS = item['time' + fetchList.dateColumn ].milliseconds;
+      let theStartTimeStr = item['time' + fetchList.dateColumn ].theTime;
 
       if ( theStartTimeMS > lastTime ) { 
         lastTime = theStartTimeMS ; 
@@ -57,7 +57,7 @@ import { getAllItems, IFoamTreeList, IFoamItemInfo } from './GetListData';
 
     });
 
-    let valueOperator = propSvalueOperator.toLowerCase() ;
+    let valueOperator = fetchList.valueOperator.toLowerCase() ;
 
 /*
     allItems.map( item => {
@@ -66,7 +66,7 @@ import { getAllItems, IFoamTreeList, IFoamItemInfo } from './GetListData';
 
       //item.searchString += 'yearMonth=' + item.yearMonth + '|||' + 'yearWeek=' + item.yearWeek + '|||' + 'year=' + item.year + '|||' + 'week=' + item.week + '|||';
 
-      let valueColumn = item[ propSvalueColumn ];
+      let valueColumn = item[ fetchList.valueColumn ];
       let valueType = typeof valueColumn;
 
       if ( valueType === 'string' ) { valueColumn = parseFloat( valueColumn ) ; }
@@ -80,11 +80,11 @@ import { getAllItems, IFoamTreeList, IFoamItemInfo } from './GetListData';
     */
 
     //Get first group tier
-    let hiearchy = propScarrotCats;
+    let hiearchy = fetchList.carrotCats;
     let start = new Date();
 
     let result = buildHiearchyGroups( allItems, [], hiearchy, 0 );
-    let finalGroups = buildGroupWeights ( result.allItems, result.groups, 0, 'sum', propSvalueColumn ) ;
+    let finalGroups = buildGroupWeights ( fetchList, result.allItems, result.groups, 0 ) ;
     console.log('finalGroups: ', finalGroups );
     let end = new Date();
     console.log( 'CALCULATION TIME (ms) = ' + ( end.getTime() - start.getTime() ) );
@@ -106,12 +106,12 @@ import { getAllItems, IFoamTreeList, IFoamItemInfo } from './GetListData';
     return thisGroupX;
   }
 
-  export function buildGroupWeights ( allItems: IFoamItemInfo[], groups: IFoamTreeGroup[], tHI: number, operator: string, propSvalueColumn: string ) { //removed hiearchy: string[], 
+  export function buildGroupWeights ( fetchList: IFoamTreeList, allItems: IFoamItemInfo[], groups: IFoamTreeGroup[], tHI: number ) { //removed hiearchy: string[], 
 
     allItems.map( item => {
 
       //Copied section from GridCharts VVVV
-      let valueColumn = item[ propSvalueColumn ];
+      let valueColumn = item[ fetchList.valueColumn ];
       let valueType = typeof valueColumn;
 
       if ( valueType === 'string' ) { valueColumn = parseFloat( valueColumn ) ; }
@@ -144,12 +144,13 @@ import { getAllItems, IFoamTreeList, IFoamItemInfo } from './GetListData';
     }); 
 
     groups = updateGroupAvg( groups ) ;
-    groups = setGroupWeight( groups, operator ) ;
+    groups = setGroupWeight( groups, fetchList.valueOperator ) ;
     return groups;
 
   }
 
   export function setGroupWeight( groups: IFoamTreeGroup[], operator: string ) {
+    operator = operator.toLowerCase();
     groups.map( group => {
       group.weight = group[operator];
       if ( group.groups.length > 0 ) { group.groups = setGroupWeight( group.groups, operator ) ; }
