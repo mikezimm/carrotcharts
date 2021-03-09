@@ -192,6 +192,8 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
         dataKey = { this.state.dataKey }
         foamTreeData = { this.state.foamTreeData } //
+        allItems = { this.state.allItems }
+        fetchList = { this.state.fetchList }
         allLoaded = { this.state.allLoaded }
         //foamTreeData = { this.state.foamTreeData } //
         generateSample = { false }  //Gets random sample data

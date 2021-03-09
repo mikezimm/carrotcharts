@@ -214,3 +214,9 @@ import { getAllItems, IFoamTreeList, IFoamItemInfo } from '../GetListData';
     return { item: item, groups: groups } ;
 
   }
+
+  export function getTotalGroupWeight ( groups: IFoamTreeGroup[] ) {
+    let total = 0 ;
+    groups.map( g=> { if ( g.weight ) { total += g.weight ;} });
+    return total;
+  } 

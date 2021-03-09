@@ -104,6 +104,7 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfun
       pullbackDuration: 2000,
       pullbackScalingStrength: -0.3,
       pullbackRotationStrength: 0,
+      showZeroWeightGroups: false,
       //pullbackPolygonDelay: 0.1, //This is not on IFoamTree yet
       fadeDuration: 0,
       //attributionPosition: 45, //This is not on IFoamTree yet

@@ -81,6 +81,26 @@ export interface IFoamchartState {
   selectedDropdowns: string[]; //array of selected choices for dropdowns
   dropDownItems: IDropdownOption[][]; //array of array of options for selected dropdown fields
 
+  searchCount: number;
+
+  searchText: string;
+  searchMeta: string[];
+
+  searchedItems: IFoamItemInfo[];
+  //stats: IStat[];
+  first20searchedItems: IFoamItemInfo[];
+
+  allItems: IFoamItemInfo[];
+
+//    viewType?: IViewType;
+
+  meta: string[];
+
+  errMessage: string | JSX.Element;
+
+  lastStateChange: string;
+  stateChanges: string[]; //Log of state changes into array
+
   foamTreeData: IFoamTree; //One IGridchartsDataPoint per date between lowest and highest date range for input data
 
   dataKey: string;
@@ -105,28 +125,9 @@ export interface IFoamchartState {
 
   showTips: boolean;
 
-  searchCount: number;
-
-  searchText: string;
-  searchMeta: string[];
-
-  searchedItems: IFoamItemInfo[];
-  //stats: IStat[];
-  first20searchedItems: IFoamItemInfo[];
-
-  allItems: IFoamItemInfo[];
-
-//    viewType?: IViewType;
-
-  meta: string[];
-
-  errMessage: string | JSX.Element;
-
   fetchList: IFoamTreeList;
 
   pivotCats: IMyPivCat[][];
 
-  lastStateChange: string;
-  stateChanges: string[]; //Log of state changes into array
 
 }

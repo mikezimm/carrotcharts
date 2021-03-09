@@ -28,7 +28,7 @@ import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeS
 
 import { IPerformanceSettings,  } from '@mikezimm/npmfunctions/dist/getFunctions';
 
-import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/IFoamTree';
+import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup, } from '@mikezimm/npmfunctions/dist/IFoamTree';
 
 //import { FoamTree, IFoamTree } from "@carrotsearch/foamtree";
 
@@ -43,7 +43,7 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfun
  *                                                                                                                                 
  */
 
- 
+ import { IFoamItemInfo, IFoamTreeList } from '../GetListData';
 
  /***
  *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b      db   db d88888b db      d8888b. d88888b d8888b. .d8888. 
@@ -84,7 +84,12 @@ export interface IFoamcontrolProps {
 
       WebpartElement?: HTMLElement;   //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
 
+      fetchList: IFoamTreeList;
+      
       foamTreeData: IFoamTree; //
+
+      allItems: IFoamItemInfo[];
+
       allLoaded: boolean;
       
       dataKey: string; //Unique identifier to generate a refresh in component did update 

@@ -7,13 +7,31 @@ import { escape } from '@microsoft/sp-lodash-subset';
 
 import { Spinner, SpinnerSize, SpinnerLabelPosition } from 'office-ui-fabric-react/lib/Spinner';
 
+import {
+  MessageBar,
+  MessageBarType,
+  SearchBox,
+  Icon,
+  Label,
+  Pivot,
+  PivotItem,
+  PivotLinkFormat,
+  PivotLinkSize,
+  Dropdown,
+  IDropdownOption,
+} from "office-ui-fabric-react";
+
 import { FoamTree } from "@carrotsearch/foamtree";
 
 import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/IFoamTree';
 
+import { doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/arrayServices';
+
 import { IFoamTreeList, IFoamItemInfo } from '../GetListData';
 
 import { getFakeFoamTreeData, getFakeFoamTreeGroups, fakeGroups1, getEmptyFoamTreeData } from '../FakeFoamTreeData';
+
+import { getTotalGroupWeight, buildGroupData } from './FoamFunctions';
 
 export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoamcontrolState> {
   private foamtreeData: any = getEmptyFoamTreeData( );
@@ -24,6 +42,27 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
     console.log( 'CONSTRUCTOR this.props.foamTreeData', this.props.foamTreeData );
     let errMessage = '';
     this.state = { 
+
+        selectedDropdowns: [], //array of selected choices for dropdowns
+        dropDownItems: [], //array of array of options for selected dropdown fields
+
+        searchCount: 0,
+
+        searchText: '',
+        searchMeta: [],
+
+        searchedItems: [],
+        
+        first20searchedItems: [],
+
+        allItems: this.props.allItems,
+
+        meta: [],
+
+        errMessage: '',
+
+        lastStateChange: '',
+        stateChanges: [], //Log of state changes into array
 
     };
 
@@ -118,6 +157,15 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
     </div> ;
     }
 */
+    let searchBox = <div>
+      <div style={{ paddingTop: '20px' }}></div>
+      <SearchBox className={ styles.searchBox }
+          placeholder= { 'Search items' }
+          iconProps={{ iconName : 'Search'}}
+          onSearch={ this.textSearch.bind(this) }
+          value={this.state.searchText}
+          onChange={ this.textSearch.bind(this) } />
+      </div>;
 
     let foamBox = <div><div className={ styles.container }><button onClick={ this.tryForEachGroup.bind(this) } style={{marginRight:'20px'}}>tryForEachGroup</button>
           <button onClick={ this.trySetGroups.bind(this) } style={{marginRight:'20px'}}>trySetGroups</button>
@@ -139,17 +187,168 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
     return (
       <div className={ styles.foamchart } style={{background: 'gray', padding: '15px'}}>
+          { searchBox }
           { foamBox }
           {  }
       </div>
     );
   }
   
-  private getTotalGroupWeight ( groups: any[] ) {
-    let total = 0 ;
-    groups.map( g=> { if ( g.weight ) { total += g.weight ;} });
-    return total;
-  } 
+  
+  /***
+ *    .d8888. d88888b  .d8b.  d8888b.  .o88b. db   db      d88888b  .d88b.  d8888b.      d888888b d888888b d88888b .88b  d88. .d8888. 
+ *    88'  YP 88'     d8' `8b 88  `8D d8P  Y8 88   88      88'     .8P  Y8. 88  `8D        `88'   `~~88~~' 88'     88'YbdP`88 88'  YP 
+ *    `8bo.   88ooooo 88ooo88 88oobY' 8P      88ooo88      88ooo   88    88 88oobY'         88       88    88ooooo 88  88  88 `8bo.   
+ *      `Y8b. 88~~~~~ 88~~~88 88`8b   8b      88~~~88      88~~~   88    88 88`8b           88       88    88~~~~~ 88  88  88   `Y8b. 
+ *    db   8D 88.     88   88 88 `88. Y8b  d8 88   88      88      `8b  d8' 88 `88.        .88.      88    88.     88  88  88 db   8D 
+ *    `8888Y' Y88888P YP   YP 88   YD  `Y88P' YP   YP      YP       `Y88P'  88   YD      Y888888P    YP    Y88888P YP  YP  YP `8888Y' 
+ *                                                                                                                                    
+ *                                                                                                                                    
+ */
+
+ 
+ /**
+  * Based on PivotTiles.tsx
+  * @param item
+  */
+ private textSearch = ( searchText: string ): void => {
+
+  this.fullSearch( null, searchText );
+
+}
+
+
+public fullSearch = (item: any, searchText: string ): void => {
+
+  //This sends back the correct pivot category which matches the category on the tile.
+  let e: any = event;
+
+  /*
+  console.log('searchForItems: e',e);
+  console.log('searchForItems: item', item);
+  console.log('searchForItems: this', this);
+
+
+ 
+ if ( currentTimeScale === 'Weeks' ) { this.setState({ sliderValueWeek: newValue, }) ; }
+ else if ( currentTimeScale === 'Years' ) { this.setState({ sliderValueYear: newValue, }) ; }
+ else if ( currentTimeScale === 'Months' ) { this.setState({ sliderValueMonth: newValue, }) ; }
+ else if ( currentTimeScale === 'WeekNo' ) { this.setState({ sliderValueWeekNo: newValue, }) ; }
+  */
+
+  let searchItems : IFoamItemInfo[] = [];
+  let newFilteredItems: IFoamItemInfo[]  = [];
+
+  searchItems =this.state.allItems;
+
+  let searchCount = searchItems.length;
+/* */
+  let selectedDropdowns = this.state.selectedDropdowns;
+  let dropDownItems = this.state.dropDownItems;
+  let dropdownColumnIndex = null; //Index of dropdown column that was picked
+
+  if ( searchText === null ) { //Then this is a choice dropdown filter
+
+    dropDownItems.map ( ( thisDropDown, ddIndex ) => {
+      thisDropDown.map( thisChoice => {
+        if ( dropdownColumnIndex === null && thisChoice.text === item ) { dropdownColumnIndex = ddIndex ; thisChoice.isSelected = true ; }  else { thisChoice.isSelected = false;} 
+      });
+    });
+
+    selectedDropdowns.map( (dd, index ) => {
+      if ( dropdownColumnIndex !== null ) {  //This should never be null but just in case... 
+        selectedDropdowns[index] = dropdownColumnIndex === index ? item : ''; 
+      }
+    });
+
+    if ( item === '' ) {
+      newFilteredItems = searchItems;
+    } else {
+      for (let thisItem of searchItems) {
+        let searchChoices = thisItem.meta ;
+        if(searchChoices.indexOf( item ) > -1) {
+          //console.log('fileName', fileName);
+          newFilteredItems.push(thisItem);
+        }
+      }
+    }
+  } else { //This is a text box filter
+
+    //Clears the selectedDropdowns array
+    selectedDropdowns.map( (dd, index ) => {
+        selectedDropdowns[index] = ''; 
+    });
+
+    //Sets isSelected on all dropdown options to false
+    dropDownItems.map ( ( thisDropDown ) => {
+      thisDropDown.map( thisChoice => {
+       thisChoice.isSelected = false;
+      });
+    });
+
+    if ( searchText == null || searchText === '' ) {
+      newFilteredItems = searchItems;
+    } else {
+      let searchTextLC = searchText.toLowerCase();
+      for (let thisItem of searchItems) {
+        if(thisItem.searchString.indexOf( searchTextLC ) > -1) {
+          newFilteredItems.push(thisItem);
+        }
+      }
+    }
+  }
+
+  searchCount = newFilteredItems.length;
+  
+  let foamTreeData = buildGroupData( this.props.fetchList, newFilteredItems );
+  let newGroups : IFoamTreeGroup[] = JSON.parse(JSON.stringify( foamTreeData.dataObject.groups ));
+  let dataObject: IFoamTreeDataObject = this.foamtree.get("dataObject");
+  
+  dataObject = this.updateGroupWeights( dataObject, newGroups );
+
+  /**
+   * For some reason, whenever I use update, it seems to ignore the showZeroWeightGroups property.
+
+  this.foamtree.update();
+   */
+  console.log( 'fullSearch dataObject:', this.props.foamTreeData.dataObject );
+
+  /**
+   * For some reason, whenever I use set, it re-animates the entire tree
+   */
+  this.foamtree.set({
+    dataObject: dataObject,
+    //showZeroWeightGroups: false, //Not required if it's in the initial settings
+    groupLabelDecorator: (opts, params, vars) => {
+      vars.labelText += " (" +
+        ( params.group.weight ? params.group.weight.toFixed(1) : '-' ) + ")";
+    }
+  });
+
+  return ;
+  
+}
+
+private updateGroupWeights ( dataObject: IFoamTreeDataObject , newGroups : IFoamTreeGroup[]  ) {
+
+  dataObject.groups.forEach((g) => {
+    let newGroupRef : IFoamTreeGroup = null;
+    let getNewGroupIndex = doesObjectExistInArray( newGroups,'label',g.label,true );
+    if ( getNewGroupIndex !== false ) { 
+      newGroupRef = newGroups[ getNewGroupIndex ];
+      g.sum = newGroupRef.sum;
+      g.min = newGroupRef.min;
+      g.max = newGroupRef.max;
+      g.count = newGroupRef.count;
+      g.avg = newGroupRef.avg;
+      g.weight = newGroupRef.weight;
+
+    } else { g.weight = 0; }
+  
+  });
+
+  return dataObject;
+}
 
  private consoleDataObject( caller: string, obj: string, oldKeySummary: any ) {
   let thisDataObject = null;
@@ -190,7 +389,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
     });
   }
 
-  console.log('object - ' + caller, this.getTotalGroupWeight( groups ), keySummary, thisDataObject );
+  console.log('object - ' + caller, getTotalGroupWeight( groups ), keySummary, thisDataObject );
   if ( Object.keys( keyChanges ).length > 0 ) {
     console.log('CHANGES to object - ' + caller, keyChanges );
   }
@@ -261,16 +460,20 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
      * This gets new data and reanimates by "undrawing" current data and the redrawing with new data... not like a resizing.
      * Seems to do same thing as trySetObject
      */
-    private trySetGroups(  ) {
+    private trySetGroups( groups: IFoamTreeGroup[] = [] ) {
       this.consoleDataObject( 'trySetGroups Before', 'full', null );
-        const newGroups = getFakeFoamTreeGroups( 90, 1000, fakeGroups1[1] );
+
+        if ( groups.length === 0 ) {
+          groups = getFakeFoamTreeGroups( 90, 1000, fakeGroups1[1] );
+        }
+        
         this.foamtree.set({
           fadeDuration: 1500,
           relaxationVisible: true,
           relaxationQualityThreshold: 0,
           relaxationMaxDuration: 1000,
           dataObject: {
-            groups: newGroups
+            groups: groups
           }
         });
       this.consoleDataObject( 'trySetGroups After', 'full', null );
@@ -405,7 +608,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
         let testDataObject : IFoamTreeDataObject = JSON.parse(JSON.stringify( this.props.foamTreeData.dataObject ));
         this.foamtree.set({
           dataObject: testDataObject,
-          //showZeroWeightGroups: false,
+          showZeroWeightGroups: false,
           groupLabelDecorator: (opts, params, vars) => {
             vars.labelText += " (" +
               ( params.group.weight ? params.group.weight.toFixed(1) : '-' ) + ")";
