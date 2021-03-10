@@ -72,4 +72,28 @@ import { IFoamTreeList, IFoamItemInfo } from '../GetListData';
 
 export interface IFoamcontrolState {
 
+    
+  selectedDropdowns: string[]; //array of selected choices for dropdowns
+  dropDownItems: IDropdownOption[][]; //array of array of options for selected dropdown fields
+
+  searchCount: number;
+
+  searchText: string;
+  searchMeta: string[];
+
+  searchedItems: IFoamItemInfo[];
+  //stats: IStat[];
+  first20searchedItems: IFoamItemInfo[];
+
+  allItems: IFoamItemInfo[];
+
+//    viewType?: IViewType;
+
+  meta: string[];
+
+  errMessage: string | JSX.Element;
+
+  lastStateChange: string;
+  stateChanges: string[]; //Log of state changes into array
+  
 }

@@ -94,7 +94,8 @@ import { IFoamTreeList } from './GetListData';
  */
 
     export function buildFetchList( pageContext: PageContext, webURL: string, listName: string, listTitle: string, isLibrary: boolean, performance : IPerformanceSettings,
-        dropDownColumns : string[], searchColumns : string[], metaColumns : string[], expandDates : string[], otherColumns: string[] ) {
+        dropDownColumns : string[], searchColumns : string[], metaColumns : string[], expandDates : string[], otherColumns: string[],
+        carrotCats: string[], dateColumn: string, valueColumn: string, valueType: string,  valueOperator: string, ) {
 
         //Copied from GridCharts for createFetchList
         let allColumns : string[] = otherColumns;  // "File/ServerRelativeUrl","File/Name"  File expanders here:  https://github.com/SharePoint/PnP-JS-Core/issues/778#issuecomment-380575103
@@ -105,8 +106,12 @@ import { IFoamTreeList } from './GetListData';
         //allColumns.push( this.props.dateColumn );
         //allColumns.push( this.props.valueColumn );
 
-        searchColumns.map( c => { allColumns.push( c ) ; });
-        metaColumns.map( c => { allColumns.push( c ) ; });
+        searchColumns.map( c => { if ( allColumns.indexOf( c ) < 0 ) { allColumns.push( c ) ; }  });
+        metaColumns.map( c => { if ( allColumns.indexOf( c ) < 0 ) { allColumns.push( c ) ; }  });
+        carrotCats.map( c => { if ( allColumns.indexOf( c ) < 0 ) { allColumns.push( c ) ; }  });
+
+        if ( dateColumn && allColumns.indexOf( dateColumn ) < 0 ) { allColumns.push( dateColumn ) ; }
+        if ( valueColumn && allColumns.indexOf( valueColumn ) < 0 ) { allColumns.push( valueColumn ) ; }
 
         let dropDownSort : string[] = dropDownColumns.map( c => { let c1 = c.replace('>','') ; if ( c1.indexOf('-') === 0 ) { return 'dec' ; } else if ( c1.indexOf('+') === 0 ) { return 'asc' ; } else { return ''; } });
 
@@ -117,6 +122,13 @@ import { IFoamTreeList } from './GetListData';
         let tempList : any = basicList;
         tempList.dropDownColumns = dropDownColumns;
         tempList.dropDownSort = dropDownSort;
+
+        tempList.carrotCats = carrotCats;
+        tempList.dateColumn = dateColumn;
+        tempList.valueColumn = valueColumn;
+        tempList.valueType = valueType;
+        tempList.valueOperator = valueOperator;
+
         let fetchList : IFoamTreeList = tempList;
 
         console.log('buildFetchList fetchList', fetchList );

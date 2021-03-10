@@ -93,6 +93,13 @@ import * as strings from 'FoamchartWebPartStrings';
     dropDownColumns: string[];
     dropDownSort: string[];
 
+    carrotCats: string[];
+    dateColumn: string;
+    valueColumn: string;
+
+    valueType: string;
+    valueOperator: string;
+
   }
 
 

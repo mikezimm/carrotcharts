@@ -45,6 +45,10 @@ import { IPropertyFieldSite } from "@pnp/spfx-property-controls/lib/PropertyFiel
 
 import { IFoamTree, IFoamTreeDataObject } from '@mikezimm/npmfunctions/dist/IFoamTree';
 
+import { getAllItems } from '@mikezimm/npmfunctions/dist/PropPaneFunctions';
+
+import { doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/arrayServices';
+
 /***
  *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b      .d8888. d88888b d8888b. db    db d888888b  .o88b. d88888b .d8888. 
  *      `88'   88'YbdP`88 88  `8D .8P  Y8. 88  `8D `~~88~~'      88'  YP 88'     88  `8D 88    88   `88'   d8P  Y8 88'     88'  YP 
@@ -124,6 +128,10 @@ export interface IFoamchartWebPartProps {
     dateColumn: string;
     //monthGap: string;
 
+    carrotProps?: string;  //For all the properties for carrotProps
+    carrotCats: string;
+    carrotStyles?: string;  //For all the properties for carrotProps
+
     valueColumn: string;
     valueType: string;
     valueOperator: string;
@@ -135,6 +143,9 @@ export interface IFoamchartWebPartProps {
 
     webPartScenario: string; //Choice used to create mutiple versions of the webpart.
     showEarlyAccess: boolean;
+    definitionToggle: boolean;
+    listDefinition: any; //Picked list defintion :  Title
+    newMap?: any[];
 
     //Items copied but not needed from GridCharts
     /* 
@@ -231,6 +242,7 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
           }
         } 
 
+        this._getListDefintions(true, true);
         //console.log('window.location',window.location);
         sp.setup({
           spfxContext: this.context
@@ -323,7 +335,7 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
     if ( this.properties.parentListWeb && this.properties.parentListWeb.length > 0 ) {} else { this.properties.parentListWeb = this.context.pageContext.web.serverRelativeUrl ; }
 
     let showEarlyAccess : boolean = false;
-    
+
     if ( window.location.origin.toLowerCase().indexOf('clickster.share') > -1 || window.location.origin.toLowerCase().indexOf('/autoliv/') > -1 ) {
       showEarlyAccess = true;
       this.properties.showEarlyAccess = true;
@@ -331,7 +343,7 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
       showEarlyAccess = this.properties.showEarlyAccess;
     }
     if ( this.properties.parentListWeb === '' ) {
-      
+
     }
     let tenant = this.context.pageContext.web.absoluteUrl.replace(this.context.pageContext.web.serverRelativeUrl,"");
     let parentListWeb = this.properties.parentListWeb.indexOf('/sites/') === 0 ? tenant + this.properties.parentListWeb : this.properties.parentListWeb;
@@ -339,7 +351,7 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
     const element: React.ReactElement<IFoamchartProps> = React.createElement(
       Foamchart,
       {
-        
+
         //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
         WebpartElement:this.domElement,
         foamtree: null,
@@ -356,9 +368,10 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
         parentListURL: null,
         parentListTitle: this.properties.parentListTitle,
         listName: null,
-              
+
         allLoaded: null,
 
+        carrotCats: this.properties.carrotCats ? this.properties.carrotCats.split(',') : [], 
         dateColumn: this.properties.dateColumn,
         valueColumn: this.properties.valueColumn,
         searchColumns: this.properties.searchColumns ? this.properties.searchColumns.split(',') : [], 
@@ -464,6 +477,7 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
       this.properties,
       this.context,
       this.onPropertyPaneFieldChanged.bind(this),
+      this._getListDefintions.bind(this),
       //this.CreateTTIMTimeList.bind(this),
       //this.CreateTTIMProjectList.bind(this),
       //this.UpdateTitles.bind(this),
@@ -471,7 +485,159 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
       );
   }
 
+  
+  //runAsync is an idea that is not currently being used.
+  /**
+   * 2021-03-06 Copied from Drilldown7 to CarrotCharts and GridCharts
+   * @param forceUpdate 
+   * @param runAsync 
+   * @returns 
+   */
+   protected async _getListDefintions(forceUpdate: boolean, runAsync: boolean) {
+    /**
+     * This section is for Templated properties
+     */
+
+    let newMap = [];
+    if ( !this.properties.newMap || forceUpdate === true ) { 
+      console.log('GETTING LIST DEFINITIONS');
+      let configWebURL = this.context.pageContext.site.absoluteUrl;
+      configWebURL = configWebURL.substring( 0, configWebURL.indexOf('/sites/') );
+      configWebURL += '/sites/PreConfigProps/';
+
+      let thisProps: string[] = Object.keys( this.properties );
+
+      let restFilterLD = '';
+
+      if ( this.properties.webPartScenario !== '' && this.properties.webPartScenario != null ) {
+        //newMap = getAllItems(configWebURL, 'DrilldownPreConfigProps', thisProps );
+        restFilterLD = "webPartScenario eq '" + this.properties.webPartScenario + "'";
+        console.log('_getListDefintions restFilterLD:', restFilterLD );
+      }
+
+      //Must remove 'newMap' from props because it's one can't be mapped.
+      //let newMapIdx = thisProps.indexOf('newMap');
+      //if (newMapIdx > -1) { thisProps.splice(newMapIdx, 1); }
+
+      //if ( runAsync === true ) {
+        newMap = await getAllItems(configWebURL, 'CarrotCharts', thisProps, restFilterLD, runAsync );
+      //} else {
+      //  newMap = getAllItems(configWebURL, 'DrilldownPreConfigProps', thisProps, runAsync );
+      //}
+
+      this.properties.newMap = newMap;
+      console.log('this.properties.newMap:',  this.properties.newMap );
+
+    } else {
+      console.log('NOT GETTING LIST DEFINITIONS, already fetched:', this.properties.newMap);
+      newMap = this.properties.newMap;
+
+    }
+    
+    return newMap;
+  }
+
+
   protected onPropertyPaneFieldChanged(propertyPath: string, oldValue: any, newValue: any): void {
+
+    /**
+     * 2021-03-06 Copied from Drilldown7 to CarrotCharts and GridCharts
+     */
+      if (propertyPath === 'listDefinition' && newValue !== oldValue) {
+
+      let thisProps: string[] = Object.keys( this.properties );
+      const hasValues = Object.keys(this.properties.newMap).length;
+
+      if (hasValues !== 0) {
+        /**
+         * defIndex is the propertie's list item index that was found for this listDefinition.
+         */
+        let defIndex : any = doesObjectExistInArray(this.properties.newMap,'Title',newValue);
+        if ( defIndex !== false ) {
+          /**
+           * thisProps is an array of of the keys of this webpart's 'properties' keys (properties)
+           */
+          thisProps.map( thisWebPartProp => {
+            /**
+             * Add columns here that are in the PreConfigProps list that should be ignored and are not an actual mapped property.
+             * webPartScenario is an example which is a list column but is used to filter out what list items to load.
+             */
+            let ignoreTheseColumns = ['webPartScenario']; 
+
+            if ( ignoreTheseColumns.indexOf( thisWebPartProp) > -1 ) {  
+              console.log('not mapping this property: ', thisWebPartProp );
+
+            } else if ( thisWebPartProp === 'listDefinition' ) { 
+                console.log('thisWebPartProp === listDefinition:', defIndex, thisWebPartProp);
+                this.properties[thisWebPartProp] = newValue;
+
+            } else {
+              /**
+               * this.properties.newMap is the property defs loaded from the tenanat list.
+               */
+              if ( Object.keys(this.properties.newMap[defIndex]).indexOf(thisWebPartProp) < 0 ) {
+                console.log('This thisWebPartProp is not to be mapped or updated:', thisWebPartProp );
+              } else {
+                /**
+                 * At this point, we should only find current this.properties.keys( thisWebPartProp ) found in the newMap list as a column.
+                 * 
+                 * potentialValue is the value found in the list that should be set for this webpart prop.  Currently all are rich text fields.
+                 */
+
+                let potentialValue = this.properties.newMap[defIndex][thisWebPartProp] ? this.properties.newMap[defIndex][thisWebPartProp] : undefined;
+
+                if ( potentialValue ) { //If value exists, continue
+
+                  let typeOfPotentialValue = typeof potentialValue;
+                  if ( typeOfPotentialValue === 'string') {
+                    potentialValue = potentialValue.replace('\"','"'); //Replace any cases where I copied the hashed characters from JSON file directly.
+                  }
+
+                  if ( typeof this.properties[thisWebPartProp] === 'boolean') {
+                    if ( potentialValue === "true" ) { potentialValue = true; }
+                    else if ( potentialValue === "false" ) { potentialValue = false; }
+                  }
+
+                  /**
+                   * Deal with special cases where potentialValue needs to be converted to an array first.
+                   */
+                  if ( ['rules0','rules1','rules2'].indexOf(thisWebPartProp) > -1 ) { //These should be arrays of strings
+
+                    if ( potentialValue != null && potentialValue != undefined ) {
+                      try {
+                        potentialValue = JSON.parse(potentialValue);
+                      } catch (e) {
+                        alert('Hey!  Check the PreConfigProps list ' + thisWebPartProp + ' field.  It should be valid JSON array string, it currently is: ' + potentialValue + '  Drilldown7WebPart.ts onPropertyPaneFieldChanged');
+                      }
+
+                    } else { potentialValue = [] ; }
+
+                    this.properties[thisWebPartProp] = potentialValue;
+
+                  } else if ( this.properties[thisWebPartProp] !== potentialValue ) { //If values are different, then update
+                      if ( potentialValue === '') { //If value is intentionally empty string, do the update
+                        this.properties[thisWebPartProp] = potentialValue;
+                      } else {
+                        this.properties[thisWebPartProp] = potentialValue;
+                      }
+                  }
+
+                }
+              }
+            }
+          });
+        } else {
+          if ( newValue.toLowerCase() !== 'na') {
+            alert('I think there is an error in onPropertyPaneFieldChanged:  \ndefIndex is false.\nCan\'t find listDefintion of ' + newValue);
+          } else {
+            console.log('I think there is an error in onPropertyPaneFieldChanged:  \ndefIndex is false.\nCan\'t find listDefintion of ' + newValue);
+          }
+        }
+      } else {
+        console.log('Did NOT List Defintion... updating column name props');
+      }
+      this.context.propertyPane.refresh();
+    }
 
     /**
      * This section is used to determine when to refresh the pane options
@@ -480,16 +646,19 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
       'setSize','setTab','otherTab','setTab','otherTab','setTab','otherTab','setTab','otherTab', '',
       'stressMultiplierTime', 'webPartScenario', '', '', '',
       'parentListTitle', 'parentListName', 'parentListWeb', 'sites', 'lists',
-      'dateColumn', 'valueColumn', 'valueType', 'valueOperator', 'minDataDownload','dropDownColumns','searchColumns', 'metaColumns',
-      'pivotSize', 'pivotFormat', 'pivotOptions', 'pivotTab', 'advancedPivotStyles', 'scaleMethod',
       'fetchCount', 'fetchCountMobile', 'restFilter', '', '', '',
-      'centerPaneFields','centerPaneStyles',
-      'monthGap', 'squareColor', 'emptyColor', 'backGroundColor', 'squareCustom', 
+
+      'pivotSize', 'pivotFormat', 'pivotOptions', 'pivotTab', 'advancedPivotStyles', 'scaleMethod',
+
+      'dateColumn', 'valueColumn', 'valueType', 'valueOperator', 'minDataDownload','dropDownColumns','searchColumns', 'metaColumns',
+
+      'carrotCats', 'carrotProps', 'carrotStyles',
     ];
+
     //alert('props updated');
     console.log('onPropertyPaneFieldChanged:', propertyPath, oldValue, newValue);
     if (updateOnThese.indexOf(propertyPath) > -1 ) {
-      this.properties[propertyPath] = newValue;   
+      this.properties[propertyPath] = newValue;
       this.context.propertyPane.refresh();
 
     } else { //This can be removed if it works

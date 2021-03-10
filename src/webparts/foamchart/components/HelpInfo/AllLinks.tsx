@@ -50,6 +50,7 @@ export const gitRepoTrackMyTime = createRepoLinks( baseMyRepos + 'TrackMyTime7v2
 export const gitRepoPivotTiles = createRepoLinks( baseMyRepos + 'Pivot-Tiles','_blank', 'Pivot-Tiles' );
 export const gitRepoSocialiis = createRepoLinks( baseMyRepos + 'Social-iis-7','_blank', 'Social-iis-7' );
 export const gitRepoGridCharts = createRepoLinks( baseMyRepos + 'gridcharts','_blank', 'GridCharts' );
+export const gitRepoCarrotCharts = createRepoLinks( baseMyRepos + 'carrotcharts','_blank', 'Carrot charts' );
 
 /**
  * Track My Time links
