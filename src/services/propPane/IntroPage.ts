@@ -175,6 +175,10 @@ export class IntroPage {
             label: 'Carrot Cats'
           }),
 
+          PropertyPaneTextField('dateColumn', {
+            label: 'Date Column'
+          }),
+
           PropertyPaneTextField('valueColumn', {
             label: 'Value Column'
           }),
@@ -238,7 +242,7 @@ export class IntroPage {
         groupFields: [
   
           PropertyPaneTextField('carrotCats', {
-            label: 'Hiearchy columns',
+            label: 'Carrot Cats',
             description: 'comma separated column names (3 max)'
           }),
 

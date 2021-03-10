@@ -87,7 +87,7 @@
         "scaleMethod": "blink",
         "fetchCount": 5000,
         "enableSearch": true,
-        "carrotCats": "Cell/Shift",
+        "carrotCats": "+zzzChoice1,+zzzItemCategory",
         "dropDownColumns": "+zzzChoice1,+zzzItemCategory"
       }
     }]

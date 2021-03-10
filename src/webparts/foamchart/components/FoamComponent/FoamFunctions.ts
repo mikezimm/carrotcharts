@@ -189,7 +189,12 @@ import { getAllItems, IFoamTreeList, IFoamItemInfo } from '../GetListData';
 
   export function buildHiearchyGroupsForItem ( item: IFoamItemInfo, groups: IFoamTreeGroup[], hiearchy: string[], tHI: number ) {
 
-    let thisHiearchyValue : any = item[hiearchy[ tHI ]];
+    let hiearchyProp = hiearchy[ tHI ];
+    let thisHiearchyValue : any = item[hiearchyProp];
+    if ( !thisHiearchyValue && ( hiearchyProp.indexOf( '.' ) > -1 || hiearchyProp.indexOf( '/' ) > -1 ) ) {
+      let cols = hiearchyProp.split(/\.|\//gm);  //Find the split using either . or / as in Editor.Title or Editor/Title
+      if ( item[ cols[0] ]) { thisHiearchyValue = item[ cols[0] ][ cols[1]] ;  }
+    }
     //if ( thisHiearchyValue === undefined ) { thisHiearchyValue = 'undefined' ; } else if ( thisHiearchyValue === null ) { thisHiearchyValue = 'null' ; }
     if ( thisHiearchyValue === undefined ) { thisHiearchyValue = 'No ' + hiearchy[ tHI ] ; } else if ( thisHiearchyValue === null ) { thisHiearchyValue = 'No ' + hiearchy[ tHI ] ; }
     if ( thisHiearchyValue ) {
