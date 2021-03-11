@@ -18,6 +18,11 @@ import { minInfinity, maxInfinity } from '@mikezimm/npmfunctions/dist/columnType
 
 
 
+import  EarlyAccess from './HelpInfo/EarlyAccess';
+import * as links from './HelpInfo/AllLinks';
+
+
+
 import { getFakeFoamTreeData, getEmptyFoamTreeData } from './FakeFoamTreeData';
 
 import { buildFetchList } from './BuildFetchList';
@@ -238,9 +243,46 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
         />
       </div>;
 
+
+    /**
+     * Add early access bar
+     */
+    let earlyAccess = null;
+
+    if ( this.props.showEarlyAccess === true ) {
+      let messages : any[] = [];
+      if ( this.state.WebpartWidth > 800 ) { 
+          messages.push( <div><span><b>{ 'Welcome to ALV Webpart Early Access!!!' }</b></span></div> ) ;
+          messages.push( <div><span><b>{ 'Get more info here -->' }</b></span></div> ) ;
+      }
+      else if ( this.state.WebpartWidth > 700 ) {
+          messages.push( <div><span><b>{ 'Webpart Early Access!' }</b></span></div> ) ;
+          messages.push( <div><span><b>{ 'More info ->' }</b></span></div> ) ;
+      } else if ( this.state.WebpartWidth > 600 ) {
+          messages.push( <div><span><b>{ 'info ->' }</b></span></div> ) ;
+  
+      } else if ( this.state.WebpartWidth > 400 ) {
+          messages.push( <div><span><b>{ 'info ->' }</b></span></div> ) ;
+      }
+  
+      earlyAccess = 
+      <div style={{ paddingBottom: 10 }}>
+        <EarlyAccess 
+            image = { "https://autoliv.sharepoint.com/sites/crs/PublishingImages/Early%20Access%20Image.png" }
+            messages = { messages }
+            links = { [ this.state.WebpartWidth > 450 ? links.gitRepoCarrotCharts.wiki : null, 
+                this.state.WebpartWidth > 600 ? links.gitRepoCarrotCharts.issues : null,
+                this.state.WebpartWidth > 800 ? links.gitRepoCarrotCharts.projects : null ]}
+            email = { 'mailto:General - WebPart Dev <0313a49d.Autoliv.onmicrosoft.com@amer.teams.ms>?subject=Drilldown Webpart Feedback&body=Enter your message here :)  \nScreenshots help!' }
+            farRightIcons = { [ ] }
+        ></EarlyAccess>
+      </div>;
+    }
+
     return (
       <div className={ styles.foamchart }>
         <div className={ styles.container }>
+          { earlyAccess }
           { button }
           { foamControl }
         </div>

@@ -17,6 +17,30 @@
   "preconfiguredEntries": [{
       "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Other
       "group": { "default": "Other" },
+      "title": { "default": "FPS foamchart-blank" },
+      "description": { "default": "Show list data as HeatMap of a list.  Mimics Github Contributor chart by Fuzzy Paws Solutions." },
+      "officeFabricIconFontName": "WebAppBuilderFragment",
+      "properties": {
+        "description": "foamchart",
+        "parentListWeb": "",
+        "parentListTitle": "",
+        "listDefinition": "",
+
+        "dateColumn": "",
+
+        "valueColumn": "Id",
+        "valueType": "number",
+        "valueOperator": "Count",
+        "minDataDownload": true,
+        "showEarlyAccess": true,
+        "fetchCount": 2000,
+        "enableSearch": true,
+        "carrotCats": "Editor/Title",
+        "dropDownColumns": "Editor/Title,Author/Title"
+      }
+    },{
+      "groupId": "5c03119e-3074-46fd-976b-c60198311f70", // Other
+      "group": { "default": "Other" },
       "title": { "default": "FPS foamchart-TMT (Beta Testing)" },
       "description": { "default": "Show list data as HeatMap of TMT by day of week.  Mimics Github Contributor chart by Fuzzy Paws Solutions." },
       "officeFabricIconFontName": "WebAppBuilderFragment",
