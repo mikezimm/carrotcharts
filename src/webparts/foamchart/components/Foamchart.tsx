@@ -195,6 +195,10 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
         allItems = { this.state.allItems }
         fetchList = { this.state.fetchList }
         allLoaded = { this.state.allLoaded }
+
+        enableSearch = { this.props.enableSearch }
+        dropDownItems = { this.state.dropDownItems }
+
         //foamTreeData = { this.state.foamTreeData } //
         generateSample = { false }  //Gets random sample data
 

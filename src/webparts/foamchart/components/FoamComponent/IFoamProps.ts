@@ -12,6 +12,8 @@
 import { PageContext } from '@microsoft/sp-page-context';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 
+import { IDropdownOption,  } from "office-ui-fabric-react";
+
 /***
  *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b      d8b   db d8888b. .88b  d88.      d88888b db    db d8b   db  .o88b. d888888b d888888b  .d88b.  d8b   db .d8888. 
  *      `88'   88'YbdP`88 88  `8D .8P  Y8. 88  `8D `~~88~~'      888o  88 88  `8D 88'YbdP`88      88'     88    88 888o  88 d8P  Y8 `~~88~~'   `88'   .8P  Y8. 888o  88 88'  YP 
@@ -91,7 +93,10 @@ export interface IFoamcontrolProps {
       allItems: IFoamItemInfo[];
 
       allLoaded: boolean;
-      
+
+      enableSearch: boolean;
+      dropDownItems : IDropdownOption[][];
+
       dataKey: string; //Unique identifier to generate a refresh in component did update 
       
       generateSample?: boolean;  //Gets random sample data

@@ -6,6 +6,7 @@ import { IFoamcontrolState } from './IFoamState';
 import { escape } from '@microsoft/sp-lodash-subset';
 
 import { Spinner, SpinnerSize, SpinnerLabelPosition } from 'office-ui-fabric-react/lib/Spinner';
+import { Stack, IStackStyles, IStackTokens } from 'office-ui-fabric-react/lib/Stack';
 
 import {
   MessageBar,
@@ -25,7 +26,7 @@ import { FoamTree } from "@carrotsearch/foamtree";
 
 import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/IFoamTree';
 
-import { doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/arrayServices';
+import { doesObjectExistInArray, sortObjectArrayByStringKey } from '@mikezimm/npmfunctions/dist/arrayServices';
 
 import { IFoamTreeList, IFoamItemInfo } from '../GetListData';
 
@@ -142,6 +143,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
   public render(): React.ReactElement<IFoamcontrolProps> {
 
+    let searchStack = null;
     let x = this.props.WebpartWidth > 0 ? ( this.props.WebpartWidth -30 ) + "px" : "500px";
     let y = this.props.WebpartHeight > 0 ? this.props.WebpartHeight + "px" : "500px";
     /*
@@ -157,15 +159,56 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
     </div> ;
     }
 */
-    let searchBox = <div>
-      <div style={{ paddingTop: '20px' }}></div>
-      <SearchBox className={ styles.searchBox }
-          placeholder= { 'Search items' }
-          iconProps={{ iconName : 'Search'}}
-          onSearch={ this.textSearch.bind(this) }
-          value={this.state.searchText}
-          onChange={ this.textSearch.bind(this) } />
-      </div>;
+
+      let searchElements = [];
+      let choiceSlider = null;
+      /**
+       * Add Dropdown search
+       */
+        if ( this.props.dropDownItems.length > 0 ) {
+
+          searchElements = this.props.dropDownItems.map( ( dropDownChoices, index ) => {
+
+              let dropDownSort = this.props.fetchList.dropDownSort[ index ];
+              let dropDownChoicesSorted = dropDownSort === '' ? dropDownChoices : sortObjectArrayByStringKey( dropDownChoices, dropDownSort, 'text' );
+              let DDLabel = this.props.fetchList.dropDownColumns[ index ].replace('>','').replace('+','').replace('-','');
+              return <Dropdown
+                  placeholder={ `Select a ${ DDLabel }` }
+                  label={ DDLabel }
+                  options={dropDownChoicesSorted}
+                  //selectedKey={ this.state.selectedDropdowns [index ] === '' ? null : this.state.selectedDropdowns [ index ] }
+                  onChange={(ev: any, value: IDropdownOption) => {
+                    this.searchForItems(value.key.toString(), index, ev);
+                  }}
+                  styles={{ dropdown: { width: 200 } }}
+              />;
+          });
+        } 
+        
+        /**
+         * Add Text search box
+         */
+        if ( this.props.enableSearch === true ) {
+          let searchBox = <div>
+            <div style={{ paddingTop: '20px' }}></div>
+            <SearchBox className={ styles.searchBox }
+                placeholder= { 'Search items' }
+                iconProps={{ iconName : 'Search'}}
+                onSearch={ this.textSearch.bind(this) }
+                //value={this.state.searchText}
+                onChange={ this.textSearch.bind(this) } />
+            </div>;
+            searchElements.push( searchBox ) ;
+
+          }
+
+          const wrapStackTokens: IStackTokens = { childrenGap: 30 };
+          searchStack = <div style={{ paddingBottom: '15px' }}>
+              <Stack horizontal horizontalAlign="start" verticalAlign="end" wrap tokens={wrapStackTokens}>
+                { searchElements }
+              </Stack>
+              <div> { choiceSlider } </div>
+          </div>;
 
     let foamBox = <div><div className={ styles.container }><button onClick={ this.tryForEachGroup.bind(this) } style={{marginRight:'20px'}}>tryForEachGroup</button>
           <button onClick={ this.trySetGroups.bind(this) } style={{marginRight:'20px'}}>trySetGroups</button>
@@ -187,7 +230,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
     return (
       <div className={ styles.foamchart } style={{background: 'gray', padding: '15px'}}>
-          { searchBox }
+          { searchStack }
           { foamBox }
           {  }
       </div>
@@ -217,6 +260,13 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
 }
 
+
+  public searchForItems = (item, choiceSliderDropdown: number, ev: any): void => {
+
+    console.log('searchForItems: ',item, choiceSliderDropdown, ev ) ;
+    this.fullSearch( item, null );
+
+  }
 
 public fullSearch = (item: any, searchText: string ): void => {
 
