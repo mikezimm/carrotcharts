@@ -283,7 +283,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
       <div className={ styles.foamchart }>
         <div className={ styles.container }>
           { earlyAccess }
-          { button }
+          { /* button */ }
           { foamControl }
         </div>
       </div>
