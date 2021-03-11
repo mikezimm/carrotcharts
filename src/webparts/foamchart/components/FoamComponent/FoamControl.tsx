@@ -202,15 +202,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
           }
 
-          const wrapStackTokens: IStackTokens = { childrenGap: 30 };
-          searchStack = <div style={{ paddingBottom: '15px' }}>
-              <Stack horizontal horizontalAlign="start" verticalAlign="end" wrap tokens={wrapStackTokens}>
-                { searchElements }
-              </Stack>
-              <div> { choiceSlider } </div>
-          </div>;
-
-    let foamBox = <div><div className={ styles.container }><button onClick={ this.tryForEachGroup.bind(this) } style={{marginRight:'20px'}}>tryForEachGroup</button>
+ /*             
           <button onClick={ this.trySetGroups.bind(this) } style={{marginRight:'20px'}}>trySetGroups</button>
           <button onClick={ this.trySetObject.bind(this) } style={{marginRight:'20px'}}>trySetObject</button>
           <button onClick={ this.tryUpdate.bind(this) } style={{marginRight:'20px'}}>tryUpdate</button>
@@ -219,11 +211,24 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
           <button onClick={ this.resetState.bind(this) } style={{marginRight:'20px'}}>resetState</button>
 
           <button onClick={ this.tryPropsData.bind(this) } style={{marginRight:'20px'}}>tryPropsData</button>         
+*/
+          searchElements.push( <button onClick={ this.forwardHiearchy.bind(this) } style={{marginRight:'20px'}}>Normal</button> );
+          searchElements.push( <button onClick={ this.reverseHiearchy.bind(this) } style={{marginRight:'20px'}}>Reverse</button> );
 
-          <button onClick={ this.showSum.bind(this) } style={{marginRight:'20px'}}>Sum</button>
-          <button onClick={ this.showCount.bind(this) } style={{marginRight:'20px'}}>Count</button>
-          <button onClick={ this.showAvg.bind(this) } style={{marginRight:'20px'}}>Avg</button>
+          searchElements.push( <button onClick={ this.showSum.bind(this) } style={{marginRight:'20px'}}>Sum</button> );
+          searchElements.push( <button onClick={ this.showCount.bind(this) } style={{marginRight:'20px'}}>Count</button> );
+          searchElements.push( <button onClick={ this.showAvg.bind(this) } style={{marginRight:'20px'}}>Avg</button> );
 
+          const wrapStackTokens: IStackTokens = { childrenGap: 30 };
+          searchStack = <div style={{ paddingBottom: '15px' }}>
+              <Stack horizontal horizontalAlign="start" verticalAlign="end" wrap tokens={wrapStackTokens}>
+                { searchElements }
+              </Stack>
+              <div> { choiceSlider } </div>
+          </div>;
+
+    //let foamBox = <div><div className={ styles.container }><button onClick={ this.tryForEachGroup.bind(this) } style={{marginRight:'20px'}}>tryForEachGroup</button>
+    let foamBox = <div><div className={ styles.container }>
           <div id='visualization' style={{height: y, width:  x }}></div>
           { this.foamtree }
         </div></div>;
@@ -377,6 +382,46 @@ public fullSearch = (item: any, searchText: string ): void => {
 
   return ;
   
+}
+
+private reverseHiearchy( ) {
+  let newFetchList : IFoamTreeList = JSON.parse(JSON.stringify( this.props.fetchList ) ) ;
+  newFetchList.carrotCats.reverse();
+  this.rollHiearchy(newFetchList);
+}
+
+private forwardHiearchy( ) {
+  let newFetchList : IFoamTreeList = this.props.fetchList ;
+  this.rollHiearchy(newFetchList);
+}
+
+private rollHiearchy ( newFetchList : IFoamTreeList ) {
+
+  let foamTreeData = buildGroupData( newFetchList, this.props.allItems );
+  let newGroups : IFoamTreeGroup[] = JSON.parse(JSON.stringify( foamTreeData.dataObject.groups ));
+  let dataObject: IFoamTreeDataObject = this.foamtree.get("dataObject");
+  
+  dataObject.groups = newGroups;
+
+  /**
+   * For some reason, whenever I use update, it seems to ignore the showZeroWeightGroups property.
+
+  this.foamtree.update();
+   */
+  console.log( 'fullSearch dataObject:', this.props.foamTreeData.dataObject );
+
+  /**
+   * For some reason, whenever I use set, it re-animates the entire tree
+   */
+  this.foamtree.set({
+    dataObject: dataObject,
+    //showZeroWeightGroups: false, //Not required if it's in the initial settings
+    groupLabelDecorator: (opts, params, vars) => {
+      vars.labelText += " (" +
+        ( params.group.weight ? params.group.weight.toFixed(1) : '-' ) + ")";
+    }
+  });
+
 }
 
 private updateGroupWeights ( dataObject: IFoamTreeDataObject , newGroups : IFoamTreeGroup[]  ) {
