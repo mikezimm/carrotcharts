@@ -40,6 +40,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
   public constructor(props:IFoamcontrolProps){
     super(props);
+
     console.log( 'CONSTRUCTOR this.props.foamTreeData', this.props.foamTreeData );
     let errMessage = '';
     this.state = { 
@@ -76,10 +77,47 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
   
   }
 
+  private updateBreadCrumbGroups( order: 'asc' | 'dec' ){
+
+    let newCats : string[] = JSON.parse(JSON.stringify(this.props.fetchList.carrotCats));
+    if ( order === 'dec') { newCats.reverse() ; }
+
+    document.getElementById("breadCrumb0").innerText = ' > ' + newCats[0];
+    if ( newCats.length > 1 ) {
+      document.getElementById("breadCrumb1").innerText = ' >' + newCats[1];
+      document.getElementById("breadCrumb1").style.display = '';
+    } else {
+
+    }
+
+
+  }
+
+  private initializeBreadCrumb() {
+
+    document.getElementById("breadCrumbSort").innerText = 'Normal sort';
+    document.getElementById("breadCrumbUnits").innerText = this.props.fetchList.valueColumn;
+
+    document.getElementById("breadCrumbUnits").innerText = this.props.fetchList.valueColumn;
+    document.getElementById("breadCrumbUnits").innerText = this.props.fetchList.valueColumn;
+
+    document.getElementById("breadCrumbOperator").innerText = this.props.fetchList.valueOperator;
+
+    document.getElementById("breadCrumbScale").style.display = 'none';
+
+    document.getElementById("breadCrumbUnits").innerText = ' of ' + this.props.fetchList.valueColumn;
+
+    document.getElementById("breadCrumbSummary").style.display = 'none';
+
+    this.updateBreadCrumbGroups( 'asc' );
+
+  }
   public componentDidMount() {
     console.log( 'DID MOUNT this.props.foamTreeData', this.props.foamTreeData );
     this.foamtree = new FoamTree( this.foamtreeData );
     this.addTheseItemsToState();
+    this.initializeBreadCrumb();
+
     return true;
 
   }
@@ -224,6 +262,15 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
               <Stack horizontal horizontalAlign="start" verticalAlign="end" wrap tokens={wrapStackTokens}>
                 { searchElements }
               </Stack>
+              <div style={{display:'inline-flex', paddingTop: '10px', fontSize: 'larger', fontWeight: 'bolder'}}>
+                  <div style={{paddingRight:'10px'}} id="breadCrumbSort"></div>
+                  <div style={{paddingRight:'10px'}} id="breadCrumb0"></div>
+                  <div style={{paddingRight:'10px', display: 'none'}} id="breadCrumb1"></div>
+                  <div style={{paddingRight:'10px'}} id="breadCrumbOperator"></div>
+                  <div style={{paddingRight:'10px', display: 'none'}} id="breadCrumbScale"></div>
+                  <div style={{paddingRight:'10px'}} id="breadCrumbUnits"></div>
+                  <div style={{paddingRight:'10px', display: 'none'}} id="breadCrumbSummary"></div>
+              </div>
               <div> { choiceSlider } </div>
           </div>;
 
@@ -384,15 +431,29 @@ public fullSearch = (item: any, searchText: string ): void => {
   
 }
 
+
+/**
+ *   document.getElementById("breadCrumbSort").innerText = 'Reverse Sorted';
+ *                <div id="breadCrumbSort"></div>
+                  <div id="breadCrumb0"></div>
+                  <div id="breadCrumb1"></div>
+                  <div id="breadCrumbOperator"></div>
+                  <div id="breadCrumbScale"></div>
+                  <div id="breadCrumbUnits"></div>
+                  <div id="breadCrumbSummary"></div>
+ */
+
 private reverseHiearchy( ) {
   let newFetchList : IFoamTreeList = JSON.parse(JSON.stringify( this.props.fetchList ) ) ;
   newFetchList.carrotCats.reverse();
   this.rollHiearchy(newFetchList);
+  this.updateBreadCrumbGroups( 'dec' );
 }
 
 private forwardHiearchy( ) {
   let newFetchList : IFoamTreeList = this.props.fetchList ;
   this.rollHiearchy(newFetchList);
+  this.updateBreadCrumbGroups( 'asc' );
 }
 
 private rollHiearchy ( newFetchList : IFoamTreeList ) {
@@ -510,7 +571,9 @@ private updateGroupWeights ( dataObject: IFoamTreeDataObject , newGroups : IFoam
     this.foamtree.update();
     this.foamtree.redraw();
     this.consoleDataObject( 'switchGroupWeights After', 'full', keySummary );
+    document.getElementById("breadCrumbOperator").innerText = operator;
   }
+
 
   private setGroupWeight( groups: IFoamTreeGroup[], operator: string ) {
     groups.map( group => {
