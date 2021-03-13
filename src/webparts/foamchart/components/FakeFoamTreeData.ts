@@ -124,8 +124,61 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfun
           groups: [],
         },
     };
+
+    //return preConfigFoamTree;
+
+    let emptyOrdered : IFoamTree = {
+      id: "visualization" ,
+      layout: "ordered",
+      stacking: "flattened",
+      descriptionGroupSize: 0.33,
+      descriptionGroupMinHeight: 22,
+      dataObject: {
+        groups: [],
+      },
+    };
+
+    
+    let emptyRelaxed : IFoamTree = {
+      id: "visualization" ,
+      layout: "relaxed",
+      stacking: "flattened",
+      descriptionGroupSize: 0.33,
+      descriptionGroupMinHeight: 22,
+
+/* 
+      groupLabelFontFamily: "Oxygen",
+      rolloutEasing: "squareInOut",
+      rolloutScalingStrength: -0.3,
+      rolloutRotationStrength: 0,
+      pullbackEasing: "squareInOut",
+      pullbackDuration: 2000,
+      pullbackScalingStrength: -0.3,
+      pullbackRotationStrength: 0,
+      
+*/
+      //pullbackPolygonDelay: 0.1, //This is not on IFoamTree yet
+      fadeDuration: 1000,
+      rolloutDuration: 1000,
+/*    This did not scale right at all
+      fadeDuration: 1000,
+      rolloutDuration: 0,
+*/
+      //attributionPosition: 45, //This is not on IFoamTree yet
+      relaxationVisible: true,
+      
+//      groupGrowingDuration: 500,
+
+
+      showZeroWeightGroups: false,
+      relaxationInitializer: 'squarified', //blackhole & fisheye make subgroups not scaled
+      dataObject: {
+        groups: [],
+      },
+    };
+
     //console.log('thisFoamTree', thisFoamTree );
-    return preConfigFoamTree;
+    return emptyRelaxed;
 
 }
 
