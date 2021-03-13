@@ -72,6 +72,13 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfun
  export const fakeGroups0 = ['Americas', 'Europe', 'Asia'];
  export const fakeGroups1 = [ ['US','Canada','Mexico','Brazil'], ['Sweden','Germany','France','Romania','Spain','Austria','Italy','Switzerland','England'], ['China','Japan','Thailand','India'] ];
 
+ export const IFoamRoundBorders = {
+    groupBorderRadius: 1,
+    groupFillGradientCenterLightnessShift: 30,
+    groupFillGradientRimSaturationShift: 20,
+    groupFillGradientRimLightnessShift: -15
+  };
+
  let products = ['AB','SB','SW'];
 
  function getFakeLayer3() {
@@ -145,6 +152,8 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfun
       stacking: "flattened",
       descriptionGroupSize: 0.33,
       descriptionGroupMinHeight: 22,
+      groupLabelFontFamily: "Oxygen",
+      groupLabelMinFontSize: 13,
 
 /* 
       groupLabelFontFamily: "Oxygen",
@@ -157,6 +166,7 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfun
       pullbackRotationStrength: 0,
       
 */
+      pullbackDuration: 1000,
       //pullbackPolygonDelay: 0.1, //This is not on IFoamTree yet
       fadeDuration: 1000,
       rolloutDuration: 1000,
