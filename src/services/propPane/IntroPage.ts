@@ -312,7 +312,21 @@ export class IntroPage {
             value: webPartProps.restFilter,
           }),
 
-        ]}, // this group
+        ]},
+         // this group
+        { groupName: 'Special properties.',
+        isCollapsed: true ,
+        groupFields: [
+
+          PropertyPaneTextField('chartId', {
+            label: 'Randomly generated chart ID.',
+            description: 'In case you have more than one carrtoChart on the page',
+          }),
+
+        ]
+      },
+
+        //chartId
 
         /*
         // 2 - Source and destination list information    

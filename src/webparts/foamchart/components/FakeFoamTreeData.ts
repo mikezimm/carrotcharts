@@ -93,7 +93,8 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfun
  export function getEmptyFoamTreeData(  ) {
 
     let preConfigFoamTree : IFoamTree = {
-      id: "visualization",
+      descriptionGroupType: 'stab',
+      id: "visualization" ,
       //exposeDuration: 400, //This is not on IFoamTree yet
       //exposeEasing: "linear", //This is not on IFoamTree yet
       groupLabelFontFamily: "Oxygen",
@@ -128,7 +129,8 @@ export function getFakeFoamTreeData( useFlatEU : boolean, weightFlatness: number
     let groups = useFlatEU === false ? getFakeFoamTreeGroups( weightFlatness, 1000, fakeGroups0 , fakeGroups1 ) : getFakeFoamTreeGroups( weightFlatness, 1000, fakeGroups1[1] );
 
     let thisFoamTree : IFoamTree = {
-        id: "visualization",
+        descriptionGroupType: 'stab',
+        id: "visualization" ,
         fadeDuration: 1500,
         layoutByWeightOrder: false,
         stacking: 'flattened',
@@ -155,6 +157,7 @@ export function getFakeFoamTreeData( useFlatEU : boolean, weightFlatness: number
       };
 
       let preConfigFoamTree : any = {
+        descriptionGroupType: 'stab',
         exposeDuration: 400,
         exposeEasing: "linear",
         groupLabelFontFamily: "Oxygen",

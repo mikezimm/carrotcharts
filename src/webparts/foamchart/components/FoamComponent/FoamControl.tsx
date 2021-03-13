@@ -21,10 +21,12 @@ import {
   Dropdown,
   IDropdownOption,
 } from "office-ui-fabric-react";
+import { IconButton, IIconProps, IContextualMenuProps, Link } from 'office-ui-fabric-react';
 
 import { FoamTree } from "@carrotsearch/foamtree";
 
 import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/IFoamTree';
+import { FoamTreeLayouts, FoamTreeFillType, FoamTreeStacking, RolloutStartPoint, RolloutMethod } from '@mikezimm/npmfunctions/dist/IFoamTree';
 
 import { doesObjectExistInArray, sortObjectArrayByStringKey } from '@mikezimm/npmfunctions/dist/arrayServices';
 
@@ -34,9 +36,24 @@ import { getFakeFoamTreeData, getFakeFoamTreeGroups, fakeGroups1, getEmptyFoamTr
 
 import { getTotalGroupWeight, buildGroupData } from './FoamFunctions';
 
+import stylesB from '../CreateButtons.module.scss';
+
 export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoamcontrolState> {
   private foamtreeData: any = getEmptyFoamTreeData( );
+  
   private foamtree = null;
+
+  private chartId = this.props.chartId;
+  private bC0 = "breadCrumb0" + this.chartId;
+  private bC1 = "breadCrumb1" + this.chartId;
+  private bCSort = "breadCrumbSort" + this.chartId;
+  private bCOper = "breadCrumbOperator" + this.chartId;
+  private bCScale = "breadCrumbScale" + this.chartId;
+  private bCUnit = "breadCrumbUnits" + this.chartId;
+  private bCSum = "breadCrumbSummary" + this.chartId;
+
+  private buttonFW = "buttonFoward" + this.chartId;
+  private buttonREV = "buttonReverse" + this.chartId;
 
   public constructor(props:IFoamcontrolProps){
     super(props);
@@ -80,12 +97,19 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
   private updateBreadCrumbGroups( order: 'asc' | 'dec' ){
 
     let newCats : string[] = JSON.parse(JSON.stringify(this.props.fetchList.carrotCats));
-    if ( order === 'dec') { newCats.reverse() ; }
+    if ( order === 'dec') { 
+      newCats.reverse() ;
+      document.getElementById( this.buttonFW ).style.display = '';
+      document.getElementById( this.buttonREV ).style.display = 'none';   
+    } else {
+      document.getElementById( this.buttonFW ).style.display = 'none';
+      document.getElementById( this.buttonREV ).style.display = '';   
+    }
 
-    document.getElementById("breadCrumb0").innerText = ' > ' + newCats[0];
+    document.getElementById( this.bC0 ).innerText = ' > ' + newCats[0];
     if ( newCats.length > 1 ) {
-      document.getElementById("breadCrumb1").innerText = ' >' + newCats[1];
-      document.getElementById("breadCrumb1").style.display = '';
+      document.getElementById( this.bC1 ).innerText = ' >' + newCats[1];
+      document.getElementById( this.bC1 ).style.display = '';
     } else {
 
     }
@@ -93,21 +117,19 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
   }
 
+ 
   private initializeBreadCrumb() {
 
-    document.getElementById("breadCrumbSort").innerText = 'Normal sort';
-    document.getElementById("breadCrumbUnits").innerText = this.props.fetchList.valueColumn;
+    document.getElementById( this.bCSort ).innerText = 'Normal sort';
+    document.getElementById( this.bCUnit ).innerText = this.props.fetchList.valueColumn;
 
-    document.getElementById("breadCrumbUnits").innerText = this.props.fetchList.valueColumn;
-    document.getElementById("breadCrumbUnits").innerText = this.props.fetchList.valueColumn;
+    document.getElementById( this.bCOper ).innerText = this.props.fetchList.valueOperator;
 
-    document.getElementById("breadCrumbOperator").innerText = this.props.fetchList.valueOperator;
+    document.getElementById( this.bCScale ).style.display = 'none';
 
-    document.getElementById("breadCrumbScale").style.display = 'none';
+    document.getElementById( this.bCUnit ).innerText = ' of ' + this.props.fetchList.valueColumn;
 
-    document.getElementById("breadCrumbUnits").innerText = ' of ' + this.props.fetchList.valueColumn;
-
-    document.getElementById("breadCrumbSummary").style.display = 'none';
+    document.getElementById( this.bCSum ).style.display = 'none';
 
     this.updateBreadCrumbGroups( 'asc' );
 
@@ -198,6 +220,28 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
     }
 */
 
+      const defCommandIconStyles : any = {
+          root: {padding:'10px !important', height: 32},//color: 'green' works here
+          icon: { 
+            fontSize: 18,
+            fontWeight: "normal",
+            margin: '0px 2px',
+            color: '#00457e', //This will set icon color
+        },
+      };
+
+      let butOriginal = <div className= {stylesB.buttons} id={ 'NoID' }>
+      <IconButton iconProps={{ iconName: 'WebAppBuilderFragment' }} 
+        //text= { 'parent component' }
+        //title= { 'titleText'} 
+        onClick={ this._onLayout.bind(this) }
+        styles={ defCommandIconStyles }
+        /><span style={{display: 'none'}} id={ 'layout' + this.props.chartId }>{ this.props.foamTreeData.layout }</span>
+      </div>;
+
+      let butLayout = <div className= {stylesB.buttons} id={ 'butLayout' + this.props.chartId }><IconButton iconProps={{ iconName: 'WebAppBuilderFragment' }} onClick={ this._onLayout.bind(this) } styles={ defCommandIconStyles } /></div>;
+      let butStacking = <div className= {stylesB.buttons} id={ 'butStacking' + this.props.chartId }><IconButton iconProps={{ iconName: 'Header' }} onClick={ this._onStacking.bind(this) } styles={ defCommandIconStyles } /></div>;
+
       let searchElements = [];
       let choiceSlider = null;
       /**
@@ -250,8 +294,8 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
           <button onClick={ this.tryPropsData.bind(this) } style={{marginRight:'20px'}}>tryPropsData</button>         
 */
-          searchElements.push( <button onClick={ this.forwardHiearchy.bind(this) } style={{marginRight:'20px'}}>Normal</button> );
-          searchElements.push( <button onClick={ this.reverseHiearchy.bind(this) } style={{marginRight:'20px'}}>Reverse</button> );
+          searchElements.push( <button onClick={ this.forwardHiearchy.bind(this) } style={{marginRight:'20px', display: 'none'}} id= { this.buttonFW }>Normal</button> );
+          searchElements.push( <button onClick={ this.reverseHiearchy.bind(this) } style={{marginRight:'20px'}} id= { this.buttonREV }>Reverse</button> );
 
           searchElements.push( <button onClick={ this.showSum.bind(this) } style={{marginRight:'20px'}}>Sum</button> );
           searchElements.push( <button onClick={ this.showCount.bind(this) } style={{marginRight:'20px'}}>Count</button> );
@@ -263,20 +307,28 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
                 { searchElements }
               </Stack>
               <div style={{display:'inline-flex', paddingTop: '10px', fontSize: 'larger', fontWeight: 'bolder'}}>
-                  <div style={{paddingRight:'10px'}} id="breadCrumbSort"></div>
-                  <div style={{paddingRight:'10px'}} id="breadCrumb0"></div>
-                  <div style={{paddingRight:'10px', display: 'none'}} id="breadCrumb1"></div>
-                  <div style={{paddingRight:'10px'}} id="breadCrumbOperator"></div>
-                  <div style={{paddingRight:'10px', display: 'none'}} id="breadCrumbScale"></div>
-                  <div style={{paddingRight:'10px'}} id="breadCrumbUnits"></div>
-                  <div style={{paddingRight:'10px', display: 'none'}} id="breadCrumbSummary"></div>
+                  <div style={{paddingRight:'10px'}} id= { this.bCSort }></div>
+                  <div style={{paddingRight:'10px'}} id={ this.bC0 }></div>
+                  <div style={{paddingRight:'10px', display: 'none'}} id={ this.bC1 }></div>
+                  <div style={{paddingRight:'10px'}} id={ this.bCOper }></div>
+                  <div style={{paddingRight:'10px', display: 'none'}} id={ this.bCScale }></div>
+                  <div style={{paddingRight:'10px'}} id={ this.bCUnit }></div>
+                  <div style={{paddingRight:'10px', display: 'none'}} id={ this.bCSum }></div>
+              </div>
+              <div style={{display:'inline-flex', paddingTop: '10px', fontSize: 'larger', fontWeight: 'bolder'}}>
+                  <div style={{paddingRight:'10px'}} id={ 'layout' + this.props.chartId }>{ this.props.foamTreeData.layout }</div>
+                  <div style={{paddingRight:'10px'}} id={ 'stacking' + this.props.chartId }>{ this.props.foamTreeData.stacking }</div>
+              </div>
+              <div style={{display:'inline-flex', paddingTop: '10px', fontSize: 'larger', fontWeight: 'bolder'}}>
+                  { butLayout }
+                  { butStacking }
               </div>
               <div> { choiceSlider } </div>
           </div>;
 
     //let foamBox = <div><div className={ styles.container }><button onClick={ this.tryForEachGroup.bind(this) } style={{marginRight:'20px'}}>tryForEachGroup</button>
     let foamBox = <div><div className={ styles.container }>
-          <div id='visualization' style={{height: y, width:  x }}></div>
+          <div id={ "visualization"     } style={{height: y, width:  x }}></div>
           { this.foamtree }
         </div></div>;
 
@@ -431,6 +483,55 @@ public fullSearch = (item: any, searchText: string ): void => {
   
 }
 
+
+private getNextElementInArray( arr: any[], current: any, direction: 'next' | 'prev' , roll : boolean, notFound: any ) {
+  let result: any = null;
+  let idx = arr.indexOf(current);
+
+  if ( arr.length === 0 || idx === -1 ) { result = notFound; } 
+  else if ( arr.length === 1 ) { result = roll === true ? arr[0] : notFound; }
+
+  else if ( idx === 0  )  { //This is first item in the array
+      if ( direction === 'next' ) { result = arr[1]; }
+       else { result = roll === true ? arr.length - 1 : notFound; } }
+
+  else if ( idx === arr.length - 1 ) { //This is the last item in the array
+      if ( direction === 'prev' ) { result = arr[idx - 1]; }
+      else { result = roll === true ? arr[0] : notFound; } }
+
+  else { //This is the last item in the array
+      result = arr[ direction === 'next' ? idx + 1 : idx - 1 ] ;
+  
+  }
+
+  if ( result === notFound ) { console.log(' ERROR in getNextElementInArray', arr, current, direction, roll, notFound ) ; }
+  return result;
+
+}
+
+private _onStacking() {
+  let currentLayout = document.getElementById('stacking' + this.props.chartId).innerText;
+  let newStacking = this.getNextElementInArray( FoamTreeStacking, currentLayout, 'next', true, FoamTreeStacking[0]);
+  this.foamtree.set({
+    stacking: newStacking,
+    descriptionGroupType: 'stab',
+    
+  });
+  this.foamtree.update();
+  this.foamtree.redraw();
+  document.getElementById('stacking' + this.props.chartId).innerText = newStacking;
+}
+
+private _onLayout() {
+  let currentLayout = document.getElementById('layout' + this.props.chartId).innerText;
+  let newLayout = this.getNextElementInArray( FoamTreeLayouts, currentLayout, 'next', true, FoamTreeLayouts[0]);
+  this.foamtree.set({
+    layout: newLayout,
+  });
+  this.foamtree.update();
+  //this.foamtree.redraw();
+  document.getElementById('layout' + this.props.chartId).innerText = newLayout;
+}
 
 /**
  *   document.getElementById("breadCrumbSort").innerText = 'Reverse Sorted';
@@ -674,7 +775,7 @@ private updateGroupWeights ( dataObject: IFoamTreeDataObject , newGroups : IFoam
     private tryNew( ) {
       this.consoleDataObject( 'tryNew Before', 'dataObject', null );
       let foamtree : any = getFakeFoamTreeData( true, 90 );
-      foamtree.id ="visualization";
+      foamtree.id = "visualization"     ;
       //this.foamtree = foamtree;                 //Causes this error in consoleDataObject:  this.foamtree.get is not a function
       this.foamtree = new FoamTree( foamtree );   // Causes this error in consoleDataObject:  Uncaught FoamTree: visualization already embedded in the element.
       this.consoleDataObject( 'tryNew After', 'dataObject', null );

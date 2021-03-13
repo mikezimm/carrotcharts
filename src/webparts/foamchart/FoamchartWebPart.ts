@@ -49,6 +49,8 @@ import { getAllItems } from '@mikezimm/npmfunctions/dist/PropPaneFunctions';
 
 import { doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/arrayServices';
 
+import { makeid } from '@mikezimm/npmfunctions/dist/stringServices';
+
 /***
  *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b      .d8888. d88888b d8888b. db    db d888888b  .o88b. d88888b .d8888. 
  *      `88'   88'YbdP`88 88  `8D .8P  Y8. 88  `8D `~~88~~'      88'  YP 88'     88  `8D 88    88   `88'   d8P  Y8 88'     88'  YP 
@@ -145,6 +147,8 @@ export interface IFoamchartWebPartProps {
     showEarlyAccess: boolean;
     definitionToggle: boolean;
     listDefinition: any; //Picked list defintion :  Title
+
+    chartId: string;
     newMap?: any[];
 
     //Items copied but not needed from GridCharts
@@ -241,6 +245,10 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
             document.getElementById("workbenchPageContent").style.maxWidth = "none";
           }
         } 
+
+        if ( this.properties.chartId && this.properties.chartId.length > 0 ) {} else { 
+          this.properties.chartId = makeid( 7 ) ;
+        }
 
         this._getListDefintions(true, true);
         //console.log('window.location',window.location);
@@ -359,7 +367,8 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
         // 0 - Context
         pageContext: this.context.pageContext,
         wpContext: this.context,
-
+        chartId: this.properties.chartId,
+        
         tenant: tenant,
         urlVars: this.getUrlVars(),
 
@@ -540,9 +549,13 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
 
   protected onPropertyPaneFieldChanged(propertyPath: string, oldValue: any, newValue: any): void {
 
-    /**
-     * 2021-03-06 Copied from Drilldown7 to CarrotCharts and GridCharts
-     */
+      if ( this.properties.chartId && this.properties.chartId.length > 0 ) {} else { 
+        this.properties.chartId = makeid( 7 ) ;
+        this.context.propertyPane.refresh() ;
+      }
+      /**
+       * 2021-03-06 Copied from Drilldown7 to CarrotCharts and GridCharts
+       */
       if (propertyPath === 'listDefinition' && newValue !== oldValue) {
 
       let thisProps: string[] = Object.keys( this.properties );

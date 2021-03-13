@@ -89,7 +89,8 @@ import { getAllItems, IFoamTreeList, IFoamItemInfo } from '../GetListData';
     let end = new Date();
     console.log( 'CALCULATION TIME (ms) = ' + ( end.getTime() - start.getTime() ) );
 
-    let foamTree : IFoamTree = getFakeFoamTreeData( true, 90 );
+    //let foamTree : IFoamTree = getFakeFoamTreeData( true, 90 );
+    let foamTree : IFoamTree = getEmptyFoamTreeData();
     foamTree.dataObject.groups = finalGroups; 
     return foamTree;
 

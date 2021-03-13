@@ -58,6 +58,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
          this.props.carrotCats, this.props.dateColumn, this.props.valueColumn,this.props.valueType, this.props.valueOperator );
 
     let foamtree : IFoamTree = getEmptyFoamTreeData( );
+    foamtree.id = "visualization"     ;
     foamtree.dataObject.groups = [];
 
     let errMessage = '';
@@ -194,7 +195,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
     let foamControl = this.state.allLoaded !== true ? null : <Foamcontrol  
         WebpartElement = { this.props.WebpartElement }   //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
-
+        chartId = { this.props.chartId }
         dataKey = { this.state.dataKey }
         foamTreeData = { this.state.foamTreeData } //
         allItems = { this.state.allItems }
@@ -322,7 +323,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
       //let foamTreeData: IFoamTree = null; //this.buildGridData (fetchList, theseItems);
       // let foamTreeData : any = getFakeFoamTreeData( true, 90 );
-      foamTreeData.id ="visualization";
+      foamTreeData.id = "visualization"     ;
       let dropDownItems : IDropdownOption[][] = allNewData === true ? this.buildDataDropdownItems( fetchList, allItems ) : this.state.dropDownItems ;
 
       this.setState({

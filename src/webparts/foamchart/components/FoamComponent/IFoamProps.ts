@@ -85,6 +85,8 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup, } from '@mikezimm/npmfu
 export interface IFoamcontrolProps {
 
       WebpartElement?: HTMLElement;   //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
+      
+      chartId: string;
 
       fetchList: IFoamTreeList;
       

@@ -68,6 +68,8 @@ export interface IFoamchartProps {
       parentListTitle?: string;
       listName : string;
 
+      chartId: string;
+      
       allLoaded: boolean;
 
       carrotCats: string[];
