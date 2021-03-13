@@ -112,7 +112,14 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfun
       relaxationVisible: true,
       groupGrowingDuration: 500,
       layout: 'relaxed',//squarified, ordered, relaxed
-      //stacking: 'flattened',
+      
+      stacking: 'hierarchical', //hierarchical, flattened
+      //descriptionGroupMinHeight: 100,
+      //descriptionGroupSize: 0,
+      //groupLabelLineHeight: 1.1,
+      //groupLabelMinFontSize: 8,
+      //attributionPosition: 4,
+
       dataObject: {
           groups: [],
         },

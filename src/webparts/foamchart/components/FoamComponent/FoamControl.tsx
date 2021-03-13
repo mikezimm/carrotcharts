@@ -488,23 +488,25 @@ private getNextElementInArray( arr: any[], current: any, direction: 'next' | 'pr
   let result: any = null;
   let idx = arr.indexOf(current);
 
-  if ( arr.length === 0 || idx === -1 ) { result = notFound; } 
-  else if ( arr.length === 1 ) { result = roll === true ? arr[0] : notFound; }
+  if ( arr.length === 0 || idx === -1 ) { } //result = notFound; } 
+  else if ( arr.length === 1 ) { result = roll === true ? arr[0] : null; }
 
   else if ( idx === 0  )  { //This is first item in the array
       if ( direction === 'next' ) { result = arr[1]; }
-       else { result = roll === true ? arr.length - 1 : notFound; } }
+       else { result = roll === true ? arr.length - 1 : null; } }
 
   else if ( idx === arr.length - 1 ) { //This is the last item in the array
       if ( direction === 'prev' ) { result = arr[idx - 1]; }
-      else { result = roll === true ? arr[0] : notFound; } }
+      else { result = roll === true ? arr[0] : null; } }
 
   else { //This is the last item in the array
       result = arr[ direction === 'next' ? idx + 1 : idx - 1 ] ;
+
   
   }
-
-  if ( result === notFound ) { console.log(' ERROR in getNextElementInArray', arr, current, direction, roll, notFound ) ; }
+  if ( result === null ) { 
+      result = notFound;
+      console.log(' ERROR in getNextElementInArray', arr, current, direction, roll, notFound ) ; }
   return result;
 
 }
@@ -514,11 +516,10 @@ private _onStacking() {
   let newStacking = this.getNextElementInArray( FoamTreeStacking, currentLayout, 'next', true, FoamTreeStacking[0]);
   this.foamtree.set({
     stacking: newStacking,
-    descriptionGroupType: 'stab',
-    
   });
   this.foamtree.update();
   this.foamtree.redraw();
+  console.log('_onStacking',currentLayout,newStacking);
   document.getElementById('stacking' + this.props.chartId).innerText = newStacking;
 }
 
