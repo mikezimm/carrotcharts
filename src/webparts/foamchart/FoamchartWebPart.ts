@@ -43,13 +43,13 @@ import { IPropertyFieldSite } from "@pnp/spfx-property-controls/lib/PropertyFiel
  *                                                                                                                                                                              
  */
 
-import { IFoamTree, IFoamTreeDataObject } from '@mikezimm/npmfunctions/dist/IFoamTree';
+import { IFoamTree, IFoamTreeDataObject } from '@mikezimm/npmfunctions/dist/Carrot/IFoamTree';
 
-import { getAllItems } from '@mikezimm/npmfunctions/dist/PropPaneFunctions';
+import { getAllItems } from '@mikezimm/npmfunctions/dist/PropPane/PPFunctions';
 
-import { doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/arrayServices';
+import { doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/Services/arrayChecks';
 
-import { makeid } from '@mikezimm/npmfunctions/dist/stringServices';
+import { makeid } from '@mikezimm/npmfunctions/dist/Services/stringServices';
 
 /***
  *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b      .d8888. d88888b d8888b. db    db d888888b  .o88b. d88888b .d8888. 

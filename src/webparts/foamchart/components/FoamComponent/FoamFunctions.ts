@@ -1,7 +1,7 @@
 
-import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/IFoamTree';
-import { doesObjectExistInArray, doesObjectExistInArrayInt } from '@mikezimm/npmfunctions/dist/arrayServices';
-import { minInfinity, maxInfinity } from '@mikezimm/npmfunctions/dist/columnTypes';
+import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/Carrot/IFoamTree';
+import { doesObjectExistInArray, doesObjectExistInArrayInt } from '@mikezimm/npmfunctions/dist/Services/arrayChecks';
+import { minInfinity, maxInfinity } from '@mikezimm/npmfunctions/dist/Lists/columnTypes';
 
 
 import { getFakeFoamTreeData, getEmptyFoamTreeData } from '../FakeFoamTreeData';

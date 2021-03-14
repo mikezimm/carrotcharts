@@ -12,7 +12,7 @@ import * as strings from 'FoamchartWebPartStrings';
 import { pivotOptionsGroup} from './index';
 import { gridChartsOptionsGroup } from './index';
 
-import * as links from '../../webparts/foamchart/components/HelpInfo/AllLinks';   //              { links.gitRepoTrackMyTime.issues }
+import * as links from '@mikezimm/npmfunctions/dist/HelpInfo/Links/LinksRepos';   //              { links.gitRepoTrackMyTime.issues }
 
 import { IFoamchartWebPartProps } from '../../webparts/foamchart/FoamchartWebPart';
 

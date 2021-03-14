@@ -7,14 +7,14 @@ import { escape } from '@microsoft/sp-lodash-subset';
 
 import { FoamTree } from "@carrotsearch/foamtree";
 
-import { IFoamTree, IFoamTreeDataObject } from '@mikezimm/npmfunctions/dist/IFoamTree';
+import { IFoamTree, IFoamTreeDataObject } from '@mikezimm/npmfunctions/dist/Carrot/IFoamTree';
 
 import { IFoamTreeList, IFoamItemInfo } from '../GetListData';
 
 import { getFakeFoamTreeData } from '../FakeFoamTreeData';
 
 
-export const FoamFunction: React.FunctionComponent<IFoamcontrolProps> = (props: IFoamcontrolProps) => {    
+export const FoamFunction: React.FunctionComponent<IFoamcontrolProps> = (props: IFoamcontrolProps) => {
 
     let x = props.WebpartWidth > 0 ? props.WebpartWidth + "px" : "500px";
     let y = props.WebpartHeight > 0 ? props.WebpartHeight + "px" : "500px";

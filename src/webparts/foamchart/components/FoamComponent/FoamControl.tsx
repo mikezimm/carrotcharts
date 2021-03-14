@@ -25,10 +25,12 @@ import { IconButton, IIconProps, IContextualMenuProps, Link } from 'office-ui-fa
 
 import { FoamTree } from "@carrotsearch/foamtree";
 
-import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/IFoamTree';
-import { FoamTreeLayouts, FoamTreeFillType, FoamTreeStacking, RolloutStartPoint, RolloutMethod } from '@mikezimm/npmfunctions/dist/IFoamTree';
+import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/Carrot/IFoamTree';
+import { FoamTreeLayouts, FoamTreeFillType, FoamTreeStacking, RolloutStartPoint, RolloutMethod } from '@mikezimm/npmfunctions/dist/Carrot/IFoamTree';
 
-import { doesObjectExistInArray, sortObjectArrayByStringKey, getNextElementInArray } from '@mikezimm/npmfunctions/dist/arrayServices';
+import { getNextElementInArray } from '@mikezimm/npmfunctions/dist/Services/arrayServices';
+import { doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/Services/arrayChecks';
+import { sortObjectArrayByStringKey } from '@mikezimm/npmfunctions/dist/Services/arraySorting';
 
 import { IFoamTreeList, IFoamItemInfo } from '../GetListData';
 

@@ -28,18 +28,20 @@ import "@pnp/sp/site-users/web";
  *                                                                                                                                                                              
  */
 
-import { doesObjectExistInArray, addItemToArrayIfItDoesNotExist, sortKeysByOtherKey } from '@mikezimm/npmfunctions/dist/arrayServices';
+import { addItemToArrayIfItDoesNotExist,} from '@mikezimm/npmfunctions/dist/Services/arrayServices';
+import { doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/Services/arrayChecks';
+import { sortObjectArrayByStringKey } from '@mikezimm/npmfunctions/dist/Services/arraySorting';
 
-import { makeTheTimeObject,  } from '@mikezimm/npmfunctions/dist/dateServices';
 
-import { getHelpfullError } from '@mikezimm/npmfunctions/dist/ErrorHandler';
+import { makeTheTimeObject,  } from '@mikezimm/npmfunctions/dist/Services/dateServices';
 
-import { IPickedList, IPickedWebBasic, IMyPivots, IPivot,  ILink, IUser, IMyProgress, IMyIcons, IMyFonts, IChartSeries, 
-    ICharNote, IRefinerRules, RefineRuleValues, ICustViewDef, IRefinerStat, ICSSChartTypes, QuickCommandsTMT, IZBasicItemInfo } from '@mikezimm/npmfunctions/dist/IReUsableInterfaces';
+import { getHelpfullError } from '@mikezimm/npmfunctions/dist/Logging/ErrorHandler';
 
-import { ensureUserInfo } from '@mikezimm/npmfunctions/dist/userServices';
+import { IZBasicItemInfo } from '@mikezimm/npmfunctions/dist/Lists/IListInterfaces';
 
-import { getExpandColumns, getSelectColumns, IZBasicList, IPerformanceSettings, createFetchList, } from '@mikezimm/npmfunctions/dist/getFunctions';
+import { ensureUserInfo } from '@mikezimm/npmfunctions/dist/Users/userServices';
+
+import { getExpandColumns, getSelectColumns, IZBasicList, IPerformanceSettings, createFetchList, } from '@mikezimm/npmfunctions/dist/Lists/getFunctions';
 
 
 /***
