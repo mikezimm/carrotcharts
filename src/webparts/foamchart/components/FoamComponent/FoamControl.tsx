@@ -29,7 +29,7 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfun
 import { FoamTreeLayouts, FoamTreeFillType, FoamTreeStacking, RolloutStartPoint, RolloutMethod } from '@mikezimm/npmfunctions/dist/Carrot/IFoamTree';
 
 import { getNextElementInArray } from '@mikezimm/npmfunctions/dist/Services/arrayServices';
-import { doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/Services/arrayChecks';
+import { doesObjectExistInArray, getKeySummary, getKeyChanges } from '@mikezimm/npmfunctions/dist/Services/arrayChecks';
 import { sortObjectArrayByStringKey } from '@mikezimm/npmfunctions/dist/Services/arraySorting';
 
 import { IFoamTreeList, IFoamItemInfo } from '../GetListData';
@@ -596,37 +596,8 @@ private updateGroupWeights ( dataObject: IFoamTreeDataObject , newGroups : IFoam
 
   }
 
-
-  
-  //let keySummary: any = getKeySummary( thisDataObject, ['string','number','boolean'], ['element'], true );
-  let keySummary: any = {};
-
-  let compareTypes = ['string','number','boolean'];
-  let ignoreKeys = ['element'];
-  Object.keys( thisDataObject ).map( key => {
-    let keyType = typeof thisDataObject[key];
-    if ( compareTypes.indexOf( keyType ) > -1 && ignoreKeys.indexOf( key ) < 0 ) { 
-      keySummary[key] = thisDataObject[key];
-    } 
-  });
-
-  keySummary = JSON.parse( JSON.stringify( keySummary ) ) ;
-
-  
-
-  // let keyChanges : any = getKeyChanges( thisDataObject, keySummary, oldKeySummary, false );
-  let keyChanges : any = {};
-  if ( oldKeySummary !== null ) {
-    Object.keys( thisDataObject ).map( key => {
-      if ( thisDataObject[key] !== oldKeySummary[key] ) { 
-        let keyChange = oldKeySummary[key] + ' >>> ' + thisDataObject[key];
-        let ignoreCompares = ['undefined >>> null', 'undefined >>> function(){}','undefined >>> [object HTMLDivElement]','undefined >>> [object Object]','undefined >>> '];
-        if ( ignoreCompares.indexOf( keyChange ) < 0 && keyChange.indexOf( 'undefined >>> function' ) < 0 ) { 
-          keyChanges[key] = keyChange ;
-         }
-      } 
-    });
-  }
+  let keySummary: any = getKeySummary( thisDataObject, ['string','number','boolean'], ['element'], true );
+  let keyChanges : any = getKeyChanges( thisDataObject, keySummary, oldKeySummary, false );
 
   console.log('object - ' + caller, getTotalGroupWeight( groups ), keySummary, thisDataObject );
   if ( Object.keys( keyChanges ).length > 0 ) {

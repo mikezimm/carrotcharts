@@ -29,8 +29,8 @@ import "@pnp/sp/site-users/web";
  */
 
 import { addItemToArrayIfItDoesNotExist,} from '@mikezimm/npmfunctions/dist/Services/arrayServices';
-import { doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/Services/arrayChecks';
-import { sortObjectArrayByStringKey } from '@mikezimm/npmfunctions/dist/Services/arraySorting';
+//import { doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/Services/arrayChecks';
+//import { sortObjectArrayByStringKey } from '@mikezimm/npmfunctions/dist/Services/arraySorting';
 
 
 import { makeTheTimeObject,  } from '@mikezimm/npmfunctions/dist/Services/dateServices';

@@ -24,12 +24,8 @@ import {    IDropdownOption,  } from "office-ui-fabric-react";
  *                                                                                                                                                                              
  */
 
-import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeSpan, getGreeting,
-    getNicks, makeTheTimeObject, getTimeDelta, monthStr3, monthStr, weekday3, ITheTime, } from '@mikezimm/npmfunctions/dist/Services/dateServices';
-
 import { IPivot, IMyPivots, IMyPivCat } from '@mikezimm/npmfunctions/dist/Pivots/IzPivots';
 
-    
 import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/Carrot/IFoamTree';
 
 /***

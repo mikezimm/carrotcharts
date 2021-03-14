@@ -18,9 +18,6 @@ import { WebPartContext } from '@microsoft/sp-webpart-base';
  * 
  */
 
-import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeSpan, getGreeting,
-  getNicks, makeTheTimeObject, getTimeDelta, monthStr3, monthStr, weekday3, ITheTime} from '@mikezimm/npmfunctions/dist/Services/dateServices';
-
 import { IPerformanceSettings,  } from '@mikezimm/npmfunctions/dist/Lists/getFunctions';
 
 import { FoamTree } from "@carrotsearch/foamtree";
