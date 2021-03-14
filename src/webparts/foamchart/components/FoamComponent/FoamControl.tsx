@@ -28,7 +28,7 @@ import { FoamTree } from "@carrotsearch/foamtree";
 import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/IFoamTree';
 import { FoamTreeLayouts, FoamTreeFillType, FoamTreeStacking, RolloutStartPoint, RolloutMethod } from '@mikezimm/npmfunctions/dist/IFoamTree';
 
-import { doesObjectExistInArray, sortObjectArrayByStringKey } from '@mikezimm/npmfunctions/dist/arrayServices';
+import { doesObjectExistInArray, sortObjectArrayByStringKey, getNextElementInArray } from '@mikezimm/npmfunctions/dist/arrayServices';
 
 import { IFoamTreeList, IFoamItemInfo } from '../GetListData';
 
@@ -484,36 +484,9 @@ public fullSearch = (item: any, searchText: string ): void => {
 }
 
 
-private getNextElementInArray( arr: any[], current: any, direction: 'next' | 'prev' , roll : boolean, notFound: any ) {
-  let result: any = null;
-  let idx = arr.indexOf(current);
-
-  if ( arr.length === 0 || idx === -1 ) { } //result = notFound; } 
-  else if ( arr.length === 1 ) { result = roll === true ? arr[0] : null; }
-
-  else if ( idx === 0  )  { //This is first item in the array
-      if ( direction === 'next' ) { result = arr[1]; }
-       else { result = roll === true ? arr.length - 1 : null; } }
-
-  else if ( idx === arr.length - 1 ) { //This is the last item in the array
-      if ( direction === 'prev' ) { result = arr[idx - 1]; }
-      else { result = roll === true ? arr[0] : null; } }
-
-  else { //This is the last item in the array
-      result = arr[ direction === 'next' ? idx + 1 : idx - 1 ] ;
-
-  
-  }
-  if ( result === null ) { 
-      result = notFound;
-      console.log(' ERROR in getNextElementInArray', arr, current, direction, roll, notFound ) ; }
-  return result;
-
-}
-
 private _onStacking() {
   let currentLayout = document.getElementById('stacking' + this.props.chartId).innerText;
-  let newStacking = this.getNextElementInArray( FoamTreeStacking, currentLayout, 'next', true, FoamTreeStacking[0]);
+  let newStacking = getNextElementInArray( FoamTreeStacking, currentLayout, 'next', true, FoamTreeStacking[0]);
   this.foamtree.set({
     stacking: newStacking,
   });
@@ -525,7 +498,7 @@ private _onStacking() {
 
 private _onLayout() {
   let currentLayout = document.getElementById('layout' + this.props.chartId).innerText;
-  let newLayout = this.getNextElementInArray( FoamTreeLayouts, currentLayout, 'next', true, FoamTreeLayouts[0]);
+  let newLayout = getNextElementInArray( FoamTreeLayouts, currentLayout, 'next', true, FoamTreeLayouts[0]);
   this.foamtree.set({
     layout: newLayout,
   });
@@ -621,6 +594,9 @@ private updateGroupWeights ( dataObject: IFoamTreeDataObject , newGroups : IFoam
 
   }
 
+
+  
+  //let keySummary: any = getKeySummary( thisDataObject, ['string','number','boolean'], ['element'], true );
   let keySummary: any = {};
 
   let compareTypes = ['string','number','boolean'];
@@ -634,6 +610,9 @@ private updateGroupWeights ( dataObject: IFoamTreeDataObject , newGroups : IFoam
 
   keySummary = JSON.parse( JSON.stringify( keySummary ) ) ;
 
+  
+
+  // let keyChanges : any = getKeyChanges( thisDataObject, keySummary, oldKeySummary, false );
   let keyChanges : any = {};
   if ( oldKeySummary !== null ) {
     Object.keys( thisDataObject ).map( key => {

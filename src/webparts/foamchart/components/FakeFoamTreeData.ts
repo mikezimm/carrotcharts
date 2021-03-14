@@ -72,12 +72,6 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfun
  export const fakeGroups0 = ['Americas', 'Europe', 'Asia'];
  export const fakeGroups1 = [ ['US','Canada','Mexico','Brazil'], ['Sweden','Germany','France','Romania','Spain','Austria','Italy','Switzerland','England'], ['China','Japan','Thailand','India'] ];
 
- export const IFoamRoundBorders = {
-    groupBorderRadius: 1,
-    groupFillGradientCenterLightnessShift: 30,
-    groupFillGradientRimSaturationShift: 20,
-    groupFillGradientRimLightnessShift: -15
-  };
 
  let products = ['AB','SB','SW'];
 
@@ -196,35 +190,7 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfun
 export function getFakeFoamTreeData( useFlatEU : boolean, weightFlatness: number ) {
     let fg3 = getFakeLayer3();
 
-    let groups = useFlatEU === false ? getFakeFoamTreeGroups( weightFlatness, 1000, fakeGroups0 , fakeGroups1 ) : getFakeFoamTreeGroups( weightFlatness, 1000, fakeGroups1[1] );
-
-    let thisFoamTree : IFoamTree = {
-        descriptionGroupType: 'stab',
-        id: "visualization" ,
-        fadeDuration: 1500,
-        layoutByWeightOrder: false,
-        stacking: 'flattened',
-        layout: 'squarified',//squarified, ordered, relaxed
-        // Show the relaxation
-        relaxationVisible: true,
-        // Make the relaxation last longer
-        relaxationQualityThreshold: 0,
-        relaxationMaxDuration: 5000,
-        dataObject: {
-          groups: groups,
-        },
-
-        groupSelectionOutlineShadowSize: 50,
-
-        // For faster rendering
-        groupFillType: "plain",
-        groupLabelMinFontSize: 20,
-        titleBarMinFontSize: 20,
-
-        groupGrowingDuration: 300,
-        //rolloutStartPoint: 'bottomright',
-
-      };
+      let groups = useFlatEU === false ? getFakeFoamTreeGroups( weightFlatness, 1000, fakeGroups0 , fakeGroups1 ) : getFakeFoamTreeGroups( weightFlatness, 1000, fakeGroups1[1] );
 
       let preConfigFoamTree : any = {
         descriptionGroupType: 'stab',
