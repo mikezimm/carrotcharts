@@ -25,12 +25,12 @@ import { IconButton, IIconProps, IContextualMenuProps, Link } from 'office-ui-fa
 
 import { FoamTree } from "@carrotsearch/foamtree";
 
-import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/Carrot/IFoamTree';
-import { FoamTreeLayouts, FoamTreeFillType, FoamTreeStacking, RolloutStartPoint, RolloutMethod } from '@mikezimm/npmfunctions/dist/Carrot/IFoamTree';
+import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTree';
+import { FoamTreeLayouts, FoamTreeFillType, FoamTreeStacking, RolloutStartPoint, RolloutMethod } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTree';
 
-import { getNextElementInArray } from '@mikezimm/npmfunctions/dist/Services/arrayServices';
-import { doesObjectExistInArray, getKeySummary, getKeyChanges } from '@mikezimm/npmfunctions/dist/Services/arrayChecks';
-import { sortObjectArrayByStringKey } from '@mikezimm/npmfunctions/dist/Services/arraySorting';
+import { getNextElementInArray } from '@mikezimm/npmfunctions/dist/Services/Arrays/services';
+import { doesObjectExistInArray, getKeySummary, getKeyChanges } from '@mikezimm/npmfunctions/dist/Services/Arrays/checks';
+import { sortObjectArrayByStringKey } from '@mikezimm/npmfunctions/dist/Services/Arrays/sorting';
 
 import { IFoamTreeList, IFoamItemInfo } from '../GetListData';
 

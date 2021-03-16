@@ -28,18 +28,18 @@ import "@pnp/sp/site-users/web";
  *                                                                                                                                                                              
  */
 
-import { addItemToArrayIfItDoesNotExist,} from '@mikezimm/npmfunctions/dist/Services/arrayServices';
+import { addItemToArrayIfItDoesNotExist,} from '@mikezimm/npmfunctions/dist/Services/Arrays/manipulation';
 //import { doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/Services/arrayChecks';
 //import { sortObjectArrayByStringKey } from '@mikezimm/npmfunctions/dist/Services/arraySorting';
 
 
-import { makeTheTimeObject,  } from '@mikezimm/npmfunctions/dist/Services/dateServices';
+import { makeTheTimeObject,  } from '@mikezimm/npmfunctions/dist/Services/Time/timeObject';
 
-import { getHelpfullError } from '@mikezimm/npmfunctions/dist/Logging/ErrorHandler';
+import { getHelpfullError } from '@mikezimm/npmfunctions/dist/Services/Logging/ErrorHandler';
 
 import { IZBasicItemInfo } from '@mikezimm/npmfunctions/dist/Lists/IListInterfaces';
 
-import { ensureUserInfo } from '@mikezimm/npmfunctions/dist/Users/userServices';
+import { ensureUserInfo } from '@mikezimm/npmfunctions/dist/Services/Users/userServices';
 
 import { getExpandColumns, getSelectColumns, IZBasicList, IPerformanceSettings, createFetchList, } from '@mikezimm/npmfunctions/dist/Lists/getFunctions';
 

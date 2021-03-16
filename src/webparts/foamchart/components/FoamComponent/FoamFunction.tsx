@@ -7,7 +7,7 @@ import { escape } from '@microsoft/sp-lodash-subset';
 
 import { FoamTree } from "@carrotsearch/foamtree";
 
-import { IFoamTree, IFoamTreeDataObject } from '@mikezimm/npmfunctions/dist/Carrot/IFoamTree';
+import { IFoamTree, IFoamTreeDataObject } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTree';
 
 import { IFoamTreeList, IFoamItemInfo } from '../GetListData';
 

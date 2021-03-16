@@ -26,7 +26,7 @@ import {    IDropdownOption,  } from "office-ui-fabric-react";
 
 import { IPivot, IMyPivots, IMyPivCat } from '@mikezimm/npmfunctions/dist/Pivots/IzPivots';
 
-import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/Carrot/IFoamTree';
+import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTree';
 
 /***
  *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b      .d8888. d88888b d8888b. db    db d888888b  .o88b. d88888b .d8888. 

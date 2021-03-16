@@ -1,6 +1,6 @@
 
-import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/Carrot/IFoamTree';
-import { doesObjectExistInArray, doesObjectExistInArrayInt } from '@mikezimm/npmfunctions/dist/Services/arrayChecks';
+import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTree';
+import { doesObjectExistInArray, doesObjectExistInArrayInt } from '@mikezimm/npmfunctions/dist/Services/Arrays/checks';
 import { minInfinity, maxInfinity } from '@mikezimm/npmfunctions/dist/Lists/columnTypes';
 
 

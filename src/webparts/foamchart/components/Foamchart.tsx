@@ -11,7 +11,7 @@ import { FoamTree } from "@carrotsearch/foamtree";
 
 
 
-import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/Carrot/IFoamTree';
+import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTree';
 
 //import  EarlyAccess from '@mikezimm/npmfunctions/dist/HelpInfo/EarlyAccess';
 

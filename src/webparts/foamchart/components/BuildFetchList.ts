@@ -30,11 +30,9 @@ import { PageContext } from '@microsoft/sp-page-context';
  *                                                                                                                                                                              
  */
 
-import { makeTheTimeObject,  } from '@mikezimm/npmfunctions/dist/Services/dateServices';
+import { getHelpfullError } from '@mikezimm/npmfunctions/dist/Services/Logging/ErrorHandler';
 
-import { getHelpfullError } from '@mikezimm/npmfunctions/dist/Logging/ErrorHandler';
-
-import { ensureUserInfo } from '@mikezimm/npmfunctions/dist/Users/userServices';
+import { ensureUserInfo } from '@mikezimm/npmfunctions/dist/Services/Users/userServices';
 
 import { getExpandColumns, getSelectColumns, IZBasicList, IPerformanceSettings, createFetchList, } from '@mikezimm/npmfunctions/dist/Lists/getFunctions';
 
