@@ -51,7 +51,8 @@ Version|Date|Comments
 ## Additional Installs
 ```bash
 npm install @carrotsearch/foamtree
-npm install @mikezimm/npmfunctions@0.0.34
+npm install webpack-bundle-analyzer@4.1.0 --save-dev //If I did not specify this version, it caused errors in gulp serve.
+npm install @mikezimm/npmfunctions@1.0.11
 ```
 
 > Include any additional steps as needed.
