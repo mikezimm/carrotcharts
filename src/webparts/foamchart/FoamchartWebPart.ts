@@ -43,11 +43,15 @@ import { IPropertyFieldSite } from "@pnp/spfx-property-controls/lib/PropertyFiel
  *                                                                                                                                                                              
  */
 
-import { IFoamTree, IFoamTreeDataObject } from '@mikezimm/npmfunctions/dist/IFoamTree';
+import { IFoamTree, IFoamTreeDataObject } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTree';
 
-import { getAllItems } from '@mikezimm/npmfunctions/dist/PropPaneFunctions';
+import { getAllItems } from '@mikezimm/npmfunctions/dist/Services/PropPane/PPFunctions';
 
-import { doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/arrayServices';
+import { doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/Services/Arrays/checks';
+
+import { makeid } from '@mikezimm/npmfunctions/dist/Services/Strings/stringServices';
+
+import { FoamAnimations, FoamBorders, FoamColors } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTreeDefaults';
 
 /***
  *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b      .d8888. d88888b d8888b. db    db d888888b  .o88b. d88888b .d8888. 
@@ -119,6 +123,21 @@ export interface IFoamchartWebPartProps {
     
     sites: IPropertyFieldSite[];
     lists: string | string[];
+  
+    foamChartHeight: number;  //Fixed number of pixels for the foam rendering
+
+    foamAnimations: string;  // 'foamAnimations', 'foamColors', 'foamBorders'
+    foamColors: string;
+    foamBorders: string;
+
+    //foamOptions components:
+    rollHiearchy: boolean;
+    includeSum: boolean;
+    includeCount: boolean;
+    includeAvg: boolean;
+    includeRange: boolean;
+    changeLayout: boolean;
+    changeTitles: boolean;
 
     parentListTitle: string;
     parentListName: string;
@@ -145,6 +164,8 @@ export interface IFoamchartWebPartProps {
     showEarlyAccess: boolean;
     definitionToggle: boolean;
     listDefinition: any; //Picked list defintion :  Title
+
+    chartId: string;
     newMap?: any[];
 
     //Items copied but not needed from GridCharts
@@ -242,11 +263,24 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
           }
         } 
 
+        if ( this.properties.chartId && this.properties.chartId.length > 0 ) {} else { 
+          this.properties.chartId = makeid( 7 ) ;
+        }
+
         this._getListDefintions(true, true);
         //console.log('window.location',window.location);
         sp.setup({
           spfxContext: this.context
         });
+
+        if ( this.properties.foamAnimations && this.properties.foamAnimations.length > 0 ) {} else { this.properties.foamAnimations = FoamAnimations.join(',') ; }
+        if ( this.properties.foamColors && this.properties.foamColors.length > 0 ) {} else { this.properties.foamColors = FoamColors.join(',') ; }
+        if ( this.properties.foamBorders && this.properties.foamBorders.length > 0 ) {} else { this.properties.foamBorders = FoamBorders.join(',') ; }
+
+        ['rollHiearchy','includeSum','includeCount','includeAvg','includeRange','changeLayout','changeTitles',].map( p => {
+          if ( this.properties[p] === null || this.properties[p] === undefined ) { this.properties[p] = true ; }
+        });
+
       });
     }
   
@@ -356,10 +390,31 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
         WebpartElement:this.domElement,
         foamtree: null,
 
+        foamStyles: {
+            foamChartHeight: this.properties.foamChartHeight,  //Fixed number of pixels for the foam rendering
+            foamAnimations: this.properties.foamAnimations.split(',') ,
+            foamColors: this.properties.foamColors.split(',') ,
+            foamBorders: this.properties.foamBorders.split(',') ,
+        },
+
+        foamOptions: {
+            rollHiearchy: this.properties.rollHiearchy,
+            changeLayout: this.properties.changeLayout,
+            changeTitles: this.properties.changeTitles,
+        },
+
+        foamData: {
+          includeSum: this.properties.includeSum,
+          includeCount: this.properties.includeCount,
+          includeAvg: this.properties.includeAvg,
+          includeRange: this.properties.includeRange,
+        },
+
         // 0 - Context
         pageContext: this.context.pageContext,
         wpContext: this.context,
-
+        chartId: this.properties.chartId,
+        
         tenant: tenant,
         urlVars: this.getUrlVars(),
 
@@ -540,9 +595,13 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
 
   protected onPropertyPaneFieldChanged(propertyPath: string, oldValue: any, newValue: any): void {
 
-    /**
-     * 2021-03-06 Copied from Drilldown7 to CarrotCharts and GridCharts
-     */
+      if ( this.properties.chartId && this.properties.chartId.length > 0 ) {} else { 
+        this.properties.chartId = makeid( 7 ) ;
+        this.context.propertyPane.refresh() ;
+      }
+      /**
+       * 2021-03-06 Copied from Drilldown7 to CarrotCharts and GridCharts
+       */
       if (propertyPath === 'listDefinition' && newValue !== oldValue) {
 
       let thisProps: string[] = Object.keys( this.properties );
@@ -652,7 +711,8 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
 
       'dateColumn', 'valueColumn', 'valueType', 'valueOperator', 'minDataDownload','dropDownColumns','searchColumns', 'metaColumns',
 
-      'carrotCats', 'carrotProps', 'carrotStyles',
+      'carrotCats', 'carrotProps', 'carrotStyles', 'foamChartHeight',
+      'foamAnimations', 'foamColors', 'foamBorders',
     ];
 
     //alert('props updated');

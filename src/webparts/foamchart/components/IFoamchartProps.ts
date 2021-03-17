@@ -18,10 +18,7 @@ import { WebPartContext } from '@microsoft/sp-webpart-base';
  * 
  */
 
-import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeSpan, getGreeting,
-  getNicks, makeTheTimeObject, getTimeDelta, monthStr3, monthStr, weekday3, ITheTime} from '@mikezimm/npmfunctions/dist/dateServices';
-
-import { IPerformanceSettings,  } from '@mikezimm/npmfunctions/dist/getFunctions';
+import { IPerformanceSettings,  } from '@mikezimm/npmfunctions/dist/Lists/getFunctions';
 
 import { FoamTree } from "@carrotsearch/foamtree";
 
@@ -68,6 +65,8 @@ export interface IFoamchartProps {
       parentListTitle?: string;
       listName : string;
 
+      chartId: string;
+      
       allLoaded: boolean;
 
       carrotCats: string[];
@@ -89,6 +88,26 @@ export interface IFoamchartProps {
       // 1 - Analytics options
       WebpartHeight?:  number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
       WebpartWidth?:   number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
+  
+      foamStyles: {
+            foamChartHeight: number;  //Fixed number of pixels for the foam rendering
+            foamAnimations: string[];
+            foamColors: string[];
+            foamBorders: string[];
+      };
+
+      foamOptions: {
+            rollHiearchy: boolean;
+            changeLayout: boolean;
+            changeTitles: boolean;
+      };
+
+      foamData: {
+            includeSum: boolean;
+            includeCount: boolean;
+            includeAvg: boolean;
+            includeRange: boolean;
+      };
   
       useListAnalytics: boolean;
       analyticsWeb?: string;

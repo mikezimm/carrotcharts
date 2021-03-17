@@ -11,10 +11,14 @@ import { FoamTree } from "@carrotsearch/foamtree";
 
 
 
-import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/IFoamTree';
-import { doesObjectExistInArray, doesObjectExistInArrayInt } from '@mikezimm/npmfunctions/dist/arrayServices';
-import { minInfinity, maxInfinity } from '@mikezimm/npmfunctions/dist/columnTypes';
+import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTree';
 
+//import  EarlyAccess from '@mikezimm/npmfunctions/dist/HelpInfo/EarlyAccess';
+
+import  EarlyAccess from './HelpInfo/EarlyAccess';
+
+
+import * as links from '@mikezimm/npmfunctions/dist/HelpInfo/Links/LinksRepos';
 
 
 
@@ -53,6 +57,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
          this.props.carrotCats, this.props.dateColumn, this.props.valueColumn,this.props.valueType, this.props.valueOperator );
 
     let foamtree : IFoamTree = getEmptyFoamTreeData( );
+    foamtree.id = "visualization"     ;
     foamtree.dataObject.groups = [];
 
     let errMessage = '';
@@ -188,8 +193,13 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
   public render(): React.ReactElement<IFoamchartProps> {
 
     let foamControl = this.state.allLoaded !== true ? null : <Foamcontrol  
-        WebpartElement = { this.props.WebpartElement }   //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
 
+        foamStyles = { this.props.foamStyles }
+        foamOptions = { this.props.foamOptions }
+        foamData = { this.props.foamData }
+
+        WebpartElement = { this.props.WebpartElement }   //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
+        chartId = { this.props.chartId }
         dataKey = { this.state.dataKey }
         foamTreeData = { this.state.foamTreeData } //
         allItems = { this.state.allItems }
@@ -238,10 +248,47 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
         />
       </div>;
 
+
+    /**
+     * Add early access bar
+     */
+    let earlyAccess = null;
+
+    if ( this.props.showEarlyAccess === true ) {
+      let messages : any[] = [];
+      if ( this.state.WebpartWidth > 800 ) { 
+          messages.push( <div><span><b>{ 'Welcome to ALV Webpart Early Access!!!' }</b></span></div> ) ;
+          messages.push( <div><span><b>{ 'Get more info here -->' }</b></span></div> ) ;
+      }
+      else if ( this.state.WebpartWidth > 700 ) {
+          messages.push( <div><span><b>{ 'Webpart Early Access!' }</b></span></div> ) ;
+          messages.push( <div><span><b>{ 'More info ->' }</b></span></div> ) ;
+      } else if ( this.state.WebpartWidth > 600 ) {
+          messages.push( <div><span><b>{ 'info ->' }</b></span></div> ) ;
+  
+      } else if ( this.state.WebpartWidth > 400 ) {
+          messages.push( <div><span><b>{ 'info ->' }</b></span></div> ) ;
+      }
+  
+      earlyAccess = 
+      <div style={{ paddingBottom: 10 }}>
+        <EarlyAccess 
+            image = { "https://autoliv.sharepoint.com/sites/crs/PublishingImages/Early%20Access%20Image.png" }
+            messages = { messages }
+            links = { [ this.state.WebpartWidth > 450 ? links.gitRepoCarrotCharts.wiki : null, 
+                this.state.WebpartWidth > 600 ? links.gitRepoCarrotCharts.issues : null,
+                this.state.WebpartWidth > 800 ? links.gitRepoCarrotCharts.projects : null ]}
+            email = { 'mailto:General - WebPart Dev <0313a49d.Autoliv.onmicrosoft.com@amer.teams.ms>?subject=Drilldown Webpart Feedback&body=Enter your message here :)  \nScreenshots help!' }
+            farRightIcons = { [ ] }
+        ></EarlyAccess>
+      </div>;
+    }
+
     return (
       <div className={ styles.foamchart }>
         <div className={ styles.container }>
-          { button }
+          { earlyAccess }
+          { /* button */ }
           { foamControl }
         </div>
       </div>
@@ -280,7 +327,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
       //let foamTreeData: IFoamTree = null; //this.buildGridData (fetchList, theseItems);
       // let foamTreeData : any = getFakeFoamTreeData( true, 90 );
-      foamTreeData.id ="visualization";
+      foamTreeData.id = "visualization"     ;
       let dropDownItems : IDropdownOption[][] = allNewData === true ? this.buildDataDropdownItems( fetchList, allItems ) : this.state.dropDownItems ;
 
       this.setState({

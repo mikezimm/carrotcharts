@@ -56,7 +56,7 @@
  *                                                                                                                                               
  */
 
-import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/IFoamTree';
+import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTree';
 
 /***
  *    d88888b db    db d8888b.  .d88b.  d8888b. d888888b      d888888b d8b   db d888888b d88888b d8888b. d88888b  .d8b.   .o88b. d88888b .d8888. 
@@ -71,6 +71,7 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfun
 
  export const fakeGroups0 = ['Americas', 'Europe', 'Asia'];
  export const fakeGroups1 = [ ['US','Canada','Mexico','Brazil'], ['Sweden','Germany','France','Romania','Spain','Austria','Italy','Switzerland','England'], ['China','Japan','Thailand','India'] ];
+
 
  let products = ['AB','SB','SW'];
 
@@ -93,7 +94,8 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfun
  export function getEmptyFoamTreeData(  ) {
 
     let preConfigFoamTree : IFoamTree = {
-      id: "visualization",
+      descriptionGroupType: 'stab',
+      id: "visualization" ,
       //exposeDuration: 400, //This is not on IFoamTree yet
       //exposeEasing: "linear", //This is not on IFoamTree yet
       groupLabelFontFamily: "Oxygen",
@@ -111,13 +113,76 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfun
       relaxationVisible: true,
       groupGrowingDuration: 500,
       layout: 'relaxed',//squarified, ordered, relaxed
-      //stacking: 'flattened',
+      
+      stacking: 'hierarchical', //hierarchical, flattened
+      //descriptionGroupMinHeight: 100,
+      //descriptionGroupSize: 0,
+      //groupLabelLineHeight: 1.1,
+      //groupLabelMinFontSize: 8,
+      //attributionPosition: 4,
+
       dataObject: {
           groups: [],
         },
     };
+
+    //return preConfigFoamTree;
+
+    let emptyOrdered : IFoamTree = {
+      id: "visualization" ,
+      layout: "ordered",
+      stacking: "flattened",
+      descriptionGroupSize: 0.33,
+      descriptionGroupMinHeight: 22,
+      dataObject: {
+        groups: [],
+      },
+    };
+
+    
+    let emptyRelaxed : IFoamTree = {
+      id: "visualization" ,
+      layout: "relaxed",
+      stacking: "flattened",
+      descriptionGroupSize: 0.33,
+      descriptionGroupMinHeight: 22,
+      groupLabelFontFamily: "Oxygen",
+      groupLabelMinFontSize: 13,
+
+/* 
+      groupLabelFontFamily: "Oxygen",
+      rolloutEasing: "squareInOut",
+      rolloutScalingStrength: -0.3,
+      rolloutRotationStrength: 0,
+      pullbackEasing: "squareInOut",
+      pullbackDuration: 2000,
+      pullbackScalingStrength: -0.3,
+      pullbackRotationStrength: 0,
+      
+*/
+      pullbackDuration: 1000,
+      //pullbackPolygonDelay: 0.1, //This is not on IFoamTree yet
+      fadeDuration: 1000,
+      rolloutDuration: 1000,
+/*    This did not scale right at all
+      fadeDuration: 1000,
+      rolloutDuration: 0,
+*/
+      //attributionPosition: 45, //This is not on IFoamTree yet
+      relaxationVisible: true,
+      
+//      groupGrowingDuration: 500,
+
+
+      showZeroWeightGroups: false,
+      relaxationInitializer: 'squarified', //blackhole & fisheye make subgroups not scaled
+      dataObject: {
+        groups: [],
+      },
+    };
+
     //console.log('thisFoamTree', thisFoamTree );
-    return preConfigFoamTree;
+    return emptyRelaxed;
 
 }
 
@@ -125,36 +190,10 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfun
 export function getFakeFoamTreeData( useFlatEU : boolean, weightFlatness: number ) {
     let fg3 = getFakeLayer3();
 
-    let groups = useFlatEU === false ? getFakeFoamTreeGroups( weightFlatness, 1000, fakeGroups0 , fakeGroups1 ) : getFakeFoamTreeGroups( weightFlatness, 1000, fakeGroups1[1] );
-
-    let thisFoamTree : IFoamTree = {
-        id: "visualization",
-        fadeDuration: 1500,
-        layoutByWeightOrder: false,
-        stacking: 'flattened',
-        layout: 'squarified',//squarified, ordered, relaxed
-        // Show the relaxation
-        relaxationVisible: true,
-        // Make the relaxation last longer
-        relaxationQualityThreshold: 0,
-        relaxationMaxDuration: 5000,
-        dataObject: {
-          groups: groups,
-        },
-
-        groupSelectionOutlineShadowSize: 50,
-
-        // For faster rendering
-        groupFillType: "plain",
-        groupLabelMinFontSize: 20,
-        titleBarMinFontSize: 20,
-
-        groupGrowingDuration: 300,
-        //rolloutStartPoint: 'bottomright',
-
-      };
+      let groups = useFlatEU === false ? getFakeFoamTreeGroups( weightFlatness, 1000, fakeGroups0 , fakeGroups1 ) : getFakeFoamTreeGroups( weightFlatness, 1000, fakeGroups1[1] );
 
       let preConfigFoamTree : any = {
+        descriptionGroupType: 'stab',
         exposeDuration: 400,
         exposeEasing: "linear",
         groupLabelFontFamily: "Oxygen",

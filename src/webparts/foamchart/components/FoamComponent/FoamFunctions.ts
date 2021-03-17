@@ -1,7 +1,7 @@
 
-import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/IFoamTree';
-import { doesObjectExistInArray, doesObjectExistInArrayInt } from '@mikezimm/npmfunctions/dist/arrayServices';
-import { minInfinity, maxInfinity } from '@mikezimm/npmfunctions/dist/columnTypes';
+import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTree';
+import { doesObjectExistInArray, doesObjectExistInArrayInt } from '@mikezimm/npmfunctions/dist/Services/Arrays/checks';
+import { minInfinity, maxInfinity } from '@mikezimm/npmfunctions/dist/Lists/columnTypes';
 
 
 import { getFakeFoamTreeData, getEmptyFoamTreeData } from '../FakeFoamTreeData';
@@ -89,7 +89,8 @@ import { getAllItems, IFoamTreeList, IFoamItemInfo } from '../GetListData';
     let end = new Date();
     console.log( 'CALCULATION TIME (ms) = ' + ( end.getTime() - start.getTime() ) );
 
-    let foamTree : IFoamTree = getFakeFoamTreeData( true, 90 );
+    //let foamTree : IFoamTree = getFakeFoamTreeData( true, 90 );
+    let foamTree : IFoamTree = getEmptyFoamTreeData();
     foamTree.dataObject.groups = finalGroups; 
     return foamTree;
 

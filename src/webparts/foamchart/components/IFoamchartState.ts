@@ -24,15 +24,9 @@ import {    IDropdownOption,  } from "office-ui-fabric-react";
  *                                                                                                                                                                              
  */
 
-import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeSpan, getGreeting,
-    getNicks, makeTheTimeObject, getTimeDelta, monthStr3, monthStr, weekday3, ITheTime, } from '@mikezimm/npmfunctions/dist/dateServices';
+import { IPivot, IMyPivots, IMyPivCat } from '@mikezimm/npmfunctions/dist/Pivots/IzPivots';
 
-import { IPickedWebBasic, IPickedList, IMyProgress,
-    IPivot, IMyPivots, ILink, IUser, IMyFonts, IMyIcons, IZBasicItemInfo, IMyPivCat
-    } from '@mikezimm/npmfunctions/dist/IReUsableInterfaces';
-
-    
-import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/IFoamTree';
+import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTree';
 
 /***
  *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b      .d8888. d88888b d8888b. db    db d888888b  .o88b. d88888b .d8888. 

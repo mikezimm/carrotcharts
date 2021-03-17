@@ -25,12 +25,9 @@ import { IDropdownOption,  } from "office-ui-fabric-react";
  *                                                                                                                                                                              
  */
 
-import { getAge, getDayTimeToMinutes, getBestTimeDelta, getLocalMonths, getTimeSpan, getGreeting,
-  getNicks, makeTheTimeObject, getTimeDelta, monthStr3, monthStr, weekday3, ITheTime} from '@mikezimm/npmfunctions/dist/dateServices';
+import { IPerformanceSettings,  } from '@mikezimm/npmfunctions/dist/Lists/getFunctions';
 
-import { IPerformanceSettings,  } from '@mikezimm/npmfunctions/dist/getFunctions';
-
-import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup, } from '@mikezimm/npmfunctions/dist/IFoamTree';
+import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup, } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTree';
 
 //import { FoamTree, IFoamTree } from "@carrotsearch/foamtree";
 
@@ -85,6 +82,8 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup, } from '@mikezimm/npmfu
 export interface IFoamcontrolProps {
 
       WebpartElement?: HTMLElement;   //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
+      
+      chartId: string;
 
       fetchList: IFoamTreeList;
       
@@ -110,5 +109,25 @@ export interface IFoamcontrolProps {
       // 1 - Analytics options
       WebpartHeight?:  number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
       WebpartWidth?:   number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
+  
+      foamStyles: {
+            foamChartHeight: number;  //Fixed number of pixels for the foam rendering
+            foamAnimations: string[];
+            foamColors: string[];
+            foamBorders: string[];
+      };
+
+      foamOptions: {
+            rollHiearchy: boolean;
+            changeLayout: boolean;
+            changeTitles: boolean;
+      };
+
+      foamData: {
+            includeSum: boolean;
+            includeCount: boolean;
+            includeAvg: boolean;
+            includeRange: boolean;
+      };
 
 }

@@ -21,12 +21,16 @@ import {
   Dropdown,
   IDropdownOption,
 } from "office-ui-fabric-react";
+import { IconButton, IIconProps, IContextualMenuProps, Link } from 'office-ui-fabric-react';
 
 import { FoamTree } from "@carrotsearch/foamtree";
 
-import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/IFoamTree';
+import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTree';
+import { FoamTreeLayouts, FoamTreeFillType, FoamTreeStacking, RolloutStartPoint, RolloutMethod } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTree';
 
-import { doesObjectExistInArray, sortObjectArrayByStringKey } from '@mikezimm/npmfunctions/dist/arrayServices';
+import { getNextElementInArray } from '@mikezimm/npmfunctions/dist/Services/Arrays/services';
+import { doesObjectExistInArray, getKeySummary, getKeyChanges } from '@mikezimm/npmfunctions/dist/Services/Arrays/checks';
+import { sortObjectArrayByStringKey } from '@mikezimm/npmfunctions/dist/Services/Arrays/sorting';
 
 import { IFoamTreeList, IFoamItemInfo } from '../GetListData';
 
@@ -34,12 +38,28 @@ import { getFakeFoamTreeData, getFakeFoamTreeGroups, fakeGroups1, getEmptyFoamTr
 
 import { getTotalGroupWeight, buildGroupData } from './FoamFunctions';
 
+import stylesB from '../CreateButtons.module.scss';
+
 export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoamcontrolState> {
   private foamtreeData: any = getEmptyFoamTreeData( );
+  
   private foamtree = null;
+
+  private chartId = this.props.chartId;
+  private bC0 = "breadCrumb0" + this.chartId;
+  private bC1 = "breadCrumb1" + this.chartId;
+  private bCSort = "breadCrumbSort" + this.chartId;
+  private bCOper = "breadCrumbOperator" + this.chartId;
+  private bCScale = "breadCrumbScale" + this.chartId;
+  private bCUnit = "breadCrumbUnits" + this.chartId;
+  private bCSum = "breadCrumbSummary" + this.chartId;
+
+  private buttonFW = "buttonFoward" + this.chartId;
+  private buttonREV = "buttonReverse" + this.chartId;
 
   public constructor(props:IFoamcontrolProps){
     super(props);
+
     console.log( 'CONSTRUCTOR this.props.foamTreeData', this.props.foamTreeData );
     let errMessage = '';
     this.state = { 
@@ -76,10 +96,52 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
   
   }
 
+  private updateBreadCrumbGroups( order: 'asc' | 'dec' ){
+
+    let newCats : string[] = JSON.parse(JSON.stringify(this.props.fetchList.carrotCats));
+    if ( order === 'dec') { 
+      newCats.reverse() ;
+      document.getElementById( this.buttonFW ).style.display = '';
+      document.getElementById( this.buttonREV ).style.display = 'none';   
+    } else {
+      document.getElementById( this.buttonFW ).style.display = 'none';
+      document.getElementById( this.buttonREV ).style.display = '';   
+    }
+
+    document.getElementById( this.bC0 ).innerText = ' > ' + newCats[0];
+    if ( newCats.length > 1 ) {
+      document.getElementById( this.bC1 ).innerText = ' >' + newCats[1];
+      document.getElementById( this.bC1 ).style.display = '';
+    } else {
+
+    }
+
+
+  }
+
+ 
+  private initializeBreadCrumb() {
+
+    document.getElementById( this.bCSort ).innerText = 'Normal sort';
+    document.getElementById( this.bCUnit ).innerText = this.props.fetchList.valueColumn;
+
+    document.getElementById( this.bCOper ).innerText = this.props.fetchList.valueOperator;
+
+    document.getElementById( this.bCScale ).style.display = 'none';
+
+    document.getElementById( this.bCUnit ).innerText = ' of ' + this.props.fetchList.valueColumn;
+
+    document.getElementById( this.bCSum ).style.display = 'none';
+
+    this.updateBreadCrumbGroups( 'asc' );
+
+  }
   public componentDidMount() {
     console.log( 'DID MOUNT this.props.foamTreeData', this.props.foamTreeData );
     this.foamtree = new FoamTree( this.foamtreeData );
     this.addTheseItemsToState();
+    this.initializeBreadCrumb();
+
     return true;
 
   }
@@ -145,7 +207,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
     let searchStack = null;
     let x = this.props.WebpartWidth > 0 ? ( this.props.WebpartWidth -30 ) + "px" : "500px";
-    let y = this.props.WebpartHeight > 0 ? this.props.WebpartHeight + "px" : "500px";
+    let y = this.props.foamStyles.foamChartHeight > 0 ? this.props.foamStyles.foamChartHeight + "px" : "500px";
     /*
     let spinner = null;
     if ( this.props.foamTreeData.dataObject.groups.length === 0 ) { 
@@ -159,6 +221,28 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
     </div> ;
     }
 */
+
+      const defCommandIconStyles : any = {
+          root: {padding:'10px !important', height: 32},//color: 'green' works here
+          icon: { 
+            fontSize: 18,
+            fontWeight: "normal",
+            margin: '0px 2px',
+            color: '#00457e', //This will set icon color
+        },
+      };
+
+      let butOriginal = <div className= {stylesB.buttons} id={ 'NoID' }>
+      <IconButton iconProps={{ iconName: 'WebAppBuilderFragment' }} 
+        //text= { 'parent component' }
+        //title= { 'titleText'} 
+        onClick={ this._onLayout.bind(this) }
+        styles={ defCommandIconStyles }
+        /><span style={{display: 'none'}} id={ 'layout' + this.props.chartId }>{ this.props.foamTreeData.layout }</span>
+      </div>;
+
+      let butLayout = <div className= {stylesB.buttons} id={ 'butLayout' + this.props.chartId }><IconButton iconProps={{ iconName: 'WebAppBuilderFragment' }} onClick={ this._onLayout.bind(this) } styles={ defCommandIconStyles } /></div>;
+      let butStacking = <div className= {stylesB.buttons} id={ 'butStacking' + this.props.chartId }><IconButton iconProps={{ iconName: 'Header' }} onClick={ this._onStacking.bind(this) } styles={ defCommandIconStyles } /></div>;
 
       let searchElements = [];
       let choiceSlider = null;
@@ -202,15 +286,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
           }
 
-          const wrapStackTokens: IStackTokens = { childrenGap: 30 };
-          searchStack = <div style={{ paddingBottom: '15px' }}>
-              <Stack horizontal horizontalAlign="start" verticalAlign="end" wrap tokens={wrapStackTokens}>
-                { searchElements }
-              </Stack>
-              <div> { choiceSlider } </div>
-          </div>;
-
-    let foamBox = <div><div className={ styles.container }><button onClick={ this.tryForEachGroup.bind(this) } style={{marginRight:'20px'}}>tryForEachGroup</button>
+ /*             
           <button onClick={ this.trySetGroups.bind(this) } style={{marginRight:'20px'}}>trySetGroups</button>
           <button onClick={ this.trySetObject.bind(this) } style={{marginRight:'20px'}}>trySetObject</button>
           <button onClick={ this.tryUpdate.bind(this) } style={{marginRight:'20px'}}>tryUpdate</button>
@@ -219,12 +295,42 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
           <button onClick={ this.resetState.bind(this) } style={{marginRight:'20px'}}>resetState</button>
 
           <button onClick={ this.tryPropsData.bind(this) } style={{marginRight:'20px'}}>tryPropsData</button>         
+*/
+          searchElements.push( <button onClick={ this.forwardHiearchy.bind(this) } style={{marginRight:'20px', display: 'none'}} id= { this.buttonFW }>Normal</button> );
+          searchElements.push( <button onClick={ this.reverseHiearchy.bind(this) } style={{marginRight:'20px'}} id= { this.buttonREV }>Reverse</button> );
 
-          <button onClick={ this.showSum.bind(this) } style={{marginRight:'20px'}}>Sum</button>
-          <button onClick={ this.showCount.bind(this) } style={{marginRight:'20px'}}>Count</button>
-          <button onClick={ this.showAvg.bind(this) } style={{marginRight:'20px'}}>Avg</button>
+          searchElements.push( <button onClick={ this.showSum.bind(this) } style={{marginRight:'20px'}}>Sum</button> );
+          searchElements.push( <button onClick={ this.showCount.bind(this) } style={{marginRight:'20px'}}>Count</button> );
+          searchElements.push( <button onClick={ this.showAvg.bind(this) } style={{marginRight:'20px'}}>Avg</button> );
 
-          <div id='visualization' style={{height: y, width:  x }}></div>
+          const wrapStackTokens: IStackTokens = { childrenGap: 30 };
+          searchStack = <div style={{ paddingBottom: '15px' }}>
+              <Stack horizontal horizontalAlign="start" verticalAlign="end" wrap tokens={wrapStackTokens}>
+                { searchElements }
+              </Stack>
+              <div style={{display:'inline-flex', paddingTop: '10px', fontSize: 'larger', fontWeight: 'bolder'}}>
+                  <div style={{paddingRight:'10px'}} id= { this.bCSort }></div>
+                  <div style={{paddingRight:'10px'}} id={ this.bC0 }></div>
+                  <div style={{paddingRight:'10px', display: 'none'}} id={ this.bC1 }></div>
+                  <div style={{paddingRight:'10px'}} id={ this.bCOper }></div>
+                  <div style={{paddingRight:'10px', display: 'none'}} id={ this.bCScale }></div>
+                  <div style={{paddingRight:'10px'}} id={ this.bCUnit }></div>
+                  <div style={{paddingRight:'10px', display: 'none'}} id={ this.bCSum }></div>
+              </div>
+              <div style={{display:'inline-flex', paddingTop: '10px', fontSize: 'larger', fontWeight: 'bolder'}}>
+                  <div style={{paddingRight:'10px'}} id={ 'layout' + this.props.chartId }>{ this.props.foamTreeData.layout }</div>
+                  <div style={{paddingRight:'10px'}} id={ 'stacking' + this.props.chartId }>{ this.props.foamTreeData.stacking }</div>
+              </div>
+              <div style={{display:'inline-flex', paddingTop: '10px', fontSize: 'larger', fontWeight: 'bolder'}}>
+                  { butLayout }
+                  { butStacking }
+              </div>
+              <div> { choiceSlider } </div>
+          </div>;
+
+    //let foamBox = <div><div className={ styles.container }><button onClick={ this.tryForEachGroup.bind(this) } style={{marginRight:'20px'}}>tryForEachGroup</button>
+    let foamBox = <div><div className={ styles.container }>
+          <div id={ "visualization"     } style={{height: y, width:  x }}></div>
           { this.foamtree }
         </div></div>;
 
@@ -379,6 +485,83 @@ public fullSearch = (item: any, searchText: string ): void => {
   
 }
 
+
+private _onStacking() {
+  let currentLayout = document.getElementById('stacking' + this.props.chartId).innerText;
+  let newStacking = getNextElementInArray( FoamTreeStacking, currentLayout, 'next', true, FoamTreeStacking[0]);
+  this.foamtree.set({
+    stacking: newStacking,
+  });
+  this.foamtree.update();
+  this.foamtree.redraw();
+  console.log('_onStacking',currentLayout,newStacking);
+  document.getElementById('stacking' + this.props.chartId).innerText = newStacking;
+}
+
+private _onLayout() {
+  let currentLayout = document.getElementById('layout' + this.props.chartId).innerText;
+  let newLayout = getNextElementInArray( FoamTreeLayouts, currentLayout, 'next', true, FoamTreeLayouts[0]);
+  this.foamtree.set({
+    layout: newLayout,
+  });
+  this.foamtree.update();
+  //this.foamtree.redraw();
+  document.getElementById('layout' + this.props.chartId).innerText = newLayout;
+}
+
+/**
+ *   document.getElementById("breadCrumbSort").innerText = 'Reverse Sorted';
+ *                <div id="breadCrumbSort"></div>
+                  <div id="breadCrumb0"></div>
+                  <div id="breadCrumb1"></div>
+                  <div id="breadCrumbOperator"></div>
+                  <div id="breadCrumbScale"></div>
+                  <div id="breadCrumbUnits"></div>
+                  <div id="breadCrumbSummary"></div>
+ */
+
+private reverseHiearchy( ) {
+  let newFetchList : IFoamTreeList = JSON.parse(JSON.stringify( this.props.fetchList ) ) ;
+  newFetchList.carrotCats.reverse();
+  this.rollHiearchy(newFetchList);
+  this.updateBreadCrumbGroups( 'dec' );
+}
+
+private forwardHiearchy( ) {
+  let newFetchList : IFoamTreeList = this.props.fetchList ;
+  this.rollHiearchy(newFetchList);
+  this.updateBreadCrumbGroups( 'asc' );
+}
+
+private rollHiearchy ( newFetchList : IFoamTreeList ) {
+
+  let foamTreeData = buildGroupData( newFetchList, this.props.allItems );
+  let newGroups : IFoamTreeGroup[] = JSON.parse(JSON.stringify( foamTreeData.dataObject.groups ));
+  let dataObject: IFoamTreeDataObject = this.foamtree.get("dataObject");
+  
+  dataObject.groups = newGroups;
+
+  /**
+   * For some reason, whenever I use update, it seems to ignore the showZeroWeightGroups property.
+
+  this.foamtree.update();
+   */
+  console.log( 'fullSearch dataObject:', this.props.foamTreeData.dataObject );
+
+  /**
+   * For some reason, whenever I use set, it re-animates the entire tree
+   */
+  this.foamtree.set({
+    dataObject: dataObject,
+    //showZeroWeightGroups: false, //Not required if it's in the initial settings
+    groupLabelDecorator: (opts, params, vars) => {
+      vars.labelText += " (" +
+        ( params.group.weight ? params.group.weight.toFixed(1) : '-' ) + ")";
+    }
+  });
+
+}
+
 private updateGroupWeights ( dataObject: IFoamTreeDataObject , newGroups : IFoamTreeGroup[]  ) {
 
   dataObject.groups.forEach((g) => {
@@ -413,31 +596,8 @@ private updateGroupWeights ( dataObject: IFoamTreeDataObject , newGroups : IFoam
 
   }
 
-  let keySummary: any = {};
-
-  let compareTypes = ['string','number','boolean'];
-  let ignoreKeys = ['element'];
-  Object.keys( thisDataObject ).map( key => {
-    let keyType = typeof thisDataObject[key];
-    if ( compareTypes.indexOf( keyType ) > -1 && ignoreKeys.indexOf( key ) < 0 ) { 
-      keySummary[key] = thisDataObject[key];
-    } 
-  });
-
-  keySummary = JSON.parse( JSON.stringify( keySummary ) ) ;
-
-  let keyChanges : any = {};
-  if ( oldKeySummary !== null ) {
-    Object.keys( thisDataObject ).map( key => {
-      if ( thisDataObject[key] !== oldKeySummary[key] ) { 
-        let keyChange = oldKeySummary[key] + ' >>> ' + thisDataObject[key];
-        let ignoreCompares = ['undefined >>> null', 'undefined >>> function(){}','undefined >>> [object HTMLDivElement]','undefined >>> [object Object]','undefined >>> '];
-        if ( ignoreCompares.indexOf( keyChange ) < 0 && keyChange.indexOf( 'undefined >>> function' ) < 0 ) { 
-          keyChanges[key] = keyChange ;
-         }
-      } 
-    });
-  }
+  let keySummary: any = getKeySummary( thisDataObject, ['string','number','boolean'], ['element'], true );
+  let keyChanges : any = getKeyChanges( thisDataObject, keySummary, oldKeySummary, false );
 
   console.log('object - ' + caller, getTotalGroupWeight( groups ), keySummary, thisDataObject );
   if ( Object.keys( keyChanges ).length > 0 ) {
@@ -465,7 +625,9 @@ private updateGroupWeights ( dataObject: IFoamTreeDataObject , newGroups : IFoam
     this.foamtree.update();
     this.foamtree.redraw();
     this.consoleDataObject( 'switchGroupWeights After', 'full', keySummary );
+    document.getElementById("breadCrumbOperator").innerText = operator;
   }
+
 
   private setGroupWeight( groups: IFoamTreeGroup[], operator: string ) {
     groups.map( group => {
@@ -566,7 +728,7 @@ private updateGroupWeights ( dataObject: IFoamTreeDataObject , newGroups : IFoam
     private tryNew( ) {
       this.consoleDataObject( 'tryNew Before', 'dataObject', null );
       let foamtree : any = getFakeFoamTreeData( true, 90 );
-      foamtree.id ="visualization";
+      foamtree.id = "visualization"     ;
       //this.foamtree = foamtree;                 //Causes this error in consoleDataObject:  this.foamtree.get is not a function
       this.foamtree = new FoamTree( foamtree );   // Causes this error in consoleDataObject:  Uncaught FoamTree: visualization already embedded in the element.
       this.consoleDataObject( 'tryNew After', 'dataObject', null );
