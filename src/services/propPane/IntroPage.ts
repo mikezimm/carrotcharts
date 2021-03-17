@@ -23,6 +23,8 @@ import { PropertyFieldColorPicker, PropertyFieldColorPickerStyle } from '@pnp/sp
 
 import { fpsLogo326 } from '@mikezimm/npmfunctions/dist/SVGIcons/fpsLogo326';
 
+import { FoamAnimations, FoamBorders, FoamColors } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTreeDefaults';
+
 /*
 
   // 1 - Analytics options
@@ -94,6 +96,29 @@ export class IntroPage {
       }) );
     //2021-03-06:  For PreConfigProps lookup, copied from Drilldown7 ^^^^^
 
+    let dataToggles = [];
+    ['includeSum','includeCount','includeAvg','includeRange',].map( propName => {
+      dataToggles.push(
+          PropertyPaneToggle(propName, {
+            label: propName,
+            offText: 'Off',
+            onText: 'On',
+            disabled: true,
+          })
+      );
+    });
+
+    let optionToggles = [];
+    ['rollHiearchy','changeLayout','changeTitles',].map( propName => {
+      optionToggles.push(
+          PropertyPaneToggle(propName, {
+            label: propName,
+            offText: 'Off',
+            onText: 'On',
+            disabled: true,
+          })
+      );
+    });
 
     return <IPropertyPanePage>
     { // <page1>
@@ -313,18 +338,74 @@ export class IntroPage {
           }),
 
         ]},
-         // this group
-        { groupName: 'Special properties.',
+
+        // this group
+        { groupName: 'Foam Styling',
         isCollapsed: true ,
         groupFields: [
 
-          PropertyPaneTextField('chartId', {
-            label: 'Randomly generated chart ID.',
-            description: 'In case you have more than one carrtoChart on the page',
+          PropertyPaneSlider('foamChartHeight', {
+            label: 'Height of the Foam drawing in px',
+            min: 100,
+            max: 700,
+            step: 50,
+            value: webPartProps.foamChartHeight,
           }),
 
+          //'foamAnimations', 'foamColors', 'foamBorders'  FoamAnimations, FoamBorders, FoamColors
+          PropertyPaneTextField('foamAnimations', {
+            label: 'Animation choices ( , separated ).',
+            description: 'Valid choices: ' + FoamAnimations.join(', '),
+            disabled: true,
+          }),
+          PropertyPaneTextField('foamColors', {
+            label: 'Color choices ( , separated ).',
+            description: 'Valid choices: ' + FoamColors.join(', '),
+            disabled: true,
+          }),
+          PropertyPaneTextField('foamBorders', {
+            label: 'Border choices ( , separated ).',
+            description: 'Valid choices: ' + FoamBorders.join(', '),
+            disabled: true,
+          }),
         ]
       },
+/*
+      rollHiearchy: this.properties.rollHiearchy,
+      includeSum: this.properties.includeSum,
+      includeCount: this.properties.includeCount,
+      includeAvg: this.properties.includeAvg,
+      includeRange: this.properties.includeRange,
+      changeLayout: this.properties.changeLayout,
+      changeTitles: this.properties.changeTitles,
+
+      */
+        { groupName: 'Foam Data Options', 
+          isCollapsed: true ,
+          groupFields:
+          dataToggles
+        },
+            // this group  dataToggles
+        { groupName: 'Foam UI Options',
+            isCollapsed: true ,
+            groupFields:
+              optionToggles
+          },
+          
+         // this group
+         { groupName: 'Special properties.',
+         isCollapsed: true ,
+         groupFields: [
+ 
+           PropertyPaneTextField('chartId', {
+             label: 'Randomly generated chart ID.',
+             description: 'In case you have more than one carrtoChart on the page',
+           }),
+ 
+         ]
+       },
+
+      //foamChartHeight
 
         //chartId
 

@@ -51,6 +51,8 @@ import { doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/Services/Arr
 
 import { makeid } from '@mikezimm/npmfunctions/dist/Services/Strings/stringServices';
 
+import { FoamAnimations, FoamBorders, FoamColors } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTreeDefaults';
+
 /***
  *    d888888b .88b  d88. d8888b.  .d88b.  d8888b. d888888b      .d8888. d88888b d8888b. db    db d888888b  .o88b. d88888b .d8888. 
  *      `88'   88'YbdP`88 88  `8D .8P  Y8. 88  `8D `~~88~~'      88'  YP 88'     88  `8D 88    88   `88'   d8P  Y8 88'     88'  YP 
@@ -121,6 +123,21 @@ export interface IFoamchartWebPartProps {
     
     sites: IPropertyFieldSite[];
     lists: string | string[];
+  
+    foamChartHeight: number;  //Fixed number of pixels for the foam rendering
+
+    foamAnimations: string;  // 'foamAnimations', 'foamColors', 'foamBorders'
+    foamColors: string;
+    foamBorders: string;
+
+    //foamOptions components:
+    rollHiearchy: boolean;
+    includeSum: boolean;
+    includeCount: boolean;
+    includeAvg: boolean;
+    includeRange: boolean;
+    changeLayout: boolean;
+    changeTitles: boolean;
 
     parentListTitle: string;
     parentListName: string;
@@ -255,6 +272,15 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
         sp.setup({
           spfxContext: this.context
         });
+
+        if ( this.properties.foamAnimations && this.properties.foamAnimations.length > 0 ) {} else { this.properties.foamAnimations = FoamAnimations.join(',') ; }
+        if ( this.properties.foamColors && this.properties.foamColors.length > 0 ) {} else { this.properties.foamColors = FoamColors.join(',') ; }
+        if ( this.properties.foamBorders && this.properties.foamBorders.length > 0 ) {} else { this.properties.foamBorders = FoamBorders.join(',') ; }
+
+        ['rollHiearchy','includeSum','includeCount','includeAvg','includeRange','changeLayout','changeTitles',].map( p => {
+          if ( this.properties[p] === null || this.properties[p] === undefined ) { this.properties[p] = true ; }
+        });
+
       });
     }
   
@@ -363,6 +389,26 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
         //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
         WebpartElement:this.domElement,
         foamtree: null,
+
+        foamStyles: {
+            foamChartHeight: this.properties.foamChartHeight,  //Fixed number of pixels for the foam rendering
+            foamAnimations: this.properties.foamAnimations.split(',') ,
+            foamColors: this.properties.foamColors.split(',') ,
+            foamBorders: this.properties.foamBorders.split(',') ,
+        },
+
+        foamOptions: {
+            rollHiearchy: this.properties.rollHiearchy,
+            changeLayout: this.properties.changeLayout,
+            changeTitles: this.properties.changeTitles,
+        },
+
+        foamData: {
+          includeSum: this.properties.includeSum,
+          includeCount: this.properties.includeCount,
+          includeAvg: this.properties.includeAvg,
+          includeRange: this.properties.includeRange,
+        },
 
         // 0 - Context
         pageContext: this.context.pageContext,
@@ -665,7 +711,8 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
 
       'dateColumn', 'valueColumn', 'valueType', 'valueOperator', 'minDataDownload','dropDownColumns','searchColumns', 'metaColumns',
 
-      'carrotCats', 'carrotProps', 'carrotStyles',
+      'carrotCats', 'carrotProps', 'carrotStyles', 'foamChartHeight',
+      'foamAnimations', 'foamColors', 'foamBorders',
     ];
 
     //alert('props updated');

@@ -193,6 +193,11 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
   public render(): React.ReactElement<IFoamchartProps> {
 
     let foamControl = this.state.allLoaded !== true ? null : <Foamcontrol  
+
+        foamStyles = { this.props.foamStyles }
+        foamOptions = { this.props.foamOptions }
+        foamData = { this.props.foamData }
+
         WebpartElement = { this.props.WebpartElement }   //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
         chartId = { this.props.chartId }
         dataKey = { this.state.dataKey }

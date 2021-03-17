@@ -89,6 +89,26 @@ export interface IFoamchartProps {
       WebpartHeight?:  number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
       WebpartWidth?:   number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
   
+      foamStyles: {
+            foamChartHeight: number;  //Fixed number of pixels for the foam rendering
+            foamAnimations: string[];
+            foamColors: string[];
+            foamBorders: string[];
+      };
+
+      foamOptions: {
+            rollHiearchy: boolean;
+            changeLayout: boolean;
+            changeTitles: boolean;
+      };
+
+      foamData: {
+            includeSum: boolean;
+            includeCount: boolean;
+            includeAvg: boolean;
+            includeRange: boolean;
+      };
+  
       useListAnalytics: boolean;
       analyticsWeb?: string;
       analyticsList?: string;

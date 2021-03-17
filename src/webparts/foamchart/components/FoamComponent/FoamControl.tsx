@@ -207,7 +207,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
     let searchStack = null;
     let x = this.props.WebpartWidth > 0 ? ( this.props.WebpartWidth -30 ) + "px" : "500px";
-    let y = this.props.WebpartHeight > 0 ? this.props.WebpartHeight + "px" : "500px";
+    let y = this.props.foamStyles.foamChartHeight > 0 ? this.props.foamStyles.foamChartHeight + "px" : "500px";
     /*
     let spinner = null;
     if ( this.props.foamTreeData.dataObject.groups.length === 0 ) { 

@@ -3,7 +3,7 @@
   "solution": {
     "name": "carrotcharts-client-side-solution",
     "id": "bf665615-fe80-49d2-b048-f1dc3272aabf",
-    "version": "1.0.0.3",
+    "version": "1.0.0.4",
     "includeClientSideAssets": true,
     "isDomainIsolated": false,
     "developer": {
