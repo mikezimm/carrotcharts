@@ -1,6 +1,6 @@
 {
   "name": "carrotcharts",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "private": true,
   "main": "lib/index.js",
   "engines": {
@@ -18,7 +18,7 @@
     "@microsoft/sp-office-ui-fabric-core": "1.11.0",
     "@microsoft/sp-property-pane": "1.11.0",
     "@microsoft/sp-webpart-base": "1.11.0",
-    "@mikezimm/npmfunctions": "^1.0.15",
+    "@mikezimm/npmfunctions": "^1.0.16",
     "@pnp/spfx-property-controls": "^2.3.0",
     "office-ui-fabric-react": "6.214.0",
     "react": "16.8.5",

@@ -13,7 +13,7 @@ import {
 //  import { PropertyFieldMultiSelect } from '@pnp/spfx-property-controls/lib/PropertyFieldMultiSelect';
   
   import * as strings from 'FoamchartWebPartStrings';
-  import { pivotOptionsGroup, gridChartsOptionsGroup } from './index';
+  import { gridChartsOptionsGroup } from './index';
   
   export class WebPartSettingsPage {
 

@@ -9,7 +9,7 @@ import { PropertyPaneWebPartInformation } from '@pnp/spfx-property-controls/lib/
 
 
 import * as strings from 'FoamchartWebPartStrings';
-import { pivotOptionsGroup} from './index';
+
 import { gridChartsOptionsGroup } from './index';
 
 import * as links from '@mikezimm/npmfunctions/dist/HelpInfo/Links/LinksRepos';   //              { links.gitRepoTrackMyTime.issues }
