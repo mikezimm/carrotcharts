@@ -9,7 +9,7 @@ const emojiIcon: IIconProps = { iconName: 'BarChartVerticalFill' };
 
 import styles from './CreateButtons.module.scss';
 
-export const defCommandIconStyles = {
+export const defCommandIconStyles : any = {
   root: {padding:'10px !important', height: 32},//color: 'green' works here
   icon: { 
     fontSize: 18,

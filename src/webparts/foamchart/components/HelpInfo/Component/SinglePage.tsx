@@ -86,7 +86,9 @@ public constructor(props:ISinglePageProps){
 
                 let tableRows = propsTable.rows.map( row => {
                     let cells = row.map( cell => {
-                        return <td>{ cell } </td>;
+                        let style = null;
+                        if ( cell['style'] ) { style = cell['style'];}
+                        return <td style={ style }>{ cell['style'] ? cell['info'] : cell } </td>;
                     });
                     return <tr>{ cells }</tr>;
                 });

@@ -22,6 +22,7 @@ import { futureContent } from '../Content/FuturePlans';
 
 import { basicsContent } from '../Content/Basics';
 
+import { tricksTable } from '../Content/Tricks';
 
 export interface IInfoPagesProps {
     showInfo: boolean;
@@ -36,6 +37,8 @@ export interface IInfoPagesProps {
     gitHubRepo: any; // replace with IRepoLinks from npmFunctions v0.1.0.3
 
     hideWebPartLinks?: boolean;  //default = false... set to True if Early Access Banner is visible
+
+    showTricks?: boolean;
     //toggleDebug: any;
 
 }
@@ -55,6 +58,7 @@ export default class InfoPages extends React.Component<IInfoPagesProps, IInfoPag
     private dev= devTable();
     private errors= errorsContent();
     private about= aboutTable();
+    private tricks= tricksTable();
 
     private options : IChoiceGroupOption[] = []; 
 
@@ -78,7 +82,13 @@ public constructor(props:IInfoPagesProps){
     if ( this.errors != null )           { this.options.push(  {key: 'errors', text: 'Errors'  }); }
     if ( this.futurePlans != null )      { this.options.push(  {key: 'futurePlans', text: 'Future Plans'  }); }
     if ( this.dev != null )              { this.options.push(  {key: 'dev', text: 'Developers'  }); }
+
+    if ( this.props.showTricks === true && this.tricks != null )           
+                                         { this.options.push(  {key: 'tricks', text: 'Tricks'  }); }
+
     if ( this.about != null )            { this.options.push(  {key: 'about', text: 'About'  }); }
+
+
 
     this.state = { 
         selectedChoice: 'gettingStarted',
@@ -148,6 +158,8 @@ public constructor(props:IInfoPagesProps){
                 content=  this.errors;
             } else if ( this.state.selectedChoice === 'about' ) {
                 content= this.about;
+            } else if ( this.state.selectedChoice === 'tricks' ) {
+                content= this.tricks;
             }
 
             let pageChoices = choiceBuilders.creatInfoChoices(this.state.selectedChoice, this.options, this._updateChoice.bind(this)); 
