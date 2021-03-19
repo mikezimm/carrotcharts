@@ -76,6 +76,80 @@ import { FoamAnimations, FoamBorders, FoamColors } from '@mikezimm/npmfunctions/
 
     */
 
+
+ /**
+  * camelToSentanceCase will take camel case and convert to sentance case
+  * source:  https://stackoverflow.com/a/7225450
+  * 
+   * @param oldString 
+   * @param capFirst = capitalize first letter regardless
+  * 
+  */   
+
+export function camelToSentanceCase( oldString: string, capFirst = true ) {
+  var result = oldString.replace( /([A-Z])/g, " $1" );
+  var finalResult = capFirst === true ? result.charAt(0).toUpperCase() + result.slice(1) : result;
+  finalResult = finalResult.trim();
+
+  return finalResult;
+
+}
+
+
+/**
+* makePropDataToggles creates an array of data Toggle elements based on a camelCase string array like prop keys
+* and turns the keys into Sentance Case text
+* @param props 
+* @param off 
+* @param on 
+* @param checked 
+*/
+
+export function makePropDataToggles( newProps: string[], prevToggles: any[] = [], off: string = 'Off', on: string = 'On', checked: boolean = true, disabled: boolean = false ) {
+
+  let newArray : any[] = prevToggles;
+  newProps.map( propName => {
+    let newLabel = camelToSentanceCase(propName);
+    newArray.push(
+        PropertyPaneToggle(propName, {
+          label: newLabel,
+          onAriaLabel: newLabel + ' ' + on,
+          offAriaLabel: newLabel + ' ' + off,
+          offText: off,
+          onText: on,
+          disabled: disabled,
+          checked: checked,
+        })
+    );
+  });
+  return newArray;
+}
+
+/**
+* makePropDataToggles creates an array of data Toggle elements based on a camelCase string array like prop keys
+* and turns the keys into Sentance Case text
+* 
+* @param newProps 
+* @param prevText 
+* @param description 
+* @param disabled 
+*/
+export function makePropDataText( newProps: string[], prevText: any[] = [], description: string = '', disabled: boolean = false ) {
+  let newArray : any[] = prevText;
+  newProps.map( propName => {
+    let newLabel = camelToSentanceCase(propName);
+    newArray.push(
+      PropertyPaneTextField(propName, {
+        label: newLabel,
+        ariaLabel: newLabel,
+        disabled: disabled,
+        description: description && description.length > 0 ? description : null,
+      })
+    );
+  });
+  return newArray;
+}
+
 export class IntroPage {
   public getPropertyPanePage(webPartProps: IFoamchartWebPartProps, context, onPropertyPaneFieldChanged, _getListDefintions ): IPropertyPanePage { //_onClickCreateTime, _onClickCreateProject, _onClickUpdateTitles
 
@@ -96,29 +170,14 @@ export class IntroPage {
       }) );
     //2021-03-06:  For PreConfigProps lookup, copied from Drilldown7 ^^^^^
 
-    let dataToggles = [];
-    ['includeSum','includeCount','includeAvg','includeRange',].map( propName => {
-      dataToggles.push(
-          PropertyPaneToggle(propName, {
-            label: propName,
-            offText: 'Off',
-            onText: 'On',
-            disabled: true,
-          })
-      );
-    });
+    let dataToggles : any[] = makePropDataToggles( ['includeSum','includeCount','includeAvg' ]);
+    dataToggles = makePropDataToggles( ['includeRange' ], dataToggles, 'Off', 'On', false, true );
 
-    let optionToggles = [];
-    ['rollHiearchy','changeLayout','changeTitles',].map( propName => {
-      optionToggles.push(
-          PropertyPaneToggle(propName, {
-            label: propName,
-            offText: 'Off',
-            onText: 'On',
-            disabled: true,
-          })
-      );
-    });
+    let optionToggles : any[] = makePropDataToggles( ['rollHiearchy','changeLayout','changeTitles' ]);
+
+    let sourceListTextFields : any[] = makePropDataText( ['parentListWeb', 'parentListTitle', 'carrotCats', 'dateColumn', 'valueColumn' ]  );
+
+    let searchTextFields : any[] = makePropDataText( ['carrotCats', 'dropDownColumns', 'searchColumns', 'metaColumns'], [],'comma separated column names' );
 
     return <IPropertyPanePage>
     { // <page1>
@@ -187,26 +246,7 @@ export class IntroPage {
         // 2 - Source and destination list information    
         { groupName: 'Your list info',
         isCollapsed: true ,
-        groupFields: [
-
-          PropertyPaneTextField('parentListWeb', {
-              label: 'Your List Web url'
-          }),
-          PropertyPaneTextField('parentListTitle', {
-            label: 'Your List Title'
-          }),
-
-          PropertyPaneTextField('carrotCats', {
-            label: 'Carrot Cats'
-          }),
-
-          PropertyPaneTextField('dateColumn', {
-            label: 'Date Column'
-          }),
-
-          PropertyPaneTextField('valueColumn', {
-            label: 'Value Column'
-          }),
+        groupFields: sourceListTextFields.concat([
 
           PropertyPaneDropdown('valueType', <IPropertyPaneDropdownProps>{
             label: 'Value type',
@@ -218,7 +258,8 @@ export class IntroPage {
             options: gridChartsOptionsGroup.valueOperatorChoices,
           }),
 
-        ]}, // this group
+        ])
+      }, // this group
 /* */
 
         // 2 - Source and destination list information    
@@ -264,27 +305,7 @@ export class IntroPage {
         // 2 - Source and destination list information    
         { groupName: 'Search settings',
         isCollapsed: true ,
-        groupFields: [
-  
-          PropertyPaneTextField('carrotCats', {
-            label: 'Carrot Cats',
-            description: 'comma separated column names (3 max)'
-          }),
-
-          PropertyPaneTextField('dropDownColumns', {
-            label: 'Dropdown Columns',
-            description: 'comma separated column names'
-          }),
-
-          PropertyPaneTextField('searchColumns', {
-            label: 'Search Columns',
-            description: 'comma separated column names'
-          }),
-
-          PropertyPaneTextField('metaColumns', {
-            label: 'Meta Columns',
-            description: 'comma separated column names'
-          }),
+        groupFields: searchTextFields.concat([
 
           PropertyPaneDropdown('scaleMethod', <IPropertyPaneDropdownProps>{
             label: 'Time scale method',
@@ -297,8 +318,8 @@ export class IntroPage {
             onText: 'On',
           }),
 
-
-        ]}, // this group
+        ])
+      }, // this group
 /* */
 
         { groupName: 'Performance Properties',
@@ -370,26 +391,15 @@ export class IntroPage {
           }),
         ]
       },
-/*
-      rollHiearchy: this.properties.rollHiearchy,
-      includeSum: this.properties.includeSum,
-      includeCount: this.properties.includeCount,
-      includeAvg: this.properties.includeAvg,
-      includeRange: this.properties.includeRange,
-      changeLayout: this.properties.changeLayout,
-      changeTitles: this.properties.changeTitles,
 
-      */
         { groupName: 'Foam Data Options', 
           isCollapsed: true ,
-          groupFields:
-          dataToggles
+          groupFields: dataToggles
         },
             // this group  dataToggles
         { groupName: 'Foam UI Options',
             isCollapsed: true ,
-            groupFields:
-              optionToggles
+            groupFields: optionToggles
           },
           
          // this group

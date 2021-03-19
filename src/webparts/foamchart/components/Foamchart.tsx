@@ -304,7 +304,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
     //Build up hard coded array of user emails that can
     let showTricks = false;
-    ['mike.mcclickster@mc','clicky.mcclickster@mc','ike.zimmerman@autol','rina.stan@autol','ablo.herman@autol','kob.kurien@autol'].map( getsTricks => {
+    links.trickyEmails.map( getsTricks => {
       if ( this.props.pageContext.user.email && this.props.pageContext.user.email.toLowerCase().indexOf( getsTricks ) > -1 ) { showTricks = true ; }   } ); 
 
     let infoPages = <div id={ 'InfoPagesID' + this.props.chartId } style={{ display: 'none' }}><InfoPages 
