@@ -11,6 +11,7 @@ export function aboutTable() {
         rows: [],
     };
 
+    table.rows.push( ['2021-03-19', '1.0.0.5',    <span>Update EarlyAccess and Tricks from npmFunctions v1.0.15</span>,                ''] );
     table.rows.push( ['2021-03-16', '1.0.0.4',    <span>Fix foam Height, update PropPane with styles, options, data choices</span>,                ''] );
     table.rows.push( ['2021-03-14', '1.0.0.2',    <span></span>,                ''] );
     table.rows.push( ['2020-11-12', '1.0.0.1',    <span>Testing</span>,                                                   ''] );

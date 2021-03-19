@@ -16,7 +16,9 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfun
 //import  EarlyAccess from '@mikezimm/npmfunctions/dist/HelpInfo/EarlyAccess';
 
 import  EarlyAccess from './HelpInfo/EarlyAccess';
+import { IEarlyAccessItem } from './HelpInfo/EarlyAccess';
 
+import InfoPages from './HelpInfo/Component/InfoPages';
 
 import * as links from '@mikezimm/npmfunctions/dist/HelpInfo/Links/LinksRepos';
 
@@ -33,7 +35,7 @@ import { buildGroupData } from './FoamComponent/FoamFunctions';
 
 import Foamcontrol from './FoamComponent/FoamControl';
 import stylesB from './CreateButtons.module.scss';
-
+import { createIconButton , defCommandIconStyles} from "./createButtons/IconButton";
 
 import styles from './Foamchart.module.scss';
 import { IFoamchartProps } from './IFoamchartProps';
@@ -223,7 +225,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
         WebpartWidth = { this.state.WebpartWidth }     //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/</div>
       />;
 
-      const defCommandIconStyles : any = {
+      const defCommandIconStylesX : any = {
         root: {padding:'10px !important', height: 32},//color: 'green' works here
         icon: { 
           fontSize: 18,
@@ -244,7 +246,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
         disabled={false} 
         checked={false}
         onClick={ this._onClick.bind(this) }
-        styles={ defCommandIconStyles }
+        styles={ defCommandIconStylesX }
         />
       </div>;
 
@@ -253,41 +255,79 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
      * Add early access bar
      */
     let earlyAccess = null;
+    defCommandIconStyles.icon.fontWeight = '600' ;
+    
+    let buttonHelp = <div title={ "Feedback" } className= {stylesB.buttons} id={ 'NoID' } style={{background: 'white', opacity: .7, borderRadius: '10px', cursor: 'pointer' }}>
+      <IconButton iconProps={{ iconName: 'Help' }} 
+        text= { 'parent component' }
+        title= { 'titleText'} 
+        //uniqueId= { titleText } 
+        //data= { titleText } 
+        //key= { titleText } 
+        //ariaLabel= { titleText } 
+        disabled={false} 
+        checked={false}
+        onClick={ this._toggleInfoPages.bind(this) }
+        styles={ defCommandIconStyles }
+        />
+    </div>;
 
     if ( this.props.showEarlyAccess === true ) {
-      let messages : any[] = [];
-      if ( this.state.WebpartWidth > 800 ) { 
-          messages.push( <div><span><b>{ 'Welcome to ALV Webpart Early Access!!!' }</b></span></div> ) ;
-          messages.push( <div><span><b>{ 'Get more info here -->' }</b></span></div> ) ;
-      }
-      else if ( this.state.WebpartWidth > 700 ) {
-          messages.push( <div><span><b>{ 'Webpart Early Access!' }</b></span></div> ) ;
-          messages.push( <div><span><b>{ 'More info ->' }</b></span></div> ) ;
-      } else if ( this.state.WebpartWidth > 600 ) {
-          messages.push( <div><span><b>{ 'info ->' }</b></span></div> ) ;
-  
-      } else if ( this.state.WebpartWidth > 400 ) {
-          messages.push( <div><span><b>{ 'info ->' }</b></span></div> ) ;
-      }
-  
+      let messages : IEarlyAccessItem[] = [];
+      let linksArray : IEarlyAccessItem[] = [];
+
+      messages.push( { minWidth: 1000, item: <div><span><b>{ 'Welcome to ALV Webpart Early Access!!!' }</b></span></div> });
+      messages.push( { minWidth: 1000, item: <div><span><b>{ 'Get more info here -->' }</b></span></div> });
+
+      messages.push( { minWidth: 700, maxWidth: 799.9, item: <div><span><b>{ 'Webpart Early Access!!!' }</b></span></div> });
+      messages.push( { minWidth: 700, maxWidth: 799.9, item: <div><span><b>{ 'More info ->' }</b></span></div> });
+
+      messages.push( { minWidth: 400, maxWidth: 699.9, item: <div><span><b>{ 'info ->' }</b></span></div> });
+
+      linksArray.push( { minWidth: 450, item: links.gitRepoCarrotCharts.wiki });
+      linksArray.push( { minWidth: 600, item: links.gitRepoCarrotCharts.issues });
+      linksArray.push( { minWidth: 800, item: links.gitRepoCarrotCharts.projects });
+
       earlyAccess = 
       <div style={{ paddingBottom: 10 }}>
         <EarlyAccess 
             image = { "https://autoliv.sharepoint.com/sites/crs/PublishingImages/Early%20Access%20Image.png" }
             messages = { messages }
-            links = { [ this.state.WebpartWidth > 450 ? links.gitRepoCarrotCharts.wiki : null, 
-                this.state.WebpartWidth > 600 ? links.gitRepoCarrotCharts.issues : null,
-                this.state.WebpartWidth > 800 ? links.gitRepoCarrotCharts.projects : null ]}
+            links = { linksArray }
             email = { 'mailto:General - WebPart Dev <0313a49d.Autoliv.onmicrosoft.com@amer.teams.ms>?subject=Drilldown Webpart Feedback&body=Enter your message here :)  \nScreenshots help!' }
-            farRightIcons = { [ ] }
+            farRightIcons = { [ { item: buttonHelp } ] }
+            WebpartWidth = { this.state.WebpartWidth }
         ></EarlyAccess>
       </div>;
+
     }
+
+    //Build up hard coded array of user emails that can
+    let showTricks = false;
+    links.trickyEmails.map( getsTricks => {
+      if ( this.props.pageContext.user.email && this.props.pageContext.user.email.toLowerCase().indexOf( getsTricks ) > -1 ) { showTricks = true ; }   } ); 
+
+    let infoPages = <div id={ 'InfoPagesID' + this.props.chartId } style={{ display: 'none' }}><InfoPages 
+        showInfo = { true }
+        allLoaded = { true }
+        showTricks = { showTricks }
+
+        parentListURL = { this.state.fetchList.parentListURL }
+        childListURL = { null }
+
+        parentListName = { this.state.fetchList.name }
+        childListName = { null }
+
+        gitHubRepo = { links.gitRepoCarrotCharts }
+
+        hideWebPartLinks = { false }
+    ></InfoPages></div>;
 
     return (
       <div className={ styles.foamchart }>
         <div className={ styles.container }>
           { earlyAccess }
+          { infoPages }
           { /* button */ }
           { foamControl }
         </div>
@@ -295,6 +335,18 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
     );
   }
 
+
+  private _toggleInfoPages() {
+    let newDisplay = document.getElementById('InfoPagesID' + this.props.chartId).style.display ;
+
+    if ( newDisplay === 'none' ) { 
+      newDisplay = ''; } 
+    else { 
+      newDisplay = 'none';
+    }
+
+    document.getElementById('InfoPagesID' + this.props.chartId).style.display = newDisplay;
+  }
 
   private _onClick () {
     //let foamtree : any = getFakeFoamTreeData( true, 90 );

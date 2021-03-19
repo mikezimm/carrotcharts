@@ -278,7 +278,7 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
         if ( this.properties.foamBorders && this.properties.foamBorders.length > 0 ) {} else { this.properties.foamBorders = FoamBorders.join(',') ; }
 
         ['rollHiearchy','includeSum','includeCount','includeAvg','includeRange','changeLayout','changeTitles',].map( p => {
-          if ( this.properties[p] === null || this.properties[p] === undefined ) { this.properties[p] = true ; }
+          //if ( this.properties[p] === null || this.properties[p] === undefined ) { this.properties[p] = true ; }
         });
 
       });

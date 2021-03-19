@@ -9,7 +9,7 @@ import { PropertyPaneWebPartInformation } from '@pnp/spfx-property-controls/lib/
 
 
 import * as strings from 'FoamchartWebPartStrings';
-import { pivotOptionsGroup} from './index';
+
 import { gridChartsOptionsGroup } from './index';
 
 import * as links from '@mikezimm/npmfunctions/dist/HelpInfo/Links/LinksRepos';   //              { links.gitRepoTrackMyTime.issues }
@@ -25,56 +25,7 @@ import { fpsLogo326 } from '@mikezimm/npmfunctions/dist/SVGIcons/fpsLogo326';
 
 import { FoamAnimations, FoamBorders, FoamColors } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTreeDefaults';
 
-/*
-
-  // 1 - Analytics options
-  useListAnalytics: boolean;
-  analyticsWeb?: string;
-  analyticsList?: string;
-
-  // 2 - Source and destination list information
-  projectListTitle: string;
-  projectListWeb: string;
-
-  timeTrackListTitle: string;
-  timeTrackListWeb: string;
-
-  // 3 - General how accurate do you want this to be
-  roundTime: string; //Up 5 minutes, Down 5 minutes, No Rounding;
-  forceCurrentUser: boolean; //false allows you to put in data for someone else
-  confirmPrompt: boolean;  //Make user press confirm
-
-  // 4 -Project options
-  allowUserProjects: boolean; //Will build list of ProjectsUser based on existing data from TrackMyTime list
-  projectMasterPriority: string; //Use to determine what projects float to top.... your most recent?  last day?
-  projectUserPriority: string; //Use to determine what projects float to top.... your most recent?  last day?
-
-  // 5 - UI Defaults
-  defaultProjectPicker: string; //Recent, Your Projects, All Projects etc...
-  defaultTimePicker: string; //SinceLast, Slider, Manual???
-
-  // 6 - User Feedback:
-  showElapsedTimeSinceLast: boolean;  // Idea is that it can be like a clock showing how long it's been since your last entry.
-
-  // Target will be used to provide user feedback on how much/well they are tracking time
-  showTargetBar: boolean; //Eventually have some kind of way to tell user that x% of hours have been entered for day/week
-  showTargetToggle: boolean; //Maybe give user option to toggle between day/week
-  targetType:  string; //Day, Week, Both?
-  targetValue: number; //Hours for typical day/week
-
-  // 7 - Slider Options
-  showTimeSlider: boolean; //true allows you to define end time and slider for how long you spent
-  timeSliderInc: number; //incriment of time slider
-  timeSliderMax: number; //max of time slider
-
-  // 9 - Other web part options
-  webPartScenario: string; //Choice used to create mutiple versions of the webpart.
-
-  pivotSize: string;
-  pivotFormat: string;
-  pivotOptions: string;
-
-    */
+import { WebPartInfoGroup, makePropDataToggles, makePropDataText } from '@mikezimm/npmfunctions/dist/Services/PropPane/zReusablePropPane';
 
 export class IntroPage {
   public getPropertyPanePage(webPartProps: IFoamchartWebPartProps, context, onPropertyPaneFieldChanged, _getListDefintions ): IPropertyPanePage { //_onClickCreateTime, _onClickCreateProject, _onClickUpdateTitles
@@ -96,29 +47,14 @@ export class IntroPage {
       }) );
     //2021-03-06:  For PreConfigProps lookup, copied from Drilldown7 ^^^^^
 
-    let dataToggles = [];
-    ['includeSum','includeCount','includeAvg','includeRange',].map( propName => {
-      dataToggles.push(
-          PropertyPaneToggle(propName, {
-            label: propName,
-            offText: 'Off',
-            onText: 'On',
-            disabled: true,
-          })
-      );
-    });
+    let dataToggles : any[] = makePropDataToggles( ['includeSum','includeCount','includeAvg' ]);
+    dataToggles = makePropDataToggles( ['includeRange' ], dataToggles, 'Off', 'On', false, true );
 
-    let optionToggles = [];
-    ['rollHiearchy','changeLayout','changeTitles',].map( propName => {
-      optionToggles.push(
-          PropertyPaneToggle(propName, {
-            label: propName,
-            offText: 'Off',
-            onText: 'On',
-            disabled: true,
-          })
-      );
-    });
+    let optionToggles : any[] = makePropDataToggles( ['rollHiearchy','changeLayout','changeTitles' ]);
+
+    let sourceListTextFields : any[] = makePropDataText( ['parentListWeb', 'parentListTitle', 'carrotCats', 'dateColumn', 'valueColumn' ]  );
+
+    let searchTextFields : any[] = makePropDataText( ['carrotCats', 'dropDownColumns', 'searchColumns', 'metaColumns'], [],'comma separated column names' );
 
     return <IPropertyPanePage>
     { // <page1>
@@ -127,43 +63,9 @@ export class IntroPage {
       },
       displayGroupsAsAccordion: true,
       groups: [
-        { groupName: 'Web Part Info',
-          isCollapsed: true ,
-          groupFields: [
-            PropertyPaneWebPartInformation({
-              description: `<img src='${fpsLogo326}'/>`,
-              key: 'webPartInfoId'
-            }) ,
-            PropertyPaneWebPartInformation({
-              description: `<p><i>"If you change the way you look at things, the things you look at change."</i></p>`,
-              key: 'webPartInfoId2'
-            }) ,
-/*
-            PropertyPanePropertyEditor({
-              webpart: this,
-              key: 'propertyEditor'
-            })  ,
- */
-            PropertyPaneWebPartInformation({
-              description: `<h4>This webpart looks at data in a whole new way.</h4>
-              <p>Use it to show data in a fun animated way allowing drill down and smooth animation.</p>`,
-              key: 'webPartInfoId3'
-            }) ,
+        WebPartInfoGroup( links.gitRepoCarrotCharts, `<h4>This webpart looks at data in a whole new way.</h4>
+        <p>Use it to show data in a fun animated way allowing drill down and smooth animation.</p>`),
 
-            PropertyPaneLink('About Link' , {
-              text: 'Github Repo:  ' + links.gitRepoCarrotCharts.desc ,
-              href: links.gitRepoCarrotCharts.href,
-              target: links.gitRepoCarrotCharts.target,
-            }),
-
-            PropertyPaneLink('Issues Link' , {
-              text: 'Report Issues:  ' + links.gitRepoCarrotCharts.desc ,
-              href: links.gitRepoCarrotCharts.href  + '/issues',
-              target: links.gitRepoCarrotCharts.target,
-            }),
-
-          ]
-        },
         //2021-03-06:  For PreConfigProps lookup, copied from Drilldown7 VVVVVVV
         {  groupName: 'Get pre-configured setup',
             isCollapsed: false ,
@@ -187,26 +89,7 @@ export class IntroPage {
         // 2 - Source and destination list information    
         { groupName: 'Your list info',
         isCollapsed: true ,
-        groupFields: [
-
-          PropertyPaneTextField('parentListWeb', {
-              label: 'Your List Web url'
-          }),
-          PropertyPaneTextField('parentListTitle', {
-            label: 'Your List Title'
-          }),
-
-          PropertyPaneTextField('carrotCats', {
-            label: 'Carrot Cats'
-          }),
-
-          PropertyPaneTextField('dateColumn', {
-            label: 'Date Column'
-          }),
-
-          PropertyPaneTextField('valueColumn', {
-            label: 'Value Column'
-          }),
+        groupFields: sourceListTextFields.concat([
 
           PropertyPaneDropdown('valueType', <IPropertyPaneDropdownProps>{
             label: 'Value type',
@@ -218,7 +101,8 @@ export class IntroPage {
             options: gridChartsOptionsGroup.valueOperatorChoices,
           }),
 
-        ]}, // this group
+        ])
+      }, // this group
 /* */
 
         // 2 - Source and destination list information    
@@ -264,27 +148,7 @@ export class IntroPage {
         // 2 - Source and destination list information    
         { groupName: 'Search settings',
         isCollapsed: true ,
-        groupFields: [
-  
-          PropertyPaneTextField('carrotCats', {
-            label: 'Carrot Cats',
-            description: 'comma separated column names (3 max)'
-          }),
-
-          PropertyPaneTextField('dropDownColumns', {
-            label: 'Dropdown Columns',
-            description: 'comma separated column names'
-          }),
-
-          PropertyPaneTextField('searchColumns', {
-            label: 'Search Columns',
-            description: 'comma separated column names'
-          }),
-
-          PropertyPaneTextField('metaColumns', {
-            label: 'Meta Columns',
-            description: 'comma separated column names'
-          }),
+        groupFields: searchTextFields.concat([
 
           PropertyPaneDropdown('scaleMethod', <IPropertyPaneDropdownProps>{
             label: 'Time scale method',
@@ -297,8 +161,8 @@ export class IntroPage {
             onText: 'On',
           }),
 
-
-        ]}, // this group
+        ])
+      }, // this group
 /* */
 
         { groupName: 'Performance Properties',
@@ -370,26 +234,15 @@ export class IntroPage {
           }),
         ]
       },
-/*
-      rollHiearchy: this.properties.rollHiearchy,
-      includeSum: this.properties.includeSum,
-      includeCount: this.properties.includeCount,
-      includeAvg: this.properties.includeAvg,
-      includeRange: this.properties.includeRange,
-      changeLayout: this.properties.changeLayout,
-      changeTitles: this.properties.changeTitles,
 
-      */
         { groupName: 'Foam Data Options', 
           isCollapsed: true ,
-          groupFields:
-          dataToggles
+          groupFields: dataToggles
         },
             // this group  dataToggles
         { groupName: 'Foam UI Options',
             isCollapsed: true ,
-            groupFields:
-              optionToggles
+            groupFields: optionToggles
           },
           
          // this group
