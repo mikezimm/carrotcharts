@@ -117,6 +117,8 @@ import * as strings from 'FoamchartWebPartStrings';
     groupIndexs: number[];
     Features: string[];
     Topics: string[];
+    searchString: string;
+    meta: string[];
 
 }
 

@@ -45,6 +45,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
   
   private foamtree = null;
 
+  private sbPlaceHolder = "Search items";
   private chartId = this.props.chartId;
   private bC0 = "breadCrumb0" + this.chartId;
   private bC1 = "breadCrumb1" + this.chartId;
@@ -238,11 +239,11 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
         //title= { 'titleText'} 
         onClick={ this._onLayout.bind(this) }
         styles={ defCommandIconStyles }
-        /><span style={{display: 'none'}} id={ 'layout' + this.props.chartId }>{ this.props.foamTreeData.layout }</span>
+        /><span style={{display: 'none'}} id={ 'layout' + this.chartId }>{ this.props.foamTreeData.layout }</span>
       </div>;
 
-      let butLayout = <div className= {stylesB.buttons} id={ 'butLayout' + this.props.chartId }><IconButton iconProps={{ iconName: 'WebAppBuilderFragment' }} onClick={ this._onLayout.bind(this) } styles={ defCommandIconStyles } /></div>;
-      let butStacking = <div className= {stylesB.buttons} id={ 'butStacking' + this.props.chartId }><IconButton iconProps={{ iconName: 'Header' }} onClick={ this._onStacking.bind(this) } styles={ defCommandIconStyles } /></div>;
+      let butLayout = <div className= {stylesB.buttons} id={ 'butLayout' + this.chartId }><IconButton iconProps={{ iconName: 'WebAppBuilderFragment' }} onClick={ this._onLayout.bind(this) } styles={ defCommandIconStyles } /></div>;
+      let butStacking = <div className= {stylesB.buttons} id={ 'butStacking' + this.chartId }><IconButton iconProps={{ iconName: 'Header' }} onClick={ this._onStacking.bind(this) } styles={ defCommandIconStyles } /></div>;
 
       let searchElements = [];
       let choiceSlider = null;
@@ -255,8 +256,8 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
               let dropDownSort = this.props.fetchList.dropDownSort[ index ];
               let dropDownChoicesSorted = dropDownSort === '' ? dropDownChoices : sortObjectArrayByStringKey( dropDownChoices, dropDownSort, 'text' );
-              let DDLabel = this.props.fetchList.dropDownColumns[ index ].replace('>','').replace('+','').replace('-','');
-              return <Dropdown
+              let DDLabel = this.getDefaultDDLabel(index);
+              return <div id={ 'DDIndex' + index + this.chartId }><Dropdown
                   placeholder={ `Select a ${ DDLabel }` }
                   label={ DDLabel }
                   options={dropDownChoicesSorted}
@@ -265,7 +266,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
                     this.searchForItems(value.key.toString(), index, ev);
                   }}
                   styles={{ dropdown: { width: 200 } }}
-              />;
+              /></div>;
           });
         } 
         
@@ -273,10 +274,10 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
          * Add Text search box
          */
         if ( this.props.enableSearch === true ) {
-          let searchBox = <div>
+          let searchBox = <div id={ 'SearchBoxParent' + this.chartId }>
             <div style={{ paddingTop: '20px' }}></div>
             <SearchBox className={ styles.searchBox }
-                placeholder= { 'Search items' }
+                placeholder= { this.sbPlaceHolder }
                 iconProps={{ iconName : 'Search'}}
                 onSearch={ this.textSearch.bind(this) }
                 //value={this.state.searchText}
@@ -318,8 +319,8 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
                   <div style={{paddingRight:'10px', display: 'none'}} id={ this.bCSum }></div>
               </div>
               <div style={{display:'inline-flex', paddingTop: '10px', fontSize: 'larger', fontWeight: 'bolder'}}>
-                  <div style={{paddingRight:'10px'}} id={ 'layout' + this.props.chartId }>{ this.props.foamTreeData.layout }</div>
-                  <div style={{paddingRight:'10px'}} id={ 'stacking' + this.props.chartId }>{ this.props.foamTreeData.stacking }</div>
+                  <div style={{paddingRight:'10px'}} id={ 'layout' + this.chartId }>{ this.props.foamTreeData.layout }</div>
+                  <div style={{paddingRight:'10px'}} id={ 'stacking' + this.chartId }>{ this.props.foamTreeData.stacking }</div>
               </div>
               <div style={{display:'inline-flex', paddingTop: '10px', fontSize: 'larger', fontWeight: 'bolder'}}>
                   { butLayout }
@@ -355,23 +356,46 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
  *                                                                                                                                    
  */
 
+  private getDefaultDDLabel( index ) {
+    let defaultLabel = this.props.fetchList.dropDownColumns[ index ].replace('>','').replace('+','').replace('-','');
+    return defaultLabel;
+  }
  
- /**
+  /**
   * Based on PivotTiles.tsx
   * @param item
   */
- private textSearch = ( searchText: string ): void => {
+  private textSearch = ( searchText: string ): void => {
+    this.resetOtherDropdowns( -1 );
+    this.fullSearch( null, searchText );
 
-  this.fullSearch( null, searchText );
-
-}
-
+  }
 
   public searchForItems = (item, choiceSliderDropdown: number, ev: any): void => {
 
     console.log('searchForItems: ',item, choiceSliderDropdown, ev ) ;
+    this.resetOtherDropdowns( choiceSliderDropdown );
+    this.resetSearchBox();
     this.fullSearch( item, null );
 
+  }
+
+  private resetSearchBox() {
+    let sb = document.getElementById('SearchBoxParent' + this.chartId).getElementsByTagName('input')[0];
+    console.log('sb value:  to ' + this.sbPlaceHolder, document.getElementById('SearchBoxParent' + this.chartId).getElementsByTagName('input')[0].value );
+    document.getElementById('SearchBoxParent' + this.chartId).getElementsByTagName('input')[0].value = this.sbPlaceHolder;
+
+  }
+
+  private resetOtherDropdowns( choiceSliderDropdown: number ) {
+    this.props.dropDownItems.map( ( dropDownChoices, index ) => {
+      let otherDDId = 'DDIndex' + index + this.chartId;
+      if ( index !== choiceSliderDropdown ) { //clear choice dropdowns to
+        let newDDLabel = `Select a ${ this.getDefaultDDLabel(index) }`;
+        document.getElementById(otherDDId).getElementsByTagName('span')[0].firstElementChild.textContent = newDDLabel ;
+      }
+    });
+    return;
   }
 
 public fullSearch = (item: any, searchText: string ): void => {
@@ -487,7 +511,7 @@ public fullSearch = (item: any, searchText: string ): void => {
 
 
 private _onStacking() {
-  let currentLayout = document.getElementById('stacking' + this.props.chartId).innerText;
+  let currentLayout = document.getElementById('stacking' + this.chartId).innerText;
   let newStacking = getNextElementInArray( FoamTreeStacking, currentLayout, 'next', true, FoamTreeStacking[0]);
   this.foamtree.set({
     stacking: newStacking,
@@ -495,18 +519,18 @@ private _onStacking() {
   this.foamtree.update();
   this.foamtree.redraw();
   console.log('_onStacking',currentLayout,newStacking);
-  document.getElementById('stacking' + this.props.chartId).innerText = newStacking;
+  document.getElementById('stacking' + this.chartId).innerText = newStacking;
 }
 
 private _onLayout() {
-  let currentLayout = document.getElementById('layout' + this.props.chartId).innerText;
+  let currentLayout = document.getElementById('layout' + this.chartId).innerText;
   let newLayout = getNextElementInArray( FoamTreeLayouts, currentLayout, 'next', true, FoamTreeLayouts[0]);
   this.foamtree.set({
     layout: newLayout,
   });
   this.foamtree.update();
   //this.foamtree.redraw();
-  document.getElementById('layout' + this.props.chartId).innerText = newLayout;
+  document.getElementById('layout' + this.chartId).innerText = newLayout;
 }
 
 /**
