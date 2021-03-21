@@ -57,6 +57,14 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
   private buttonFW = "buttonFoward" + this.chartId;
   private buttonREV = "buttonReverse" + this.chartId;
+  private buttonSum = "buttonSum" + this.chartId;
+  private buttonCnt = "buttonCount" + this.chartId;
+  private buttonAvg = "buttonAvg" + this.chartId;
+  private buttonMax= "buttonMax" + this.chartId;
+  private buttonMin= "buttonMin" + this.chartId;
+  private buttonRng= "buttonRange" + this.chartId;
+
+  private buttonOperators = [ this.buttonSum, this.buttonCnt, this.buttonAvg, this.buttonMax, this.buttonMin, this.buttonRng ];
 
   public constructor(props:IFoamcontrolProps){
     super(props);
@@ -297,17 +305,26 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
           <button onClick={ this.tryPropsData.bind(this) } style={{marginRight:'20px'}}>tryPropsData</button>         
 */
-          searchElements.push( <button onClick={ this.forwardHiearchy.bind(this) } style={{marginRight:'20px', display: 'none'}} id= { this.buttonFW }>Normal</button> );
-          searchElements.push( <button onClick={ this.reverseHiearchy.bind(this) } style={{marginRight:'20px'}} id= { this.buttonREV }>Reverse</button> );
 
-          searchElements.push( <button onClick={ this.showSum.bind(this) } style={{marginRight:'20px'}}>Sum</button> );
-          searchElements.push( <button onClick={ this.showCount.bind(this) } style={{marginRight:'20px'}}>Count</button> );
-          searchElements.push( <button onClick={ this.showAvg.bind(this) } style={{marginRight:'20px'}}>Avg</button> );
+          let changeElements = [];
+          changeElements.push( <button onClick={ this.forwardHiearchy.bind(this) } style={{marginRight:'20px', width: '70px', display: 'none'}} id= { this.buttonFW }>Normal</button> );
+          changeElements.push( <button onClick={ this.reverseHiearchy.bind(this) } style={{marginRight:'20px', width: '70px' }} id= { this.buttonREV }>Reverse</button> );
+
+          changeElements.push( <button onClick={ this.showSum.bind(this) } style={{marginRight:'20px'}} id= { this.buttonSum }>Sum</button> ); //&Sigma;
+          changeElements.push( <button onClick={ this.showCount.bind(this) } style={{marginRight:'20px'}} id= { this.buttonCnt }>Count</button> );
+          changeElements.push( <button onClick={ this.showAvg.bind(this) } style={{marginRight:'20px'}} id= { this.buttonAvg }>Avg</button> );
+
+          changeElements.push( <button onClick={ this.showMax.bind(this) } style={{marginRight:'20px'}} id= { this.buttonMax }>Max</button> );
+          changeElements.push( <button onClick={ this.showMin.bind(this) } style={{marginRight:'20px'}} id= { this.buttonMin }>Min</button> );
+          changeElements.push( <button onClick={ this.showRange.bind(this) } style={{marginRight:'20px'}} id= { this.buttonRng }>Range</button> );
 
           const wrapStackTokens: IStackTokens = { childrenGap: 30 };
           searchStack = <div style={{ paddingBottom: '15px' }}>
               <Stack horizontal horizontalAlign="start" verticalAlign="end" wrap tokens={wrapStackTokens}>
                 { searchElements }
+              </Stack>
+              <Stack horizontal horizontalAlign="start" verticalAlign="end" wrap tokens={wrapStackTokens} padding="15px 0px 15px 0px">
+                { changeElements }
               </Stack>
               <div style={{display:'inline-flex', paddingTop: '10px', fontSize: 'larger', fontWeight: 'bolder'}}>
                   <div style={{paddingRight:'10px'}} id= { this.bCSort }></div>
@@ -640,6 +657,7 @@ private updateGroupWeights ( dataObject: IFoamTreeDataObject , newGroups : IFoam
   private showMin() { this.switchGroupWeights('min'); }
   private showMax() { this.switchGroupWeights('max'); }
   private showAvg() { this.switchGroupWeights('avg'); }
+  private showRange() { this.switchGroupWeights('range'); }
 
   private switchGroupWeights( operator: string  ) {
     let keySummary = this.consoleDataObject( 'switchGroupWeights Before', 'full', null );
@@ -649,13 +667,20 @@ private updateGroupWeights ( dataObject: IFoamTreeDataObject , newGroups : IFoam
     this.foamtree.update();
     this.foamtree.redraw();
     this.consoleDataObject( 'switchGroupWeights After', 'full', keySummary );
-    document.getElementById("breadCrumbOperator").innerText = operator;
+    document.getElementById( this.bCOper ).innerText = operator;
+
+    this.buttonOperators.map( op => {
+      document.getElementById(op).classList.add( op.toLowerCase().indexOf(operator ) > -1 ? styles.activeButton : null );
+      document.getElementById(op).classList.remove( op.toLowerCase().indexOf(operator ) > -1 ? null : styles.activeButton );
+    });
+
   }
 
 
   private setGroupWeight( groups: IFoamTreeGroup[], operator: string ) {
     groups.map( group => {
-      group.weight = group[operator];
+      group.weight = operator === 'range' ? group['max'] - group['min'] : group[operator];
+
       if ( group.groups.length > 0 ) { group.groups = this.setGroupWeight( group.groups, operator ) ; }
     });
     return groups;

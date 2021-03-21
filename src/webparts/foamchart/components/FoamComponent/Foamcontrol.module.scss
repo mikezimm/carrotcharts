@@ -7,6 +7,26 @@
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 25px 50px 0 rgba(0, 0, 0, 0.1);
   }
   
+  // define variables first
+  //https://docs.microsoft.com/en-us/sharepoint/dev/spfx/use-theme-colors-in-your-customizations#available-theme-tokens-and-their-occurances
+  $themePrimary: '[theme:themePrimary, default:#333333]';
+  $themeSecondary: '[theme:themeSecondary, default:#666666]';
+  $themeWhite: '[theme:white, default:white]';
+  $themeBlack: '[theme:black, default:black]';
+
+  .activeButton {
+    //background-color: green;
+    background-color: $themePrimary;
+    color: $themeWhite;
+
+  }
+
+  button {
+    cursor: pointer;
+    background-color: $themeSecondary;
+    color: $themeBlack;
+  }
+
   .searchBox {
     //@extend .floatLeft;
     width: 100%;
@@ -21,7 +41,6 @@
   padding-right: 60px;
   //text-align: right;
   }
-
 
   .showSearch {
     transition:all 0.4s ease;
