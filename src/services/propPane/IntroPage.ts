@@ -47,7 +47,7 @@ export class IntroPage {
       }) );
     //2021-03-06:  For PreConfigProps lookup, copied from Drilldown7 ^^^^^
 
-    let dataToggles : any[] = makePropDataToggles( ['includeSum','includeCount','includeAvg' ]);
+    let dataToggles : any[] = makePropDataToggles( ['includeSum','includeCount','includeAvg','includeMax','includeMin' ]);
     dataToggles = makePropDataToggles( ['includeRange' ], dataToggles, 'Off', 'On', false, true );
 
     let optionToggles : any[] = makePropDataToggles( ['rollHiearchy','changeLayout','changeTitles' ]);

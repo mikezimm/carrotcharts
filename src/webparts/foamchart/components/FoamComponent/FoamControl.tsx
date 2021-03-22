@@ -108,13 +108,20 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
   private updateBreadCrumbGroups( order: 'asc' | 'dec' ){
 
     let newCats : string[] = JSON.parse(JSON.stringify(this.props.fetchList.carrotCats));
-    if ( order === 'dec') { 
+    
+    if ( this.props.foamOptions.rollHiearchy !== true ) {
+      document.getElementById( this.buttonFW ).style.display = 'none';
+      document.getElementById( this.buttonREV ).style.display = 'none';
+
+    } else if ( order === 'dec') { 
       newCats.reverse() ;
       document.getElementById( this.buttonFW ).style.display = '';
-      document.getElementById( this.buttonREV ).style.display = 'none';   
+      document.getElementById( this.buttonREV ).style.display = 'none';
+
     } else {
       document.getElementById( this.buttonFW ).style.display = 'none';
-      document.getElementById( this.buttonREV ).style.display = '';   
+      document.getElementById( this.buttonREV ).style.display = '';
+
     }
 
     document.getElementById( this.bC0 ).innerText = ' > ' + newCats[0];
@@ -214,6 +221,10 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
   public render(): React.ReactElement<IFoamcontrolProps> {
 
+    let foamOptions = this.props.foamOptions;
+    let foamStyles = this.props.foamStyles;
+    let foamData = this.props.foamData;
+
     let searchStack = null;
     let x = this.props.WebpartWidth > 0 ? ( this.props.WebpartWidth -30 ) + "px" : "500px";
     let y = this.props.foamStyles.foamChartHeight > 0 ? this.props.foamStyles.foamChartHeight + "px" : "500px";
@@ -250,8 +261,22 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
         /><span style={{display: 'none'}} id={ 'layout' + this.chartId }>{ this.props.foamTreeData.layout }</span>
       </div>;
 
-      let butLayout = <div className= {stylesB.buttons} id={ 'butLayout' + this.chartId }><IconButton iconProps={{ iconName: 'WebAppBuilderFragment' }} onClick={ this._onLayout.bind(this) } styles={ defCommandIconStyles } /></div>;
-      let butStacking = <div className= {stylesB.buttons} id={ 'butStacking' + this.chartId }><IconButton iconProps={{ iconName: 'Header' }} onClick={ this._onStacking.bind(this) } styles={ defCommandIconStyles } /></div>;
+      let butLayout = <div className= {stylesB.buttons} id={ 'butLayout' + this.chartId } style={{ display: foamOptions.changeLayout === true ? '' : 'none' }}>
+            <IconButton iconProps={{ iconName: 'WebAppBuilderFragment' }} onClick={ this._onLayout.bind(this) } styles={ defCommandIconStyles } /></div>;
+
+      let butStacking = <div className= {stylesB.buttons} id={ 'butStacking' + this.chartId } style={{ display: foamOptions.changeTitles === true ? '' : 'none' }}>
+            <IconButton iconProps={{ iconName: 'Header' }} onClick={ this._onStacking.bind(this) } styles={ defCommandIconStyles } /></div>;
+
+
+/*
+      foamStyles: {
+            foamChartHeight: number;  //Fixed number of pixels for the foam rendering
+            foamAnimations: string[];
+            foamColors: string[];
+            foamBorders: string[];
+      };
+*/
+
 
       let searchElements = [];
       let choiceSlider = null;
@@ -303,20 +328,40 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
           <button onClick={ this.tryNew.bind(this) } style={{marginRight:'20px'}}>tryNew</button>
           <button onClick={ this.resetState.bind(this) } style={{marginRight:'20px'}}>resetState</button>
 
-          <button onClick={ this.tryPropsData.bind(this) } style={{marginRight:'20px'}}>tryPropsData</button>         
+          <button onClick={ this.tryPropsData.bind(this) } style={{marginRight:'20px'}}>tryPropsData</button>    
+
+      foamStyles: {
+            foamChartHeight: number;  //Fixed number of pixels for the foam rendering
+            foamAnimations: string[];
+            foamColors: string[];
+            foamBorders: string[];
+      };
+
+      foamOptions: {    // foamOptions.changeTitles
+            rollHiearchy: boolean;
+            changeLayout: boolean;
+            changeTitles: boolean;
+      };
+
+      foamData: {
+            includeSum: boolean;
+            includeCount: boolean;
+            includeAvg: boolean;
+            includeRange: boolean;
+      };
 */
 
           let changeElements = [];
-          changeElements.push( <button onClick={ this.forwardHiearchy.bind(this) } style={{marginRight:'20px', width: '70px', display: 'none'}} id= { this.buttonFW }>Normal</button> );
-          changeElements.push( <button onClick={ this.reverseHiearchy.bind(this) } style={{marginRight:'20px', width: '70px' }} id= { this.buttonREV }>Reverse</button> );
+          changeElements.push( <button onClick={ this.forwardHiearchy.bind(this) } style={{marginRight:'20px', width: '70px', display: foamOptions.rollHiearchy === true ? '' : 'none'}} id= { this.buttonFW }>Normal</button> ); 
+          changeElements.push( <button onClick={ this.reverseHiearchy.bind(this) } style={{marginRight:'20px', width: '70px', display: 'none' }} id= { this.buttonREV }>Reverse</button> ); 
 
-          changeElements.push( <button onClick={ this.showSum.bind(this) } style={{marginRight:'20px'}} id= { this.buttonSum }>Sum</button> ); //&Sigma;
-          changeElements.push( <button onClick={ this.showCount.bind(this) } style={{marginRight:'20px'}} id= { this.buttonCnt }>Count</button> );
-          changeElements.push( <button onClick={ this.showAvg.bind(this) } style={{marginRight:'20px'}} id= { this.buttonAvg }>Avg</button> );
+          changeElements.push( <button onClick={ this.showSum.bind(this) } style={{marginRight:'20px', display: foamData.includeSum === true ? '' : 'none'}} id= { this.buttonSum }>Sum</button> );  //&Sigma;
+          changeElements.push( <button onClick={ this.showCount.bind(this) } style={{marginRight:'20px', display: foamData.includeCount === true ? '' : 'none'}} id= { this.buttonCnt }>Count</button> ); 
+          changeElements.push( <button onClick={ this.showAvg.bind(this) } style={{marginRight:'20px', display: foamData.includeAvg === true ? '' : 'none'}} id= { this.buttonAvg }>Avg</button> ); 
 
-          changeElements.push( <button onClick={ this.showMax.bind(this) } style={{marginRight:'20px'}} id= { this.buttonMax }>Max</button> );
-          changeElements.push( <button onClick={ this.showMin.bind(this) } style={{marginRight:'20px'}} id= { this.buttonMin }>Min</button> );
-          changeElements.push( <button onClick={ this.showRange.bind(this) } style={{marginRight:'20px'}} id= { this.buttonRng }>Range</button> );
+          changeElements.push( <button onClick={ this.showMax.bind(this) } style={{marginRight:'20px', display: foamData.includeMax === true ? '' : 'none'}} id= { this.buttonMax }>Max</button> ); 
+          changeElements.push( <button onClick={ this.showMin.bind(this) } style={{marginRight:'20px', display: foamData.includeMin === true ? '' : 'none'}} id= { this.buttonMin }>Min</button> ); 
+          changeElements.push( <button onClick={ this.showRange.bind(this) } style={{marginRight:'20px', display: foamData.includeRange === true ? '' : 'none'}} id= { this.buttonRng }>Range</button> ); 
 
           const wrapStackTokens: IStackTokens = { childrenGap: 30 };
           searchStack = <div style={{ paddingBottom: '15px' }}>

@@ -106,6 +106,8 @@ export interface IFoamchartProps {
             includeSum: boolean;
             includeCount: boolean;
             includeAvg: boolean;
+            includeMax: boolean;
+            includeMin: boolean;
             includeRange: boolean;
       };
   

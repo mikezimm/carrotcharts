@@ -135,6 +135,8 @@ export interface IFoamchartWebPartProps {
     includeSum: boolean;
     includeCount: boolean;
     includeAvg: boolean;
+    includeMax: boolean;
+    includeMin: boolean;
     includeRange: boolean;
     changeLayout: boolean;
     changeTitles: boolean;
@@ -277,8 +279,12 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
         if ( this.properties.foamColors && this.properties.foamColors.length > 0 ) {} else { this.properties.foamColors = FoamColors.join(',') ; }
         if ( this.properties.foamBorders && this.properties.foamBorders.length > 0 ) {} else { this.properties.foamBorders = FoamBorders.join(',') ; }
 
-        ['rollHiearchy','includeSum','includeCount','includeAvg','includeRange','changeLayout','changeTitles',].map( p => {
-          //if ( this.properties[p] === null || this.properties[p] === undefined ) { this.properties[p] = true ; }
+        ['includeSum','includeCount','includeAvg','includeMax','includeMin', 'includeRange'].map( p => {   //Data Options Settings
+          if ( this.properties[p] === null || this.properties[p] === undefined ) { this.properties[p] = true ; }
+        });
+
+        ['rollHiearchy','changeLayout','changeTitles',].map( p => {  //UI Settings
+          if ( this.properties[p] === null || this.properties[p] === undefined ) { this.properties[p] = true ; }
         });
 
       });
@@ -407,6 +413,8 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
           includeSum: this.properties.includeSum,
           includeCount: this.properties.includeCount,
           includeAvg: this.properties.includeAvg,
+          includeMax: this.properties.includeMax,
+          includeMin: this.properties.includeMin,
           includeRange: this.properties.includeRange,
         },
 
@@ -703,16 +711,27 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
      */
     let updateOnThese = [
       'setSize','setTab','otherTab','setTab','otherTab','setTab','otherTab','setTab','otherTab', '',
+
       'stressMultiplierTime', 'webPartScenario', '', '', '',
+
       'parentListTitle', 'parentListName', 'parentListWeb', 'sites', 'lists',
-      'fetchCount', 'fetchCountMobile', 'restFilter', '', '', '',
 
-      'pivotSize', 'pivotFormat', 'pivotOptions', 'pivotTab', 'advancedPivotStyles', 'scaleMethod',
+      'fetchCount', 'fetchCountMobile', 'restFilter', 'minDataDownload', '', '',  //Performance Settings
 
-      'dateColumn', 'valueColumn', 'valueType', 'valueOperator', 'minDataDownload','dropDownColumns','searchColumns', 'metaColumns',
+      'pivotSize', 'pivotFormat', 'pivotOptions', 'pivotTab', 'advancedPivotStyles',  //Pivot Style Settings (may not be needed)
 
-      'carrotCats', 'carrotProps', 'carrotStyles', 'foamChartHeight',
-      'foamAnimations', 'foamColors', 'foamBorders',
+      'dateColumn', 'valueColumn', 'valueType', 'valueOperator','dropDownColumns','searchColumns', 'metaColumns',  //List columns used for webpart
+
+      'scaleMethod', //Specific to GridCharts Settings
+
+      'carrotCats', 'carrotProps', 'carrotStyles', 'foamChartHeight', //Specific to CarrotSearch Settings
+
+      'includeSum','includeCount','includeAvg','includeMax','includeMin', 'includeRange',  //Data Options Settings
+
+      'rollHiearchy','changeLayout','changeTitles',  //UI Settings
+
+      'foamAnimations', 'foamColors', 'foamBorders',  //Styling Settings
+      
     ];
 
     //alert('props updated');

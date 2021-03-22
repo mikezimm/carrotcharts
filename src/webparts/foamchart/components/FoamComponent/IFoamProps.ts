@@ -127,6 +127,8 @@ export interface IFoamcontrolProps {
             includeSum: boolean;
             includeCount: boolean;
             includeAvg: boolean;
+            includeMax: boolean;
+            includeMin: boolean;
             includeRange: boolean;
       };
 
