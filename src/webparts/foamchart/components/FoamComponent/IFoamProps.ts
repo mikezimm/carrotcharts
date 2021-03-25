@@ -75,6 +75,7 @@ import { IFoamColor , FoamColors, FoamColorSettings, FoamColorLight, FoamColorDa
  *                                                                                                                                               
  */
 
+ import { IFoamStyles } from '../IFoamchartProps';
 
 /***
  *    d88888b db    db d8888b.  .d88b.  d8888b. d888888b      d888888b d8b   db d888888b d88888b d8888b. d88888b  .d8b.   .o88b. d88888b .d8888. 
@@ -119,12 +120,7 @@ export interface IFoamcontrolProps {
       WebpartHeight?:  number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
       WebpartWidth?:   number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
   
-      foamStyles: {
-            foamChartHeight: number;  //Fixed number of pixels for the foam rendering
-            foamAnimations: IFoamAnimation[];
-            foamColors: IFoamColor[];
-            foamBorders: IFoamBorder[];
-      };
+      foamStyles: IFoamStyles;
 
       foamOptions: {
             rollHiearchy: boolean;

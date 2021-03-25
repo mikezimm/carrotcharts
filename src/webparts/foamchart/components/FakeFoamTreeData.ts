@@ -57,6 +57,8 @@
  */
 
 import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTree';
+import { IFoamStyles } from './IFoamchartProps';
+import { setBorderSettings } from './FoamComponent/BorderFunctions';
 
 /***
  *    d88888b db    db d8888b.  .d88b.  d8888b. d888888b      d888888b d8b   db d888888b d88888b d8888b. d88888b  .d8b.   .o88b. d88888b .d8888. 
@@ -91,7 +93,7 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfun
  }
 
 
- export function getEmptyFoamTreeData(  ) {
+ export function getEmptyFoamTreeData( foamStyles : IFoamStyles ) {
 
     let preConfigFoamTree : IFoamTree = {
       descriptionGroupType: 'stab',
@@ -180,6 +182,8 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfun
         groups: [],
       },
     };
+
+    emptyRelaxed = setBorderSettings( emptyRelaxed, foamStyles.foamBorders[0] );
 
     //console.log('thisFoamTree', thisFoamTree );
     return emptyRelaxed;

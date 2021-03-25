@@ -49,7 +49,7 @@ import { getAllItems } from '@mikezimm/npmfunctions/dist/Services/PropPane/PPFun
 
 import { doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/Services/Arrays/checks';
 
-import { makeid } from '@mikezimm/npmfunctions/dist/Services/Strings/stringServices';
+import { makeid, getStringArrayFromString } from '@mikezimm/npmfunctions/dist/Services/Strings/stringServices';
 
 import { FoamAnimations, FoamBorders, FoamColors } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTreeDefaults';
 
@@ -388,9 +388,9 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
     let tenant = this.context.pageContext.web.absoluteUrl.replace(this.context.pageContext.web.serverRelativeUrl,"");
     let parentListWeb = this.properties.parentListWeb.indexOf('/sites/') === 0 ? tenant + this.properties.parentListWeb : this.properties.parentListWeb;
 
-    let foamAnimations: any = this.properties.foamAnimations.split(',') ;
-    let foamColors: any = this.properties.foamColors.split(',') ;
-    let foamBorders: any = this.properties.foamBorders.split(',') ;
+    let foamAnimations: any = getStringArrayFromString( this.properties.foamAnimations, ',or;', true, null, true ) ;
+    let foamColors: any = getStringArrayFromString( this.properties.foamColors, ',or;', true, null, true ) ;
+    let foamBorders: any = getStringArrayFromString( this.properties.foamBorders, ',or;', true, null, true ) ;
 
     const element: React.ReactElement<IFoamchartProps> = React.createElement(
       Foamchart,
@@ -405,6 +405,9 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
             foamAnimations: foamAnimations ,
             foamColors: foamColors ,
             foamBorders: foamBorders ,
+            currentAnimation: foamAnimations[0],
+            currentBorder: foamBorders[0],
+            currentColor: foamColors[0],
         },
 
         foamOptions: {

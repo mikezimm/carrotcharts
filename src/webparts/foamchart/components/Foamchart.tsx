@@ -32,6 +32,8 @@ import { getAllItems, IFoamTreeList, IFoamItemInfo } from './GetListData';
 
 import { buildGroupData } from './FoamComponent/FoamFunctions';
 
+import { setBorderSettings } from './FoamComponent/BorderFunctions';
+
 
 import Foamcontrol from './FoamComponent/FoamControl';
 import stylesB from './CreateButtons.module.scss';
@@ -58,7 +60,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
          this.props.dropDownColumns, this.props.searchColumns, metaColumns, [this.props.dateColumn], [this.props.valueColumn],
          this.props.carrotCats, this.props.dateColumn, this.props.valueColumn,this.props.valueType, this.props.valueOperator );
 
-    let foamtree : IFoamTree = getEmptyFoamTreeData( );
+    let foamtree : IFoamTree = getEmptyFoamTreeData( this.props.foamStyles );
     foamtree.id = "visualization"     ;
     foamtree.dataObject.groups = [];
 
@@ -375,11 +377,12 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
       let allItems = allNewData === false ? this.state.allItems : theseItems;
 
-      let foamTreeData = buildGroupData( fetchList, allItems );
+      let foamTreeData = buildGroupData( fetchList, allItems, this.props.foamStyles );
 
       //let foamTreeData: IFoamTree = null; //this.buildGridData (fetchList, theseItems);
       // let foamTreeData : any = getFakeFoamTreeData( true, 90 );
-      foamTreeData.id = "visualization"     ;
+      foamTreeData.id = "visualization" ;
+
       let dropDownItems : IDropdownOption[][] = allNewData === true ? this.buildDataDropdownItems( fetchList, allItems ) : this.state.dropDownItems ;
 
       this.setState({

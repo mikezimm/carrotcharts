@@ -36,14 +36,16 @@ import { IFoamTreeList, IFoamItemInfo } from '../GetListData';
 
 import { getFakeFoamTreeData, getFakeFoamTreeGroups, fakeGroups1, getEmptyFoamTreeData } from '../FakeFoamTreeData';
 
-import { resetBorderSettings } from './BorderFunctions';
+import { setBorderSettings, resetBorderSettings } from './BorderFunctions';
 
 import { getTotalGroupWeight, buildGroupData } from './FoamFunctions';
 
 import stylesB from '../CreateButtons.module.scss';
 
 export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoamcontrolState> {
-  private foamtreeData: any = getEmptyFoamTreeData( );
+
+  private foamStyles = this.props.foamStyles;
+  private foamtreeData: any = getEmptyFoamTreeData( this.foamStyles );
   
   private foamtree = null;
 
@@ -224,13 +226,13 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
   public render(): React.ReactElement<IFoamcontrolProps> {
 
     let foamOptions = this.props.foamOptions;
-    let foamStyles = this.props.foamStyles;
+    let foamStyles = this.foamStyles;
     let foamData = this.props.foamData;
     let foamBorders = foamStyles.foamBorders;
 
     let searchStack = null;
     let x = this.props.WebpartWidth > 0 ? ( this.props.WebpartWidth -30 ) + "px" : "500px";
-    let y = this.props.foamStyles.foamChartHeight > 0 ? this.props.foamStyles.foamChartHeight + "px" : "500px";
+    let y = this.foamStyles.foamChartHeight > 0 ? this.foamStyles.foamChartHeight + "px" : "500px";
     /*
     let spinner = null;
     if ( this.props.foamTreeData.dataObject.groups.length === 0 ) { 
@@ -550,7 +552,7 @@ public fullSearch = (item: any, searchText: string ): void => {
 
   searchCount = newFilteredItems.length;
   
-  let foamTreeData = buildGroupData( this.props.fetchList, newFilteredItems );
+  let foamTreeData = buildGroupData( this.props.fetchList, newFilteredItems, this.foamStyles );
   let newGroups : IFoamTreeGroup[] = JSON.parse(JSON.stringify( foamTreeData.dataObject.groups ));
   let dataObject: IFoamTreeDataObject = this.foamtree.get("dataObject");
   
@@ -581,9 +583,10 @@ public fullSearch = (item: any, searchText: string ): void => {
 
 private _onBorder() {
   let currentBorder = document.getElementById('border' + this.chartId).innerText;
-  let newBorder = getNextElementInArray( this.props.foamStyles.foamBorders, currentBorder, 'next', true, this.props.foamStyles.foamBorders[0]);
+  let newBorder = getNextElementInArray( this.foamStyles.foamBorders, currentBorder, 'next', true, this.foamStyles.foamBorders[0]);
 
-  let foamTree: any = resetBorderSettings( newBorder, this.props.foamStyles.foamBorders );
+  this.foamStyles.currentBorder = newBorder;
+  let foamTree: any = resetBorderSettings( newBorder, this.foamStyles.foamBorders );
 
   this.foamtree.set( foamTree );
   this.foamtree.update();
@@ -643,7 +646,7 @@ private forwardHiearchy( ) {
 
 private rollHiearchy ( newFetchList : IFoamTreeList ) {
 
-  let foamTreeData = buildGroupData( newFetchList, this.props.allItems );
+  let foamTreeData = buildGroupData( newFetchList, this.props.allItems, this.foamStyles );
   let newGroups : IFoamTreeGroup[] = JSON.parse(JSON.stringify( foamTreeData.dataObject.groups ));
   let dataObject: IFoamTreeDataObject = this.foamtree.get("dataObject");
   

@@ -1,7 +1,7 @@
 
 import { IFoamTree } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTree';
 
-import { IFoamBorder , FoamBorders, FoamBorderSettings, FoamBordersRound, FoamBordersNone, FoamBordersStraight } 
+import { IFoamBorder , FoamBorders, FoamBorderSettings, FoamBordersDefaults ,FoamBordersRound, FoamBordersNone, FoamBordersStraight } 
     from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTreeDefaults';
 
 import { IFoamAnimation , FoamAnimations, FoamAnimationSettings, FoamAnimateGentle, FoamAnimateFadeIn, FoamAnimateFlyIn } 
@@ -10,6 +10,15 @@ import { IFoamAnimation , FoamAnimations, FoamAnimationSettings, FoamAnimateGent
 import { IFoamColor , FoamColors, FoamColorSettings, FoamColorLight, FoamColorDark, FoamColorWarm } 
     from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTreeDefaults';
 
+
+export function setBorderSettings( currentFoamTree: any, newBorder: IFoamBorder ) { //currentTree: IFoamTree, 
+
+    currentFoamTree = resetTheseBorderSettings( currentFoamTree, 'Default', 'set' );
+    currentFoamTree = resetTheseBorderSettings( currentFoamTree, newBorder, 'set' );
+
+    return currentFoamTree;
+
+}
 
 /**
  * This function will clear all border related settings and set new ones.
@@ -20,10 +29,7 @@ export function resetBorderSettings( newBorder: IFoamBorder, availBorders: IFoam
 
     let newTree: any = { };  //IFoamTree = { dataObject: null, layout: null };
 
-    availBorders.map( thisBorder => {
-        newTree = resetTheseBorderSettings( newTree, thisBorder, 'clear' );
-    });
-
+    newTree = resetTheseBorderSettings( newTree, 'Default', 'set' );
     newTree = resetTheseBorderSettings( newTree, newBorder, 'set' );
 
     return newTree;
@@ -39,7 +45,9 @@ export function resetBorderSettings( newBorder: IFoamBorder, availBorders: IFoam
 export function resetTheseBorderSettings( currentTree: IFoamTree, thisBorder: IFoamBorder, clearOrSet : 'clear' | 'set' ) {
 
     let borderObject = null;
-    if ( thisBorder === 'None' ) { borderObject = FoamBordersNone; }
+    
+    if ( thisBorder === 'Default' ) { borderObject = FoamBordersDefaults; }
+    else if ( thisBorder === 'None' ) { borderObject = FoamBordersNone; }
     else if ( thisBorder === 'Round' ) { borderObject = FoamBordersRound; }
     else if ( thisBorder === 'Straight' ) { borderObject = FoamBordersStraight; }
 
