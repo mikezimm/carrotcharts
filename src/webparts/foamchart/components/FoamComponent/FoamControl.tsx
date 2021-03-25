@@ -279,10 +279,10 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
       let butBorder = <div className= {stylesB.buttons} id={ 'butBorder' + this.chartId } style={{ display: foamBorders.length > 1 ? '' : 'none' }}>
             <IconButton iconProps={{ iconName: 'BorderDash' }} onClick={ this._onBorder.bind(this) } styles={ defCommandIconStyles } /></div>;
 
-      let butAnimate = <div className= {stylesB.buttons} id={ 'butAnimate' + this.chartId } style={{ display: foamBorders.length > 1 ? '' : 'none' }}>
+      let butAnimate = <div className= {stylesB.buttons} id={ 'butAnimate' + this.chartId } style={{ display: foamAnimations.length > 1 ? '' : 'none' }}>
             <IconButton iconProps={{ iconName: 'SetAction' }} onClick={ this._onAnimate.bind(this) } styles={ defCommandIconStyles } /></div>;
 
-      let butColor = <div className= {stylesB.buttons} id={ 'butColor' + this.chartId } style={{ display: foamBorders.length > 1 ? '' : 'none' }}>
+      let butColor = <div className= {stylesB.buttons} id={ 'butColor' + this.chartId } style={{ display: foamColors.length > 1 ? '' : 'none' }}>
             <IconButton iconProps={{ iconName: 'Color' }} onClick={ this._onColor.bind(this) } styles={ defCommandIconStyles } /></div>;
 
 /*
@@ -600,6 +600,9 @@ private _onBorder() {
 
   this.foamStyles.currentBorder = newBorder;
   let foamTree: any = resetBorderSettings( newBorder, this.foamStyles.foamBorders );
+
+  //Note if you change the border, it has some color settings so you have to reset the colors afterwords
+  foamTree= resetColorSettings( this.foamStyles.currentColor , this.foamStyles.foamColors );
 
   this.foamtree.set( foamTree );
   this.foamtree.update();
