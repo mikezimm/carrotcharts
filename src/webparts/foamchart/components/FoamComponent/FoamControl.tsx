@@ -36,6 +36,8 @@ import { IFoamTreeList, IFoamItemInfo } from '../GetListData';
 
 import { getFakeFoamTreeData, getFakeFoamTreeGroups, fakeGroups1, getEmptyFoamTreeData } from '../FakeFoamTreeData';
 
+import { resetBorderSettings } from './BorderFunctions';
+
 import { getTotalGroupWeight, buildGroupData } from './FoamFunctions';
 
 import stylesB from '../CreateButtons.module.scss';
@@ -224,6 +226,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
     let foamOptions = this.props.foamOptions;
     let foamStyles = this.props.foamStyles;
     let foamData = this.props.foamData;
+    let foamBorders = foamStyles.foamBorders;
 
     let searchStack = null;
     let x = this.props.WebpartWidth > 0 ? ( this.props.WebpartWidth -30 ) + "px" : "500px";
@@ -266,6 +269,9 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
       let butStacking = <div className= {stylesB.buttons} id={ 'butStacking' + this.chartId } style={{ display: foamOptions.changeTitles === true ? '' : 'none' }}>
             <IconButton iconProps={{ iconName: 'Header' }} onClick={ this._onStacking.bind(this) } styles={ defCommandIconStyles } /></div>;
+
+      let butBorder = <div className= {stylesB.buttons} id={ 'butBorder' + this.chartId } style={{ display: foamBorders.length > 1 ? '' : 'none' }}>
+            <IconButton iconProps={{ iconName: 'BorderDash' }} onClick={ this._onBorder.bind(this) } styles={ defCommandIconStyles } /></div>;
 
 
 /*
@@ -383,10 +389,12 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
               <div style={{display:'inline-flex', paddingTop: '10px', fontSize: 'larger', fontWeight: 'bolder'}}>
                   <div style={{paddingRight:'10px'}} id={ 'layout' + this.chartId }>{ this.props.foamTreeData.layout }</div>
                   <div style={{paddingRight:'10px'}} id={ 'stacking' + this.chartId }>{ this.props.foamTreeData.stacking }</div>
+                  <div style={{paddingRight:'10px'}} id={ 'border' + this.chartId }>{ foamBorders[0] }</div>
               </div>
               <div style={{display:'inline-flex', paddingTop: '10px', fontSize: 'larger', fontWeight: 'bolder'}}>
                   { butLayout }
                   { butStacking }
+                  { butBorder }
               </div>
               <div> { choiceSlider } </div>
           </div>;
@@ -570,6 +578,20 @@ public fullSearch = (item: any, searchText: string ): void => {
   return ;
   
 }
+
+private _onBorder() {
+  let currentBorder = document.getElementById('border' + this.chartId).innerText;
+  let newBorder = getNextElementInArray( this.props.foamStyles.foamBorders, currentBorder, 'next', true, this.props.foamStyles.foamBorders[0]);
+
+  let foamTree: any = resetBorderSettings( newBorder, this.props.foamStyles.foamBorders );
+
+  this.foamtree.set( foamTree );
+  this.foamtree.update();
+  this.foamtree.redraw();
+  console.log('_onBorder',currentBorder,newBorder, foamTree );
+  document.getElementById('border' + this.chartId).innerText = newBorder;
+}
+
 
 
 private _onStacking() {

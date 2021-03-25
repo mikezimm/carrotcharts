@@ -29,6 +29,15 @@ import { IPerformanceSettings,  } from '@mikezimm/npmfunctions/dist/Lists/getFun
 
 import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup, } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTree';
 
+import { IFoamBorder , FoamBorders, FoamBorderSettings, FoamBordersRound, FoamBordersNone, FoamBordersStraight } 
+    from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTreeDefaults';
+
+import { IFoamAnimation , FoamAnimations, FoamAnimationSettings, FoamAnimateGentle, FoamAnimateFadeIn, FoamAnimateFlyIn } 
+    from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTreeDefaults';
+
+import { IFoamColor , FoamColors, FoamColorSettings, FoamColorLight, FoamColorDark, FoamColorWarm } 
+    from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTreeDefaults';
+
 //import { FoamTree, IFoamTree } from "@carrotsearch/foamtree";
 
 /***
@@ -112,9 +121,9 @@ export interface IFoamcontrolProps {
   
       foamStyles: {
             foamChartHeight: number;  //Fixed number of pixels for the foam rendering
-            foamAnimations: string[];
-            foamColors: string[];
-            foamBorders: string[];
+            foamAnimations: IFoamAnimation[];
+            foamColors: IFoamColor[];
+            foamBorders: IFoamBorder[];
       };
 
       foamOptions: {

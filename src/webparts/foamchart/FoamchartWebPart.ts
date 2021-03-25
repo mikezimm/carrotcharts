@@ -388,6 +388,10 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
     let tenant = this.context.pageContext.web.absoluteUrl.replace(this.context.pageContext.web.serverRelativeUrl,"");
     let parentListWeb = this.properties.parentListWeb.indexOf('/sites/') === 0 ? tenant + this.properties.parentListWeb : this.properties.parentListWeb;
 
+    let foamAnimations: any = this.properties.foamAnimations.split(',') ;
+    let foamColors: any = this.properties.foamColors.split(',') ;
+    let foamBorders: any = this.properties.foamBorders.split(',') ;
+
     const element: React.ReactElement<IFoamchartProps> = React.createElement(
       Foamchart,
       {
@@ -398,9 +402,9 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
 
         foamStyles: {
             foamChartHeight: this.properties.foamChartHeight,  //Fixed number of pixels for the foam rendering
-            foamAnimations: this.properties.foamAnimations.split(',') ,
-            foamColors: this.properties.foamColors.split(',') ,
-            foamBorders: this.properties.foamBorders.split(',') ,
+            foamAnimations: foamAnimations ,
+            foamColors: foamColors ,
+            foamBorders: foamBorders ,
         },
 
         foamOptions: {

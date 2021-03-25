@@ -9,6 +9,7 @@
 import { PageContext } from '@microsoft/sp-page-context';
 import { WebPartContext } from '@microsoft/sp-webpart-base';
 
+import { FoamTree } from "@carrotsearch/foamtree";
 
 /**
  * 
@@ -20,7 +21,15 @@ import { WebPartContext } from '@microsoft/sp-webpart-base';
 
 import { IPerformanceSettings,  } from '@mikezimm/npmfunctions/dist/Lists/getFunctions';
 
-import { FoamTree } from "@carrotsearch/foamtree";
+import { IFoamBorder , FoamBorders, FoamBorderSettings, FoamBordersRound, FoamBordersNone, FoamBordersStraight } 
+    from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTreeDefaults';
+
+import { IFoamAnimation , FoamAnimations, FoamAnimationSettings, FoamAnimateGentle, FoamAnimateFadeIn, FoamAnimateFlyIn } 
+    from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTreeDefaults';
+
+import { IFoamColor , FoamColors, FoamColorSettings, FoamColorLight, FoamColorDark, FoamColorWarm } 
+    from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTreeDefaults';
+
 
 /**
  * 
@@ -91,9 +100,9 @@ export interface IFoamchartProps {
   
       foamStyles: {
             foamChartHeight: number;  //Fixed number of pixels for the foam rendering
-            foamAnimations: string[];
-            foamColors: string[];
-            foamBorders: string[];
+            foamAnimations: IFoamAnimation[];
+            foamColors: IFoamColor[];
+            foamBorders: IFoamBorder[];
       };
 
       foamOptions: {
