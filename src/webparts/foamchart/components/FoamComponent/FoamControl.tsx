@@ -421,7 +421,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
         </div></div>;
 
     return (
-      <div className={ styles.foamchart } style={{background: 'gray', padding: '15px'}}>
+      <div className={ styles.foamchart } style={{background: 'transparent', padding: '15px'}}>
           { searchStack }
           { foamBox }
           {  }
