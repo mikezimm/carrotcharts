@@ -220,12 +220,12 @@ export class IntroPage {
           PropertyPaneTextField('foamAnimations', {
             label: 'Animation choices ( , separated )',
             description: 'Valid choices: ' + FoamAnimations.join(', '),
-            disabled: true,
+            //disabled: true,
           }),
           PropertyPaneTextField('foamColors', {
             label: 'Color choices ( , separated )',
             description: 'Valid choices: ' + FoamColors.join(', '),
-            disabled: true,
+            //disabled: true,
           }),
           PropertyPaneTextField('foamBorders', {
             label: 'Border choices ( , separated )',

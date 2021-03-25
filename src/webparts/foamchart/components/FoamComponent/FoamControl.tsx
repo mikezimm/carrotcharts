@@ -36,7 +36,9 @@ import { IFoamTreeList, IFoamItemInfo } from '../GetListData';
 
 import { getFakeFoamTreeData, getFakeFoamTreeGroups, fakeGroups1, getEmptyFoamTreeData } from '../FakeFoamTreeData';
 
-import { setBorderSettings, resetBorderSettings } from './BorderFunctions';
+import { resetBorderSettings } from './StyleBorderFunctions';
+import { resetAnimateSettings } from './StyleAnimateFunctions';
+import { resetColorSettings } from './StyleColorFunctions';
 
 import { getTotalGroupWeight, buildGroupData } from './FoamFunctions';
 
@@ -229,6 +231,8 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
     let foamStyles = this.foamStyles;
     let foamData = this.props.foamData;
     let foamBorders = foamStyles.foamBorders;
+    let foamColors = foamStyles.foamColors;
+    let foamAnimations = foamStyles.foamAnimations;
 
     let searchStack = null;
     let x = this.props.WebpartWidth > 0 ? ( this.props.WebpartWidth -30 ) + "px" : "500px";
@@ -275,6 +279,11 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
       let butBorder = <div className= {stylesB.buttons} id={ 'butBorder' + this.chartId } style={{ display: foamBorders.length > 1 ? '' : 'none' }}>
             <IconButton iconProps={{ iconName: 'BorderDash' }} onClick={ this._onBorder.bind(this) } styles={ defCommandIconStyles } /></div>;
 
+      let butAnimate = <div className= {stylesB.buttons} id={ 'butAnimate' + this.chartId } style={{ display: foamBorders.length > 1 ? '' : 'none' }}>
+            <IconButton iconProps={{ iconName: 'SetAction' }} onClick={ this._onAnimate.bind(this) } styles={ defCommandIconStyles } /></div>;
+
+      let butColor = <div className= {stylesB.buttons} id={ 'butColor' + this.chartId } style={{ display: foamBorders.length > 1 ? '' : 'none' }}>
+            <IconButton iconProps={{ iconName: 'Color' }} onClick={ this._onColor.bind(this) } styles={ defCommandIconStyles } /></div>;
 
 /*
       foamStyles: {
@@ -392,11 +401,15 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
                   <div style={{paddingRight:'10px'}} id={ 'layout' + this.chartId }>{ this.props.foamTreeData.layout }</div>
                   <div style={{paddingRight:'10px'}} id={ 'stacking' + this.chartId }>{ this.props.foamTreeData.stacking }</div>
                   <div style={{paddingRight:'10px'}} id={ 'border' + this.chartId }>{ foamBorders[0] }</div>
+                  <div style={{paddingRight:'10px'}} id={ 'color' + this.chartId }>{ foamColors[0] }</div>
+                  <div style={{paddingRight:'10px'}} id={ 'animate' + this.chartId }>{ foamAnimations[0] }</div>
               </div>
               <div style={{display:'inline-flex', paddingTop: '10px', fontSize: 'larger', fontWeight: 'bolder'}}>
                   { butLayout }
                   { butStacking }
                   { butBorder }
+                  { butAnimate }
+                  { butColor }
               </div>
               <div> { choiceSlider } </div>
           </div>;
@@ -595,7 +608,33 @@ private _onBorder() {
   document.getElementById('border' + this.chartId).innerText = newBorder;
 }
 
+private _onColor() {
+  let currentColor = document.getElementById('color' + this.chartId).innerText;
+  let newColor = getNextElementInArray( this.foamStyles.foamColors, currentColor, 'next', true, this.foamStyles.foamColors[0]);
 
+  this.foamStyles.currentColor = newColor;
+  let foamTree: any = resetColorSettings( newColor, this.foamStyles.foamColors );
+
+  this.foamtree.set( foamTree );
+  this.foamtree.update();
+  this.foamtree.redraw();
+  console.log('_onColor',currentColor,newColor, foamTree );
+  document.getElementById('color' + this.chartId).innerText = newColor;
+}
+
+private _onAnimate() {
+  let currentAnimate = document.getElementById('animate' + this.chartId).innerText;
+  let newAnimate = getNextElementInArray( this.foamStyles.foamAnimations, currentAnimate, 'next', true, this.foamStyles.currentAnimation[0]);
+
+  this.foamStyles.currentAnimation = newAnimate;
+  let foamTree: any = resetAnimateSettings( newAnimate, this.foamStyles.foamAnimations );
+
+  this.foamtree.set( foamTree );
+  this.foamtree.update();
+  this.foamtree.redraw();
+  console.log('_onAnimate',currentAnimate,newAnimate, foamTree );
+  document.getElementById('animate' + this.chartId).innerText = newAnimate;
+}
 
 private _onStacking() {
   let currentLayout = document.getElementById('stacking' + this.chartId).innerText;

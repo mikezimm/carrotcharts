@@ -58,8 +58,9 @@
 
 import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTree';
 import { IFoamStyles } from './IFoamchartProps';
-import { setBorderSettings } from './FoamComponent/BorderFunctions';
-
+import { setBorderSettings } from './FoamComponent/StyleBorderFunctions';
+import { setAnimateSettings } from './FoamComponent/StyleAnimateFunctions';
+import { setColorSettings } from './FoamComponent/StyleColorFunctions';
 /***
  *    d88888b db    db d8888b.  .d88b.  d8888b. d888888b      d888888b d8b   db d888888b d88888b d8888b. d88888b  .d8b.   .o88b. d88888b .d8888. 
  *    88'     `8b  d8' 88  `8D .8P  Y8. 88  `8D `~~88~~'        `88'   888o  88 `~~88~~' 88'     88  `8D 88'     d8' `8b d8P  Y8 88'     88'  YP 
@@ -184,6 +185,8 @@ import { setBorderSettings } from './FoamComponent/BorderFunctions';
     };
 
     emptyRelaxed = setBorderSettings( emptyRelaxed, foamStyles.foamBorders[0] );
+    emptyRelaxed = setAnimateSettings( emptyRelaxed, foamStyles.foamAnimations[0] );
+    emptyRelaxed = setColorSettings( emptyRelaxed, foamStyles.foamColors[0] );
 
     //console.log('thisFoamTree', thisFoamTree );
     return emptyRelaxed;

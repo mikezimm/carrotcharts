@@ -32,8 +32,6 @@ import { getAllItems, IFoamTreeList, IFoamItemInfo } from './GetListData';
 
 import { buildGroupData } from './FoamComponent/FoamFunctions';
 
-import { setBorderSettings } from './FoamComponent/BorderFunctions';
-
 
 import Foamcontrol from './FoamComponent/FoamControl';
 import stylesB from './CreateButtons.module.scss';

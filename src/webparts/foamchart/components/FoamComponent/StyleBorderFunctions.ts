@@ -1,15 +1,8 @@
 
 import { IFoamTree } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTree';
 
-import { IFoamBorder , FoamBorders, FoamBorderSettings, FoamBordersDefaults ,FoamBordersRound, FoamBordersNone, FoamBordersStraight } 
+import { IFoamBorder , FoamBorders, FoamBorderSettings, FoamBordersRound, FoamBordersNone, FoamBordersStraight, FoamBordersDefaults } 
     from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTreeDefaults';
-
-import { IFoamAnimation , FoamAnimations, FoamAnimationSettings, FoamAnimateGentle, FoamAnimateFadeIn, FoamAnimateFlyIn } 
-    from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTreeDefaults';
-
-import { IFoamColor , FoamColors, FoamColorSettings, FoamColorLight, FoamColorDark, FoamColorWarm } 
-    from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTreeDefaults';
-
 
 export function setBorderSettings( currentFoamTree: any, newBorder: IFoamBorder ) { //currentTree: IFoamTree, 
 
