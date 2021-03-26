@@ -6,6 +6,8 @@ import { minInfinity, maxInfinity } from '@mikezimm/npmfunctions/dist/Lists/colu
 
 import { getFakeFoamTreeData, getEmptyFoamTreeData } from '../FakeFoamTreeData';
 
+import { IFoamStyles } from '../IFoamchartProps';
+
 import { getAllItems, IFoamTreeList, IFoamItemInfo } from '../GetListData';
 
 
@@ -21,7 +23,7 @@ import { getAllItems, IFoamTreeList, IFoamItemInfo } from '../GetListData';
     */
 
 
-   export function buildGroupData ( fetchList: IFoamTreeList, allItems : IFoamItemInfo[] ) {
+   export function buildGroupData ( fetchList: IFoamTreeList, allItems : IFoamItemInfo[], foamStyles : IFoamStyles ) {
 
     let count = allItems.length;
 
@@ -90,7 +92,7 @@ import { getAllItems, IFoamTreeList, IFoamItemInfo } from '../GetListData';
     console.log( 'CALCULATION TIME (ms) = ' + ( end.getTime() - start.getTime() ) );
 
     //let foamTree : IFoamTree = getFakeFoamTreeData( true, 90 );
-    let foamTree : IFoamTree = getEmptyFoamTreeData();
+    let foamTree : IFoamTree = getEmptyFoamTreeData( foamStyles );
     foamTree.dataObject.groups = finalGroups; 
     return foamTree;
 

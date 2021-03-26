@@ -31,20 +31,28 @@ import { FoamTreeLayouts, FoamTreeFillType, FoamTreeStacking, RolloutStartPoint,
 import { getNextElementInArray } from '@mikezimm/npmfunctions/dist/Services/Arrays/services';
 import { doesObjectExistInArray, getKeySummary, getKeyChanges } from '@mikezimm/npmfunctions/dist/Services/Arrays/checks';
 import { sortObjectArrayByStringKey } from '@mikezimm/npmfunctions/dist/Services/Arrays/sorting';
+import { camelize, upperFirstLetter, lowerFirstLetter } from '@mikezimm/npmfunctions/dist/Services/Strings/stringCase';
 
 import { IFoamTreeList, IFoamItemInfo } from '../GetListData';
 
 import { getFakeFoamTreeData, getFakeFoamTreeGroups, fakeGroups1, getEmptyFoamTreeData } from '../FakeFoamTreeData';
+
+import { resetBorderSettings } from './StyleBorderFunctions';
+import { resetAnimateSettings } from './StyleAnimateFunctions';
+import { resetColorSettings } from './StyleColorFunctions';
 
 import { getTotalGroupWeight, buildGroupData } from './FoamFunctions';
 
 import stylesB from '../CreateButtons.module.scss';
 
 export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoamcontrolState> {
-  private foamtreeData: any = getEmptyFoamTreeData( );
+
+  private foamStyles = this.props.foamStyles;
+  private foamtreeData: any = getEmptyFoamTreeData( this.foamStyles );
   
   private foamtree = null;
 
+  private sbPlaceHolder = "Search items";
   private chartId = this.props.chartId;
   private bC0 = "breadCrumb0" + this.chartId;
   private bC1 = "breadCrumb1" + this.chartId;
@@ -56,6 +64,14 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
   private buttonFW = "buttonFoward" + this.chartId;
   private buttonREV = "buttonReverse" + this.chartId;
+  private buttonSum = "buttonSum" + this.chartId;
+  private buttonCnt = "buttonCount" + this.chartId;
+  private buttonAvg = "buttonAvg" + this.chartId;
+  private buttonMax= "buttonMax" + this.chartId;
+  private buttonMin= "buttonMin" + this.chartId;
+  private buttonRng= "buttonRange" + this.chartId;
+
+  private buttonOperators = [ this.buttonSum, this.buttonCnt, this.buttonAvg, this.buttonMax, this.buttonMin, this.buttonRng ];
 
   public constructor(props:IFoamcontrolProps){
     super(props);
@@ -99,13 +115,20 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
   private updateBreadCrumbGroups( order: 'asc' | 'dec' ){
 
     let newCats : string[] = JSON.parse(JSON.stringify(this.props.fetchList.carrotCats));
-    if ( order === 'dec') { 
+    
+    if ( this.props.foamOptions.rollHiearchy !== true ) {
+      document.getElementById( this.buttonFW ).style.display = 'none';
+      document.getElementById( this.buttonREV ).style.display = 'none';
+
+    } else if ( order === 'dec') { 
       newCats.reverse() ;
       document.getElementById( this.buttonFW ).style.display = '';
-      document.getElementById( this.buttonREV ).style.display = 'none';   
+      document.getElementById( this.buttonREV ).style.display = 'none';
+
     } else {
       document.getElementById( this.buttonFW ).style.display = 'none';
-      document.getElementById( this.buttonREV ).style.display = '';   
+      document.getElementById( this.buttonREV ).style.display = '';
+
     }
 
     document.getElementById( this.bC0 ).innerText = ' > ' + newCats[0];
@@ -205,9 +228,16 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
   public render(): React.ReactElement<IFoamcontrolProps> {
 
+    let foamOptions = this.props.foamOptions;
+    let foamStyles = this.foamStyles;
+    let foamData = this.props.foamData;
+    let foamBorders = foamStyles.foamBorders;
+    let foamColors = foamStyles.foamColors;
+    let foamAnimations = foamStyles.foamAnimations;
+
     let searchStack = null;
     let x = this.props.WebpartWidth > 0 ? ( this.props.WebpartWidth -30 ) + "px" : "500px";
-    let y = this.props.foamStyles.foamChartHeight > 0 ? this.props.foamStyles.foamChartHeight + "px" : "500px";
+    let y = this.foamStyles.foamChartHeight > 0 ? this.foamStyles.foamChartHeight + "px" : "500px";
     /*
     let spinner = null;
     if ( this.props.foamTreeData.dataObject.groups.length === 0 ) { 
@@ -238,14 +268,40 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
         //title= { 'titleText'} 
         onClick={ this._onLayout.bind(this) }
         styles={ defCommandIconStyles }
-        /><span style={{display: 'none'}} id={ 'layout' + this.props.chartId }>{ this.props.foamTreeData.layout }</span>
+        /><span style={{display: 'none'}} id={ 'layout' + this.chartId }>{ this.props.foamTreeData.layout }</span>
       </div>;
 
-      let butLayout = <div className= {stylesB.buttons} id={ 'butLayout' + this.props.chartId }><IconButton iconProps={{ iconName: 'WebAppBuilderFragment' }} onClick={ this._onLayout.bind(this) } styles={ defCommandIconStyles } /></div>;
-      let butStacking = <div className= {stylesB.buttons} id={ 'butStacking' + this.props.chartId }><IconButton iconProps={{ iconName: 'Header' }} onClick={ this._onStacking.bind(this) } styles={ defCommandIconStyles } /></div>;
+      let butLayout = <div className= {stylesB.buttons} id={ 'butLayout' + this.chartId } style={{ display: foamOptions.changeLayout === true ? '' : 'none' }}>
+            <IconButton iconProps={{ iconName: 'WebAppBuilderFragment' }} onClick={ this._onLayout.bind(this) } styles={ defCommandIconStyles } /></div>;
+
+      let butStacking = <div className= {stylesB.buttons} id={ 'butStacking' + this.chartId } style={{ display: foamOptions.changeTitles === true ? '' : 'none' }}>
+            <IconButton iconProps={{ iconName: 'Header' }} onClick={ this._onStacking.bind(this) } styles={ defCommandIconStyles } /></div>;
+
+      let butBorder = <div className= {stylesB.buttons} id={ 'butBorder' + this.chartId } style={{ display: foamBorders.length > 1 ? '' : 'none' }}>
+            <IconButton iconProps={{ iconName: 'BorderDash' }} onClick={ this._onBorder.bind(this) } styles={ defCommandIconStyles } /></div>;
+
+      let butAnimate = <div className= {stylesB.buttons} id={ 'butAnimate' + this.chartId } style={{ display: foamAnimations.length > 1 ? '' : 'none' }}>
+            <IconButton iconProps={{ iconName: 'SetAction' }} onClick={ this._onAnimate.bind(this) } styles={ defCommandIconStyles } /></div>;
+
+      let butColor = <div className= {stylesB.buttons} id={ 'butColor' + this.chartId } style={{ display: foamColors.length > 1 ? '' : 'none' }}>
+            <IconButton iconProps={{ iconName: 'Color' }} onClick={ this._onColor.bind(this) } styles={ defCommandIconStyles } /></div>;
+
+/*
+      foamStyles: {
+            foamChartHeight: number;  //Fixed number of pixels for the foam rendering
+            foamAnimations: string[];
+            foamColors: string[];
+            foamBorders: string[];
+      };
+*/
+
 
       let searchElements = [];
       let choiceSlider = null;
+
+      // Added as 'relative' per this github comment (works! ) https://github.com/mui-org/material-ui/issues/8928#issuecomment-340964842
+      let searchDivDDStyles = { padding: '0px 20px 0px 0px', position: 'relative' as 'relative', top: '-10px'};
+      let searchDivSearchStyles = { padding: '0px 20px 5px 0px', position: 'relative' as 'relative', top: '-5px'};
       /**
        * Add Dropdown search
        */
@@ -255,8 +311,8 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
               let dropDownSort = this.props.fetchList.dropDownSort[ index ];
               let dropDownChoicesSorted = dropDownSort === '' ? dropDownChoices : sortObjectArrayByStringKey( dropDownChoices, dropDownSort, 'text' );
-              let DDLabel = this.props.fetchList.dropDownColumns[ index ].replace('>','').replace('+','').replace('-','');
-              return <Dropdown
+              let DDLabel = this.getDefaultDDLabel(index);
+              return <div id={ 'DDIndex' + index + this.chartId } style={ searchDivDDStyles }><Dropdown
                   placeholder={ `Select a ${ DDLabel }` }
                   label={ DDLabel }
                   options={dropDownChoicesSorted}
@@ -265,7 +321,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
                     this.searchForItems(value.key.toString(), index, ev);
                   }}
                   styles={{ dropdown: { width: 200 } }}
-              />;
+              /></div>;
           });
         } 
         
@@ -273,10 +329,10 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
          * Add Text search box
          */
         if ( this.props.enableSearch === true ) {
-          let searchBox = <div>
-            <div style={{ paddingTop: '20px' }}></div>
+          let searchBox = <div id={ 'SearchBoxParent' + this.chartId } style={ searchDivSearchStyles }>
+            
             <SearchBox className={ styles.searchBox }
-                placeholder= { 'Search items' }
+                placeholder= { this.sbPlaceHolder }
                 iconProps={{ iconName : 'Search'}}
                 onSearch={ this.textSearch.bind(this) }
                 //value={this.state.searchText}
@@ -294,20 +350,71 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
           <button onClick={ this.tryNew.bind(this) } style={{marginRight:'20px'}}>tryNew</button>
           <button onClick={ this.resetState.bind(this) } style={{marginRight:'20px'}}>resetState</button>
 
-          <button onClick={ this.tryPropsData.bind(this) } style={{marginRight:'20px'}}>tryPropsData</button>         
+          <button onClick={ this.tryPropsData.bind(this) } style={{marginRight:'20px'}}>tryPropsData</button>    
+
+      foamStyles: {
+            foamChartHeight: number;  //Fixed number of pixels for the foam rendering
+            foamAnimations: string[];
+            foamColors: string[];
+            foamBorders: string[];
+      };
+
+      foamOptions: {    // foamOptions.changeTitles
+            rollHiearchy: boolean;
+            changeLayout: boolean;
+            changeTitles: boolean;
+      };
+
+      foamData: {
+            includeSum: boolean;
+            includeCount: boolean;
+            includeAvg: boolean;
+            includeRange: boolean;
+      };
 */
-          searchElements.push( <button onClick={ this.forwardHiearchy.bind(this) } style={{marginRight:'20px', display: 'none'}} id= { this.buttonFW }>Normal</button> );
-          searchElements.push( <button onClick={ this.reverseHiearchy.bind(this) } style={{marginRight:'20px'}} id= { this.buttonREV }>Reverse</button> );
 
-          searchElements.push( <button onClick={ this.showSum.bind(this) } style={{marginRight:'20px'}}>Sum</button> );
-          searchElements.push( <button onClick={ this.showCount.bind(this) } style={{marginRight:'20px'}}>Count</button> );
-          searchElements.push( <button onClick={ this.showAvg.bind(this) } style={{marginRight:'20px'}}>Avg</button> );
+          let changeElements = [];
+          changeElements.push( <button onClick={ this.forwardHiearchy.bind(this) } style={{padding: '5px 10px', marginRight:'20px', width: '80px', display: foamOptions.rollHiearchy === true ? '' : 'none'}} id= { this.buttonFW }>Normal</button> ); 
+          changeElements.push( <button onClick={ this.reverseHiearchy.bind(this) } style={{padding: '5px 10px', marginRight:'20px', width: '80px', display: 'none' }} id= { this.buttonREV }>Reverse</button> ); 
 
-          const wrapStackTokens: IStackTokens = { childrenGap: 30 };
+          changeElements.push( <button onClick={ this.showSum.bind(this) } style={{padding: '5px 20px', marginRight:'15px', display: foamData.includeSum === true ? '' : 'none'}} id= { this.buttonSum }>Sum</button> );  //&Sigma;
+          changeElements.push( <button onClick={ this.showCount.bind(this) } style={{padding: '5px 20px', marginRight:'15px', display: foamData.includeCount === true ? '' : 'none'}} id= { this.buttonCnt }>Count</button> ); 
+          changeElements.push( <button onClick={ this.showAvg.bind(this) } style={{padding: '5px 20px', marginRight:'15px', display: foamData.includeAvg === true ? '' : 'none'}} id= { this.buttonAvg }>Avg</button> ); 
+
+          changeElements.push( <button onClick={ this.showMax.bind(this) } style={{padding: '5px 20px', marginRight:'15px', display: foamData.includeMax === true ? '' : 'none'}} id= { this.buttonMax }>Max</button> ); 
+          changeElements.push( <button onClick={ this.showMin.bind(this) } style={{padding: '5px 20px', marginRight:'15px', display: foamData.includeMin === true ? '' : 'none'}} id= { this.buttonMin }>Min</button> ); 
+          changeElements.push( <button onClick={ this.showRange.bind(this) } style={{padding: '5px 20px', marginRight:'15px', display: foamData.includeRange === true ? '' : 'none'}} id= { this.buttonRng }>Range</button> ); 
+
+          const wrapStackTokensSearch: IStackTokens = { childrenGap: 0 };
+          const wrapStackTokensChange: IStackTokens = { childrenGap: 30 };
+
+          let labelDiv60w : React.CSSProperties = {width: '60px', padding:'0px 30px 0px 10px', whiteSpace: 'normal',  lineHeight: '30px' };
+          let labelDiv80w : React.CSSProperties = {width: '80px', padding:'0px 30px 0px 10px', whiteSpace: 'normal',  lineHeight: '30px' };
+          let labelDiv100w : React.CSSProperties = {width: '100px', padding:'0px 30px 0px 10px', whiteSpace: 'normal',  lineHeight: '30px' };
+
           searchStack = <div style={{ paddingBottom: '15px' }}>
-              <Stack horizontal horizontalAlign="start" verticalAlign="end" wrap tokens={wrapStackTokens}>
+              <Stack horizontal horizontalAlign="start" verticalAlign="end" wrap tokens={wrapStackTokensSearch}>
                 { searchElements }
               </Stack>
+              <div  id= { "DataButtonsID" + this.props.chartId } style={{display: ( this.props.foamOptions.expandData === true ? '' : 'none')}}>
+                <Stack horizontal horizontalAlign="start" verticalAlign="end" wrap tokens={wrapStackTokensChange} padding="15px 0px 15px 0px">
+                  { changeElements }
+                </Stack>
+              </div>
+              <div id={ 'DesignButtonsID' + this.props.chartId } style={{display: ( this.props.foamOptions.expandLayout === true ? '' : 'none')}} >
+                <div style={{display:'inline-flex', paddingTop: '10px 0px', fontWeight: 'bolder'}}>
+                    { butLayout }
+                    { <div style={ labelDiv60w } id={ 'layout' + this.chartId } title={ 'Foam layout' }>{ upperFirstLetter( this.props.foamTreeData.layout , true ) }</div> }
+                    { butStacking }
+                    { <div style={ labelDiv80w } id={ 'stacking' + this.chartId } title={ 'Title stacking' }>{ upperFirstLetter(this.props.foamTreeData.stacking, true ) }</div> }
+                    { butBorder }
+                    { <div style={ labelDiv60w } id={ 'border' + this.chartId } title={ 'Border' }>{ foamBorders[0] }</div> }
+                    { butAnimate }
+                    { <div style={ labelDiv60w } id={ 'animate' + this.chartId } title={ 'Animation' }>{ foamAnimations[0] }</div> }
+                    { butColor }
+                    { <div style={ labelDiv60w } id={ 'color' + this.chartId } title={ 'Color' }>{ foamColors[0] }</div> }
+                </div>
+              </div>
               <div style={{display:'inline-flex', paddingTop: '10px', fontSize: 'larger', fontWeight: 'bolder'}}>
                   <div style={{paddingRight:'10px'}} id= { this.bCSort }></div>
                   <div style={{paddingRight:'10px'}} id={ this.bC0 }></div>
@@ -317,14 +424,8 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
                   <div style={{paddingRight:'10px'}} id={ this.bCUnit }></div>
                   <div style={{paddingRight:'10px', display: 'none'}} id={ this.bCSum }></div>
               </div>
-              <div style={{display:'inline-flex', paddingTop: '10px', fontSize: 'larger', fontWeight: 'bolder'}}>
-                  <div style={{paddingRight:'10px'}} id={ 'layout' + this.props.chartId }>{ this.props.foamTreeData.layout }</div>
-                  <div style={{paddingRight:'10px'}} id={ 'stacking' + this.props.chartId }>{ this.props.foamTreeData.stacking }</div>
-              </div>
-              <div style={{display:'inline-flex', paddingTop: '10px', fontSize: 'larger', fontWeight: 'bolder'}}>
-                  { butLayout }
-                  { butStacking }
-              </div>
+
+
               <div> { choiceSlider } </div>
           </div>;
 
@@ -335,7 +436,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
         </div></div>;
 
     return (
-      <div className={ styles.foamchart } style={{background: 'gray', padding: '15px'}}>
+      <div className={ styles.foamchart } style={{background: 'transparent', padding: '15px'}}>
           { searchStack }
           { foamBox }
           {  }
@@ -355,23 +456,46 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
  *                                                                                                                                    
  */
 
+  private getDefaultDDLabel( index ) {
+    let defaultLabel = this.props.fetchList.dropDownColumns[ index ].replace('>','').replace('+','').replace('-','');
+    return defaultLabel;
+  }
  
- /**
+  /**
   * Based on PivotTiles.tsx
   * @param item
   */
- private textSearch = ( searchText: string ): void => {
+  private textSearch = ( searchText: string ): void => {
+    this.resetOtherDropdowns( -1 );
+    this.fullSearch( null, searchText );
 
-  this.fullSearch( null, searchText );
-
-}
-
+  }
 
   public searchForItems = (item, choiceSliderDropdown: number, ev: any): void => {
 
     console.log('searchForItems: ',item, choiceSliderDropdown, ev ) ;
+    this.resetOtherDropdowns( choiceSliderDropdown );
+    this.resetSearchBox();
     this.fullSearch( item, null );
 
+  }
+
+  private resetSearchBox() {
+    let sb = document.getElementById('SearchBoxParent' + this.chartId).getElementsByTagName('input')[0];
+    console.log('sb value:  to ' + this.sbPlaceHolder, document.getElementById('SearchBoxParent' + this.chartId).getElementsByTagName('input')[0].value );
+    document.getElementById('SearchBoxParent' + this.chartId).getElementsByTagName('input')[0].value = this.sbPlaceHolder;
+
+  }
+
+  private resetOtherDropdowns( choiceSliderDropdown: number ) {
+    this.props.dropDownItems.map( ( dropDownChoices, index ) => {
+      let otherDDId = 'DDIndex' + index + this.chartId;
+      if ( index !== choiceSliderDropdown ) { //clear choice dropdowns to
+        let newDDLabel = `Select a ${ this.getDefaultDDLabel(index) }`;
+        document.getElementById(otherDDId).getElementsByTagName('span')[0].firstElementChild.textContent = newDDLabel ;
+      }
+    });
+    return;
   }
 
 public fullSearch = (item: any, searchText: string ): void => {
@@ -456,7 +580,7 @@ public fullSearch = (item: any, searchText: string ): void => {
 
   searchCount = newFilteredItems.length;
   
-  let foamTreeData = buildGroupData( this.props.fetchList, newFilteredItems );
+  let foamTreeData = buildGroupData( this.props.fetchList, newFilteredItems, this.foamStyles );
   let newGroups : IFoamTreeGroup[] = JSON.parse(JSON.stringify( foamTreeData.dataObject.groups ));
   let dataObject: IFoamTreeDataObject = this.foamtree.get("dataObject");
   
@@ -485,9 +609,55 @@ public fullSearch = (item: any, searchText: string ): void => {
   
 }
 
+private _onBorder() {
+  let currentBorder = document.getElementById('border' + this.chartId).innerText;
+  let newBorder = getNextElementInArray( this.foamStyles.foamBorders, currentBorder, 'next', true, this.foamStyles.foamBorders[0]);
+
+  this.foamStyles.currentBorder = newBorder;
+  let foamTree: any = resetBorderSettings( newBorder, this.foamStyles.foamBorders );
+
+  //Note if you change the border, it has some color settings so you have to reset the colors afterwords
+  foamTree= resetColorSettings( this.foamStyles.currentColor , this.foamStyles.foamColors );
+
+  this.foamtree.set( foamTree );
+  this.foamtree.update();
+  this.foamtree.redraw();
+  console.log('_onBorder',currentBorder,newBorder, foamTree );
+  document.getElementById('border' + this.chartId).innerText = newBorder;
+}
+
+private _onColor() {
+  let currentColor = document.getElementById('color' + this.chartId).innerText;
+  let newColor = getNextElementInArray( this.foamStyles.foamColors, currentColor, 'next', true, this.foamStyles.foamColors[0]);
+
+  this.foamStyles.currentColor = newColor;
+  let foamTree: any = resetColorSettings( newColor, this.foamStyles.foamColors );
+
+  this.foamtree.set( foamTree );
+  this.foamtree.update();
+  this.foamtree.redraw();
+  console.log('_onColor',currentColor,newColor, foamTree );
+  document.getElementById('color' + this.chartId).innerText = newColor;
+}
+
+private _onAnimate() {
+  let currentAnimate = document.getElementById('animate' + this.chartId).innerText;
+  let newAnimate = getNextElementInArray( this.foamStyles.foamAnimations, currentAnimate, 'next', true, this.foamStyles.currentAnimation[0]);
+
+  this.foamStyles.currentAnimation = newAnimate;
+  let foamTree: any = resetAnimateSettings( newAnimate, this.foamStyles.foamAnimations );
+
+  this.foamtree.set( foamTree );
+  this.foamtree.update();
+  this.foamtree.redraw();
+  console.log('_onAnimate',currentAnimate,newAnimate, foamTree );
+  document.getElementById('animate' + this.chartId).innerText = newAnimate;
+}
 
 private _onStacking() {
-  let currentLayout = document.getElementById('stacking' + this.props.chartId).innerText;
+  //NOTE This function needs to convert innterText to lowerCase first letter because it's a prop.
+  //Then it upper cases first character for display purposes
+  let currentLayout = lowerFirstLetter( document.getElementById('stacking' + this.chartId).innerText, true );
   let newStacking = getNextElementInArray( FoamTreeStacking, currentLayout, 'next', true, FoamTreeStacking[0]);
   this.foamtree.set({
     stacking: newStacking,
@@ -495,18 +665,20 @@ private _onStacking() {
   this.foamtree.update();
   this.foamtree.redraw();
   console.log('_onStacking',currentLayout,newStacking);
-  document.getElementById('stacking' + this.props.chartId).innerText = newStacking;
+  document.getElementById('stacking' + this.chartId).innerText = upperFirstLetter( newStacking, true );
 }
 
 private _onLayout() {
-  let currentLayout = document.getElementById('layout' + this.props.chartId).innerText;
+  //NOTE This function needs to convert innterText to lowerCase first letter because it's a prop.
+  //Then it upper cases first character for display purposes
+  let currentLayout = lowerFirstLetter( document.getElementById('layout' + this.chartId).innerText, true );
   let newLayout = getNextElementInArray( FoamTreeLayouts, currentLayout, 'next', true, FoamTreeLayouts[0]);
   this.foamtree.set({
     layout: newLayout,
   });
   this.foamtree.update();
   //this.foamtree.redraw();
-  document.getElementById('layout' + this.props.chartId).innerText = newLayout;
+  document.getElementById('layout' + this.chartId).innerText =  upperFirstLetter( newLayout, true);
 }
 
 /**
@@ -535,7 +707,7 @@ private forwardHiearchy( ) {
 
 private rollHiearchy ( newFetchList : IFoamTreeList ) {
 
-  let foamTreeData = buildGroupData( newFetchList, this.props.allItems );
+  let foamTreeData = buildGroupData( newFetchList, this.props.allItems, this.foamStyles );
   let newGroups : IFoamTreeGroup[] = JSON.parse(JSON.stringify( foamTreeData.dataObject.groups ));
   let dataObject: IFoamTreeDataObject = this.foamtree.get("dataObject");
   
@@ -616,6 +788,7 @@ private updateGroupWeights ( dataObject: IFoamTreeDataObject , newGroups : IFoam
   private showMin() { this.switchGroupWeights('min'); }
   private showMax() { this.switchGroupWeights('max'); }
   private showAvg() { this.switchGroupWeights('avg'); }
+  private showRange() { this.switchGroupWeights('range'); }
 
   private switchGroupWeights( operator: string  ) {
     let keySummary = this.consoleDataObject( 'switchGroupWeights Before', 'full', null );
@@ -625,13 +798,20 @@ private updateGroupWeights ( dataObject: IFoamTreeDataObject , newGroups : IFoam
     this.foamtree.update();
     this.foamtree.redraw();
     this.consoleDataObject( 'switchGroupWeights After', 'full', keySummary );
-    document.getElementById("breadCrumbOperator").innerText = operator;
+    document.getElementById( this.bCOper ).innerText = operator;
+
+    this.buttonOperators.map( op => {
+      document.getElementById(op).classList.add( op.toLowerCase().indexOf(operator ) > -1 ? styles.activeButton : null );
+      document.getElementById(op).classList.remove( op.toLowerCase().indexOf(operator ) > -1 ? null : styles.activeButton );
+    });
+
   }
 
 
   private setGroupWeight( groups: IFoamTreeGroup[], operator: string ) {
     groups.map( group => {
-      group.weight = group[operator];
+      group.weight = operator === 'range' ? group['max'] - group['min'] : group[operator];
+
       if ( group.groups.length > 0 ) { group.groups = this.setGroupWeight( group.groups, operator ) ; }
     });
     return groups;

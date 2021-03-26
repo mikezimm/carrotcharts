@@ -29,6 +29,15 @@ import { IPerformanceSettings,  } from '@mikezimm/npmfunctions/dist/Lists/getFun
 
 import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup, } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTree';
 
+import { IFoamBorder , FoamBorders, FoamBorderSettings, FoamBordersRound, FoamBordersNone, FoamBordersStraight } 
+    from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTreeDefaults';
+
+import { IFoamAnimation , FoamAnimations, FoamAnimationSettings, FoamAnimateGentle, FoamAnimateFadeIn, FoamAnimateFlyIn } 
+    from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTreeDefaults';
+
+import { IFoamColor , FoamColors, FoamColorSettings, FoamColorLight, FoamColorDark, FoamColorWarm } 
+    from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTreeDefaults';
+
 //import { FoamTree, IFoamTree } from "@carrotsearch/foamtree";
 
 /***
@@ -66,6 +75,7 @@ import { IFoamTree, IFoamTreeDataObject, IFoamTreeGroup, } from '@mikezimm/npmfu
  *                                                                                                                                               
  */
 
+ import { IFoamStyles, IFoamOptions, IFoamData } from '../IFoamchartProps';
 
 /***
  *    d88888b db    db d8888b.  .d88b.  d8888b. d888888b      d888888b d8b   db d888888b d88888b d8888b. d88888b  .d8b.   .o88b. d88888b .d8888. 
@@ -110,24 +120,10 @@ export interface IFoamcontrolProps {
       WebpartHeight?:  number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
       WebpartWidth?:   number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
   
-      foamStyles: {
-            foamChartHeight: number;  //Fixed number of pixels for the foam rendering
-            foamAnimations: string[];
-            foamColors: string[];
-            foamBorders: string[];
-      };
+      foamStyles: IFoamStyles;
 
-      foamOptions: {
-            rollHiearchy: boolean;
-            changeLayout: boolean;
-            changeTitles: boolean;
-      };
+      foamOptions: IFoamOptions;
 
-      foamData: {
-            includeSum: boolean;
-            includeCount: boolean;
-            includeAvg: boolean;
-            includeRange: boolean;
-      };
+      foamData: IFoamData;
 
 }

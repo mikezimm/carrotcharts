@@ -49,7 +49,7 @@ import { getAllItems } from '@mikezimm/npmfunctions/dist/Services/PropPane/PPFun
 
 import { doesObjectExistInArray } from '@mikezimm/npmfunctions/dist/Services/Arrays/checks';
 
-import { makeid } from '@mikezimm/npmfunctions/dist/Services/Strings/stringServices';
+import { makeid, getStringArrayFromString } from '@mikezimm/npmfunctions/dist/Services/Strings/stringServices';
 
 import { FoamAnimations, FoamBorders, FoamColors } from '@mikezimm/npmfunctions/dist/CarrotCharts/IFoamTreeDefaults';
 
@@ -126,18 +126,26 @@ export interface IFoamchartWebPartProps {
   
     foamChartHeight: number;  //Fixed number of pixels for the foam rendering
 
-    foamAnimations: string;  // 'foamAnimations', 'foamColors', 'foamBorders'
-    foamColors: string;
-    foamBorders: string;
 
     //foamOptions components:
     rollHiearchy: boolean;
+    changeLayout: boolean;
+    changeTitles: boolean;
+    expandLayout: boolean;
+    expandData: boolean;
+
+    //foamData components:
     includeSum: boolean;
     includeCount: boolean;
     includeAvg: boolean;
+    includeMax: boolean;
+    includeMin: boolean;
     includeRange: boolean;
-    changeLayout: boolean;
-    changeTitles: boolean;
+
+    //foamDataStyling components
+    foamAnimations: string;  // 'foamAnimations', 'foamColors', 'foamBorders'
+    foamColors: string;
+    foamBorders: string;
 
     parentListTitle: string;
     parentListName: string;
@@ -277,8 +285,12 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
         if ( this.properties.foamColors && this.properties.foamColors.length > 0 ) {} else { this.properties.foamColors = FoamColors.join(',') ; }
         if ( this.properties.foamBorders && this.properties.foamBorders.length > 0 ) {} else { this.properties.foamBorders = FoamBorders.join(',') ; }
 
-        ['rollHiearchy','includeSum','includeCount','includeAvg','includeRange','changeLayout','changeTitles',].map( p => {
-          //if ( this.properties[p] === null || this.properties[p] === undefined ) { this.properties[p] = true ; }
+        ['includeSum','includeCount','includeAvg','includeMax','includeMin', 'includeRange'].map( p => {   //Data Options Settings
+          if ( this.properties[p] === null || this.properties[p] === undefined ) { this.properties[p] = true ; }
+        });
+
+        ['rollHiearchy','changeLayout','changeTitles','expandLayout','expandData'].map( p => {  //UI Settings
+          if ( this.properties[p] === null || this.properties[p] === undefined ) { this.properties[p] = true ; }
         });
 
       });
@@ -382,6 +394,10 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
     let tenant = this.context.pageContext.web.absoluteUrl.replace(this.context.pageContext.web.serverRelativeUrl,"");
     let parentListWeb = this.properties.parentListWeb.indexOf('/sites/') === 0 ? tenant + this.properties.parentListWeb : this.properties.parentListWeb;
 
+    let foamAnimations: any = getStringArrayFromString( this.properties.foamAnimations, ',or;', true, null, true ) ;
+    let foamColors: any = getStringArrayFromString( this.properties.foamColors, ',or;', true, null, true ) ;
+    let foamBorders: any = getStringArrayFromString( this.properties.foamBorders, ',or;', true, null, true ) ;
+
     const element: React.ReactElement<IFoamchartProps> = React.createElement(
       Foamchart,
       {
@@ -392,21 +408,28 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
 
         foamStyles: {
             foamChartHeight: this.properties.foamChartHeight,  //Fixed number of pixels for the foam rendering
-            foamAnimations: this.properties.foamAnimations.split(',') ,
-            foamColors: this.properties.foamColors.split(',') ,
-            foamBorders: this.properties.foamBorders.split(',') ,
+            foamAnimations: foamAnimations ,
+            foamColors: foamColors ,
+            foamBorders: foamBorders ,
+            currentAnimation: foamAnimations[0],
+            currentBorder: foamBorders[0],
+            currentColor: foamColors[0],
         },
 
         foamOptions: {
             rollHiearchy: this.properties.rollHiearchy,
             changeLayout: this.properties.changeLayout,
             changeTitles: this.properties.changeTitles,
+            expandLayout: this.properties.expandLayout,
+            expandData: this.properties.expandData,
         },
 
         foamData: {
           includeSum: this.properties.includeSum,
           includeCount: this.properties.includeCount,
           includeAvg: this.properties.includeAvg,
+          includeMax: this.properties.includeMax,
+          includeMin: this.properties.includeMin,
           includeRange: this.properties.includeRange,
         },
 
@@ -703,16 +726,27 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
      */
     let updateOnThese = [
       'setSize','setTab','otherTab','setTab','otherTab','setTab','otherTab','setTab','otherTab', '',
+
       'stressMultiplierTime', 'webPartScenario', '', '', '',
+
       'parentListTitle', 'parentListName', 'parentListWeb', 'sites', 'lists',
-      'fetchCount', 'fetchCountMobile', 'restFilter', '', '', '',
 
-      'pivotSize', 'pivotFormat', 'pivotOptions', 'pivotTab', 'advancedPivotStyles', 'scaleMethod',
+      'fetchCount', 'fetchCountMobile', 'restFilter', 'minDataDownload', '', '',  //Performance Settings
 
-      'dateColumn', 'valueColumn', 'valueType', 'valueOperator', 'minDataDownload','dropDownColumns','searchColumns', 'metaColumns',
+      'pivotSize', 'pivotFormat', 'pivotOptions', 'pivotTab', 'advancedPivotStyles',  //Pivot Style Settings (may not be needed)
 
-      'carrotCats', 'carrotProps', 'carrotStyles', 'foamChartHeight',
-      'foamAnimations', 'foamColors', 'foamBorders',
+      'dateColumn', 'valueColumn', 'valueType', 'valueOperator','dropDownColumns','searchColumns', 'metaColumns',  //List columns used for webpart
+
+      'scaleMethod', //Specific to GridCharts Settings
+
+      'carrotCats', 'carrotProps', 'carrotStyles', 'foamChartHeight', //Specific to CarrotSearch Settings
+
+      'includeSum','includeCount','includeAvg','includeMax','includeMin', 'includeRange',  //Data Options Settings
+
+      'rollHiearchy','changeLayout','changeTitles',  //UI Settings
+
+      'foamAnimations', 'foamColors', 'foamBorders',  //Styling Settings
+      
     ];
 
     //alert('props updated');

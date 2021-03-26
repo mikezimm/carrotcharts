@@ -47,10 +47,10 @@ export class IntroPage {
       }) );
     //2021-03-06:  For PreConfigProps lookup, copied from Drilldown7 ^^^^^
 
-    let dataToggles : any[] = makePropDataToggles( ['includeSum','includeCount','includeAvg' ]);
+    let dataToggles : any[] = makePropDataToggles( ['includeSum','includeCount','includeAvg','includeMax','includeMin' ]);
     dataToggles = makePropDataToggles( ['includeRange' ], dataToggles, 'Off', 'On', false, true );
 
-    let optionToggles : any[] = makePropDataToggles( ['rollHiearchy','changeLayout','changeTitles' ]);
+    let optionToggles : any[] = makePropDataToggles( ['rollHiearchy','changeLayout','changeTitles','expandLayout','expandData' ]);
 
     let sourceListTextFields : any[] = makePropDataText( ['parentListWeb', 'parentListTitle', 'carrotCats', 'dateColumn', 'valueColumn' ]  );
 
@@ -218,19 +218,19 @@ export class IntroPage {
 
           //'foamAnimations', 'foamColors', 'foamBorders'  FoamAnimations, FoamBorders, FoamColors
           PropertyPaneTextField('foamAnimations', {
-            label: 'Animation choices ( , separated ).',
+            label: 'Animation choices ( , separated )',
             description: 'Valid choices: ' + FoamAnimations.join(', '),
-            disabled: true,
+            //disabled: true,
           }),
           PropertyPaneTextField('foamColors', {
-            label: 'Color choices ( , separated ).',
+            label: 'Color choices ( , separated )',
             description: 'Valid choices: ' + FoamColors.join(', '),
-            disabled: true,
+            //disabled: true,
           }),
           PropertyPaneTextField('foamBorders', {
-            label: 'Border choices ( , separated ).',
+            label: 'Border choices ( , separated )',
             description: 'Valid choices: ' + FoamBorders.join(', '),
-            disabled: true,
+            //disabled: true,
           }),
         ]
       },
