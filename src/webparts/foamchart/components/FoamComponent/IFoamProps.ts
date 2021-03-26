@@ -75,7 +75,7 @@ import { IFoamColor , FoamColors, FoamColorSettings, FoamColorLight, FoamColorDa
  *                                                                                                                                               
  */
 
- import { IFoamStyles } from '../IFoamchartProps';
+ import { IFoamStyles, IFoamOptions, IFoamData } from '../IFoamchartProps';
 
 /***
  *    d88888b db    db d8888b.  .d88b.  d8888b. d888888b      d888888b d8b   db d888888b d88888b d8888b. d88888b  .d8b.   .o88b. d88888b .d8888. 
@@ -122,19 +122,8 @@ export interface IFoamcontrolProps {
   
       foamStyles: IFoamStyles;
 
-      foamOptions: {
-            rollHiearchy: boolean;
-            changeLayout: boolean;
-            changeTitles: boolean;
-      };
+      foamOptions: IFoamOptions;
 
-      foamData: {
-            includeSum: boolean;
-            includeCount: boolean;
-            includeAvg: boolean;
-            includeMax: boolean;
-            includeMin: boolean;
-            includeRange: boolean;
-      };
+      foamData: IFoamData;
 
 }

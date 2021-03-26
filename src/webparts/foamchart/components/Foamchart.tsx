@@ -44,6 +44,25 @@ import { IFoamchartState } from './IFoamchartState';
 
 export default class Foamchart extends React.Component<IFoamchartProps, IFoamchartState> {
 
+  private buildEarlyAccessButton( title: string, icon: string, onClick: any, ) {
+    defCommandIconStyles.icon.fontWeight = '600' ;
+    
+    return <div title={ title } className= {stylesB.buttons} id={ 'NoID' } style={{background: 'white', opacity: .7, borderRadius: '10px', cursor: 'pointer' }}>
+      <IconButton iconProps={{ iconName: icon }} 
+        text= { 'parent component' }
+        title= { title } 
+        //uniqueId= { titleText } 
+        //data= { titleText } 
+        //key= { titleText } 
+        ariaLabel= { title } 
+        disabled={false} 
+        checked={false}
+        onClick={ onClick }
+        styles={ defCommandIconStyles }
+        />
+    </div>;
+
+  }
   public constructor(props:IFoamchartProps){
     super(props);
 
@@ -225,52 +244,15 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
         WebpartWidth = { this.state.WebpartWidth }     //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/</div>
       />;
 
-      const defCommandIconStylesX : any = {
-        root: {padding:'10px !important', height: 32},//color: 'green' works here
-        icon: { 
-          fontSize: 18,
-          fontWeight: "normal",
-          margin: '0px 2px',
-          color: '#00457e', //This will set icon color
-       },
-      };
-
-      let button = <div className= {stylesB.buttons} id={ 'NoID' }>
-      <IconButton iconProps={{ iconName: 'Cat' }} 
-        text= { 'parent component' }
-        title= { 'titleText'} 
-        //uniqueId= { titleText } 
-        //data= { titleText } 
-        //key= { titleText } 
-        //ariaLabel= { titleText } 
-        disabled={false} 
-        checked={false}
-        onClick={ this._onClick.bind(this) }
-        styles={ defCommandIconStylesX }
-        />
-      </div>;
-
-
     /**
      * Add early access bar
      */
     let earlyAccess = null;
     defCommandIconStyles.icon.fontWeight = '600' ;
     
-    let buttonHelp = <div title={ "Feedback" } className= {stylesB.buttons} id={ 'NoID' } style={{background: 'white', opacity: .7, borderRadius: '10px', cursor: 'pointer' }}>
-      <IconButton iconProps={{ iconName: 'Help' }} 
-        text= { 'parent component' }
-        title= { 'titleText'} 
-        //uniqueId= { titleText } 
-        //data= { titleText } 
-        //key= { titleText } 
-        //ariaLabel= { titleText } 
-        disabled={false} 
-        checked={false}
-        onClick={ this._toggleInfoPages.bind(this) }
-        styles={ defCommandIconStyles }
-        />
-    </div>;
+    let buttonHelp = this.buildEarlyAccessButton( "Feedback" , 'Help', this._toggleInfoPages.bind(this));
+    let buttonAdvanced = this.buildEarlyAccessButton( "Layout" , 'Design', this._toggleDesign.bind(this));
+    let buttonData = this.buildEarlyAccessButton( "Data" , 'Calculator', this._toggleData.bind(this));
 
     if ( this.props.showEarlyAccess === true ) {
       let messages : IEarlyAccessItem[] = [];
@@ -295,7 +277,7 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
             messages = { messages }
             links = { linksArray }
             email = { 'mailto:General - WebPart Dev <0313a49d.Autoliv.onmicrosoft.com@amer.teams.ms>?subject=Drilldown Webpart Feedback&body=Enter your message here :)  \nScreenshots help!' }
-            farRightIcons = { [ { item: buttonHelp } ] }
+            farRightIcons = { [ { item: buttonData } , { item: buttonAdvanced } , { item: buttonHelp }  ] }
             WebpartWidth = { this.state.WebpartWidth }
         ></EarlyAccess>
       </div>;
@@ -347,6 +329,31 @@ export default class Foamchart extends React.Component<IFoamchartProps, IFoamcha
 
     document.getElementById('InfoPagesID' + this.props.chartId).style.display = newDisplay;
   }
+
+  private _toggleDesign() {
+    let newDisplay = document.getElementById('DesignButtonsID' + this.props.chartId).style.display ;
+
+    if ( newDisplay === 'none' ) { 
+      newDisplay = ''; } 
+    else { 
+      newDisplay = 'none';
+    }
+
+    document.getElementById('DesignButtonsID' + this.props.chartId).style.display = newDisplay;
+  }
+  
+  private _toggleData() {
+    let newDisplay = document.getElementById('DataButtonsID' + this.props.chartId).style.display ;
+
+    if ( newDisplay === 'none' ) { 
+      newDisplay = ''; } 
+    else { 
+      newDisplay = 'none';
+    }
+
+    document.getElementById('DataButtonsID' + this.props.chartId).style.display = newDisplay;
+  }
+
 
   private _onClick () {
     //let foamtree : any = getFakeFoamTreeData( true, 90 );

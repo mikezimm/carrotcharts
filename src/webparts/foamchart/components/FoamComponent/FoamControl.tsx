@@ -31,6 +31,7 @@ import { FoamTreeLayouts, FoamTreeFillType, FoamTreeStacking, RolloutStartPoint,
 import { getNextElementInArray } from '@mikezimm/npmfunctions/dist/Services/Arrays/services';
 import { doesObjectExistInArray, getKeySummary, getKeyChanges } from '@mikezimm/npmfunctions/dist/Services/Arrays/checks';
 import { sortObjectArrayByStringKey } from '@mikezimm/npmfunctions/dist/Services/Arrays/sorting';
+import { camelize, upperFirstLetter, lowerFirstLetter } from '@mikezimm/npmfunctions/dist/Services/Strings/stringCase';
 
 import { IFoamTreeList, IFoamItemInfo } from '../GetListData';
 
@@ -386,13 +387,34 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
           const wrapStackTokensSearch: IStackTokens = { childrenGap: 0 };
           const wrapStackTokensChange: IStackTokens = { childrenGap: 30 };
+
+          let labelDiv60w : React.CSSProperties = {width: '60px', padding:'0px 30px 0px 10px', whiteSpace: 'normal',  lineHeight: '30px' };
+          let labelDiv80w : React.CSSProperties = {width: '80px', padding:'0px 30px 0px 10px', whiteSpace: 'normal',  lineHeight: '30px' };
+          let labelDiv100w : React.CSSProperties = {width: '100px', padding:'0px 30px 0px 10px', whiteSpace: 'normal',  lineHeight: '30px' };
+
           searchStack = <div style={{ paddingBottom: '15px' }}>
               <Stack horizontal horizontalAlign="start" verticalAlign="end" wrap tokens={wrapStackTokensSearch}>
                 { searchElements }
               </Stack>
-              <Stack horizontal horizontalAlign="start" verticalAlign="end" wrap tokens={wrapStackTokensChange} padding="15px 0px 15px 0px">
-                { changeElements }
-              </Stack>
+              <div  id= { "DataButtonsID" + this.props.chartId } style={{display: ( this.props.foamOptions.expandData === true ? '' : 'none')}}>
+                <Stack horizontal horizontalAlign="start" verticalAlign="end" wrap tokens={wrapStackTokensChange} padding="15px 0px 15px 0px">
+                  { changeElements }
+                </Stack>
+              </div>
+              <div id={ 'DesignButtonsID' + this.props.chartId } style={{display: ( this.props.foamOptions.expandLayout === true ? '' : 'none')}} >
+                <div style={{display:'inline-flex', paddingTop: '10px 0px', fontWeight: 'bolder'}}>
+                    { butLayout }
+                    { <div style={ labelDiv60w } id={ 'layout' + this.chartId } title={ 'Foam layout' }>{ upperFirstLetter( this.props.foamTreeData.layout , true ) }</div> }
+                    { butStacking }
+                    { <div style={ labelDiv80w } id={ 'stacking' + this.chartId } title={ 'Title stacking' }>{ upperFirstLetter(this.props.foamTreeData.stacking, true ) }</div> }
+                    { butBorder }
+                    { <div style={ labelDiv60w } id={ 'border' + this.chartId } title={ 'Border' }>{ foamBorders[0] }</div> }
+                    { butAnimate }
+                    { <div style={ labelDiv60w } id={ 'animate' + this.chartId } title={ 'Animation' }>{ foamAnimations[0] }</div> }
+                    { butColor }
+                    { <div style={ labelDiv60w } id={ 'color' + this.chartId } title={ 'Color' }>{ foamColors[0] }</div> }
+                </div>
+              </div>
               <div style={{display:'inline-flex', paddingTop: '10px', fontSize: 'larger', fontWeight: 'bolder'}}>
                   <div style={{paddingRight:'10px'}} id= { this.bCSort }></div>
                   <div style={{paddingRight:'10px'}} id={ this.bC0 }></div>
@@ -402,20 +424,8 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
                   <div style={{paddingRight:'10px'}} id={ this.bCUnit }></div>
                   <div style={{paddingRight:'10px', display: 'none'}} id={ this.bCSum }></div>
               </div>
-              <div style={{display:'inline-flex', paddingTop: '10px', fontSize: 'larger', fontWeight: 'bolder'}}>
-                  <div style={{paddingRight:'10px'}} id={ 'layout' + this.chartId }>{ this.props.foamTreeData.layout }</div>
-                  <div style={{paddingRight:'10px'}} id={ 'stacking' + this.chartId }>{ this.props.foamTreeData.stacking }</div>
-                  <div style={{paddingRight:'10px'}} id={ 'border' + this.chartId }>{ foamBorders[0] }</div>
-                  <div style={{paddingRight:'10px'}} id={ 'color' + this.chartId }>{ foamColors[0] }</div>
-                  <div style={{paddingRight:'10px'}} id={ 'animate' + this.chartId }>{ foamAnimations[0] }</div>
-              </div>
-              <div style={{display:'inline-flex', paddingTop: '10px', fontSize: 'larger', fontWeight: 'bolder'}}>
-                  { butLayout }
-                  { butStacking }
-                  { butBorder }
-                  { butAnimate }
-                  { butColor }
-              </div>
+
+
               <div> { choiceSlider } </div>
           </div>;
 
@@ -645,7 +655,9 @@ private _onAnimate() {
 }
 
 private _onStacking() {
-  let currentLayout = document.getElementById('stacking' + this.chartId).innerText;
+  //NOTE This function needs to convert innterText to lowerCase first letter because it's a prop.
+  //Then it upper cases first character for display purposes
+  let currentLayout = lowerFirstLetter( document.getElementById('stacking' + this.chartId).innerText, true );
   let newStacking = getNextElementInArray( FoamTreeStacking, currentLayout, 'next', true, FoamTreeStacking[0]);
   this.foamtree.set({
     stacking: newStacking,
@@ -653,18 +665,20 @@ private _onStacking() {
   this.foamtree.update();
   this.foamtree.redraw();
   console.log('_onStacking',currentLayout,newStacking);
-  document.getElementById('stacking' + this.chartId).innerText = newStacking;
+  document.getElementById('stacking' + this.chartId).innerText = upperFirstLetter( newStacking, true );
 }
 
 private _onLayout() {
-  let currentLayout = document.getElementById('layout' + this.chartId).innerText;
+  //NOTE This function needs to convert innterText to lowerCase first letter because it's a prop.
+  //Then it upper cases first character for display purposes
+  let currentLayout = lowerFirstLetter( document.getElementById('layout' + this.chartId).innerText, true );
   let newLayout = getNextElementInArray( FoamTreeLayouts, currentLayout, 'next', true, FoamTreeLayouts[0]);
   this.foamtree.set({
     layout: newLayout,
   });
   this.foamtree.update();
   //this.foamtree.redraw();
-  document.getElementById('layout' + this.chartId).innerText = newLayout;
+  document.getElementById('layout' + this.chartId).innerText =  upperFirstLetter( newLayout, true);
 }
 
 /**

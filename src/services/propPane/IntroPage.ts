@@ -50,7 +50,7 @@ export class IntroPage {
     let dataToggles : any[] = makePropDataToggles( ['includeSum','includeCount','includeAvg','includeMax','includeMin' ]);
     dataToggles = makePropDataToggles( ['includeRange' ], dataToggles, 'Off', 'On', false, true );
 
-    let optionToggles : any[] = makePropDataToggles( ['rollHiearchy','changeLayout','changeTitles' ]);
+    let optionToggles : any[] = makePropDataToggles( ['rollHiearchy','changeLayout','changeTitles','expandLayout','expandData' ]);
 
     let sourceListTextFields : any[] = makePropDataText( ['parentListWeb', 'parentListTitle', 'carrotCats', 'dateColumn', 'valueColumn' ]  );
 

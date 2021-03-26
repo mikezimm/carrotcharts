@@ -68,6 +68,23 @@ export interface IFoamStyles {
       currentBorder?: IFoamBorder;
 }
 
+export interface IFoamOptions {
+      rollHiearchy: boolean;
+      changeLayout: boolean;
+      changeTitles: boolean;
+      expandLayout: boolean;
+      expandData: boolean;
+}
+
+export interface IFoamData {
+      includeSum: boolean;
+      includeCount: boolean;
+      includeAvg: boolean;
+      includeMax: boolean;
+      includeMin: boolean;
+      includeRange: boolean;
+}
+
 export interface IFoamchartProps {
 
       WebpartElement?: HTMLElement;   //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
@@ -110,20 +127,9 @@ export interface IFoamchartProps {
   
       foamStyles: IFoamStyles;
 
-      foamOptions: {
-            rollHiearchy: boolean;
-            changeLayout: boolean;
-            changeTitles: boolean;
-      };
+      foamOptions: IFoamOptions;
 
-      foamData: {
-            includeSum: boolean;
-            includeCount: boolean;
-            includeAvg: boolean;
-            includeMax: boolean;
-            includeMin: boolean;
-            includeRange: boolean;
-      };
+      foamData: IFoamData;
   
       useListAnalytics: boolean;
       analyticsWeb?: string;

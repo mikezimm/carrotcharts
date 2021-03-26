@@ -11,6 +11,7 @@ export function aboutTable() {
         rows: [],
     };
 
+    table.rows.push( ['2021-03-26', '1.0.0.7',    <span>Control over styling and data button visibility, npmFunctions v1.0.26</span>,                ''] );
     table.rows.push( ['2021-03-19', '1.0.0.6',    <span>Add pass-down props for data and layout buttons, npmFunctions v1.0.15</span>,                ''] );
     table.rows.push( ['2021-03-19', '1.0.0.5',    <span>Update EarlyAccess and Tricks from npmFunctions v1.0.15</span>,                ''] );
     table.rows.push( ['2021-03-16', '1.0.0.4',    <span>Fix foam Height, update PropPane with styles, options, data choices</span>,                ''] );

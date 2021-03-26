@@ -126,20 +126,26 @@ export interface IFoamchartWebPartProps {
   
     foamChartHeight: number;  //Fixed number of pixels for the foam rendering
 
-    foamAnimations: string;  // 'foamAnimations', 'foamColors', 'foamBorders'
-    foamColors: string;
-    foamBorders: string;
 
     //foamOptions components:
     rollHiearchy: boolean;
+    changeLayout: boolean;
+    changeTitles: boolean;
+    expandLayout: boolean;
+    expandData: boolean;
+
+    //foamData components:
     includeSum: boolean;
     includeCount: boolean;
     includeAvg: boolean;
     includeMax: boolean;
     includeMin: boolean;
     includeRange: boolean;
-    changeLayout: boolean;
-    changeTitles: boolean;
+
+    //foamDataStyling components
+    foamAnimations: string;  // 'foamAnimations', 'foamColors', 'foamBorders'
+    foamColors: string;
+    foamBorders: string;
 
     parentListTitle: string;
     parentListName: string;
@@ -283,7 +289,7 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
           if ( this.properties[p] === null || this.properties[p] === undefined ) { this.properties[p] = true ; }
         });
 
-        ['rollHiearchy','changeLayout','changeTitles',].map( p => {  //UI Settings
+        ['rollHiearchy','changeLayout','changeTitles','expandLayout','expandData'].map( p => {  //UI Settings
           if ( this.properties[p] === null || this.properties[p] === undefined ) { this.properties[p] = true ; }
         });
 
@@ -414,6 +420,8 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
             rollHiearchy: this.properties.rollHiearchy,
             changeLayout: this.properties.changeLayout,
             changeTitles: this.properties.changeTitles,
+            expandLayout: this.properties.expandLayout,
+            expandData: this.properties.expandData,
         },
 
         foamData: {
