@@ -297,6 +297,10 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 
       let searchElements = [];
       let choiceSlider = null;
+
+      // Added as 'relative' per this github comment (works! ) https://github.com/mui-org/material-ui/issues/8928#issuecomment-340964842
+      let searchDivDDStyles = { padding: '0px 20px 0px 0px', position: 'relative' as 'relative', top: '-10px'};
+      let searchDivSearchStyles = { padding: '0px 20px 5px 0px', position: 'relative' as 'relative', top: '-5px'};
       /**
        * Add Dropdown search
        */
@@ -307,7 +311,7 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
               let dropDownSort = this.props.fetchList.dropDownSort[ index ];
               let dropDownChoicesSorted = dropDownSort === '' ? dropDownChoices : sortObjectArrayByStringKey( dropDownChoices, dropDownSort, 'text' );
               let DDLabel = this.getDefaultDDLabel(index);
-              return <div id={ 'DDIndex' + index + this.chartId }><Dropdown
+              return <div id={ 'DDIndex' + index + this.chartId } style={ searchDivDDStyles }><Dropdown
                   placeholder={ `Select a ${ DDLabel }` }
                   label={ DDLabel }
                   options={dropDownChoicesSorted}
@@ -324,8 +328,8 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
          * Add Text search box
          */
         if ( this.props.enableSearch === true ) {
-          let searchBox = <div id={ 'SearchBoxParent' + this.chartId }>
-            <div style={{ paddingTop: '20px' }}></div>
+          let searchBox = <div id={ 'SearchBoxParent' + this.chartId } style={ searchDivSearchStyles }>
+            
             <SearchBox className={ styles.searchBox }
                 placeholder= { this.sbPlaceHolder }
                 iconProps={{ iconName : 'Search'}}
@@ -369,23 +373,24 @@ export default class Foamcontrol extends React.Component<IFoamcontrolProps, IFoa
 */
 
           let changeElements = [];
-          changeElements.push( <button onClick={ this.forwardHiearchy.bind(this) } style={{marginRight:'20px', width: '70px', display: foamOptions.rollHiearchy === true ? '' : 'none'}} id= { this.buttonFW }>Normal</button> ); 
-          changeElements.push( <button onClick={ this.reverseHiearchy.bind(this) } style={{marginRight:'20px', width: '70px', display: 'none' }} id= { this.buttonREV }>Reverse</button> ); 
+          changeElements.push( <button onClick={ this.forwardHiearchy.bind(this) } style={{padding: '5px 10px', marginRight:'20px', width: '80px', display: foamOptions.rollHiearchy === true ? '' : 'none'}} id= { this.buttonFW }>Normal</button> ); 
+          changeElements.push( <button onClick={ this.reverseHiearchy.bind(this) } style={{padding: '5px 10px', marginRight:'20px', width: '80px', display: 'none' }} id= { this.buttonREV }>Reverse</button> ); 
 
-          changeElements.push( <button onClick={ this.showSum.bind(this) } style={{marginRight:'20px', display: foamData.includeSum === true ? '' : 'none'}} id= { this.buttonSum }>Sum</button> );  //&Sigma;
-          changeElements.push( <button onClick={ this.showCount.bind(this) } style={{marginRight:'20px', display: foamData.includeCount === true ? '' : 'none'}} id= { this.buttonCnt }>Count</button> ); 
-          changeElements.push( <button onClick={ this.showAvg.bind(this) } style={{marginRight:'20px', display: foamData.includeAvg === true ? '' : 'none'}} id= { this.buttonAvg }>Avg</button> ); 
+          changeElements.push( <button onClick={ this.showSum.bind(this) } style={{padding: '5px 20px', marginRight:'15px', display: foamData.includeSum === true ? '' : 'none'}} id= { this.buttonSum }>Sum</button> );  //&Sigma;
+          changeElements.push( <button onClick={ this.showCount.bind(this) } style={{padding: '5px 20px', marginRight:'15px', display: foamData.includeCount === true ? '' : 'none'}} id= { this.buttonCnt }>Count</button> ); 
+          changeElements.push( <button onClick={ this.showAvg.bind(this) } style={{padding: '5px 20px', marginRight:'15px', display: foamData.includeAvg === true ? '' : 'none'}} id= { this.buttonAvg }>Avg</button> ); 
 
-          changeElements.push( <button onClick={ this.showMax.bind(this) } style={{marginRight:'20px', display: foamData.includeMax === true ? '' : 'none'}} id= { this.buttonMax }>Max</button> ); 
-          changeElements.push( <button onClick={ this.showMin.bind(this) } style={{marginRight:'20px', display: foamData.includeMin === true ? '' : 'none'}} id= { this.buttonMin }>Min</button> ); 
-          changeElements.push( <button onClick={ this.showRange.bind(this) } style={{marginRight:'20px', display: foamData.includeRange === true ? '' : 'none'}} id= { this.buttonRng }>Range</button> ); 
+          changeElements.push( <button onClick={ this.showMax.bind(this) } style={{padding: '5px 20px', marginRight:'15px', display: foamData.includeMax === true ? '' : 'none'}} id= { this.buttonMax }>Max</button> ); 
+          changeElements.push( <button onClick={ this.showMin.bind(this) } style={{padding: '5px 20px', marginRight:'15px', display: foamData.includeMin === true ? '' : 'none'}} id= { this.buttonMin }>Min</button> ); 
+          changeElements.push( <button onClick={ this.showRange.bind(this) } style={{padding: '5px 20px', marginRight:'15px', display: foamData.includeRange === true ? '' : 'none'}} id= { this.buttonRng }>Range</button> ); 
 
-          const wrapStackTokens: IStackTokens = { childrenGap: 30 };
+          const wrapStackTokensSearch: IStackTokens = { childrenGap: 0 };
+          const wrapStackTokensChange: IStackTokens = { childrenGap: 30 };
           searchStack = <div style={{ paddingBottom: '15px' }}>
-              <Stack horizontal horizontalAlign="start" verticalAlign="end" wrap tokens={wrapStackTokens}>
+              <Stack horizontal horizontalAlign="start" verticalAlign="end" wrap tokens={wrapStackTokensSearch}>
                 { searchElements }
               </Stack>
-              <Stack horizontal horizontalAlign="start" verticalAlign="end" wrap tokens={wrapStackTokens} padding="15px 0px 15px 0px">
+              <Stack horizontal horizontalAlign="start" verticalAlign="end" wrap tokens={wrapStackTokensChange} padding="15px 0px 15px 0px">
                 { changeElements }
               </Stack>
               <div style={{display:'inline-flex', paddingTop: '10px', fontSize: 'larger', fontWeight: 'bolder'}}>
