@@ -382,7 +382,7 @@ export default class FoamchartWebPart extends BaseClientSideWebPart<IFoamchartWe
 
     let showEarlyAccess : boolean = false;
 
-    if ( window.location.origin.toLowerCase().indexOf('clickster.share') > -1 || window.location.origin.toLowerCase().indexOf('/autoliv/') > -1 ) {
+    if ( window.location.origin.toLowerCase().indexOf('clickster.share') > -1 || window.location.origin.toLowerCase().indexOf('autoliv/') > -1 ) {
       showEarlyAccess = true;
       this.properties.showEarlyAccess = true;
     } else {
