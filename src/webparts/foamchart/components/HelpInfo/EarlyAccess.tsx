@@ -27,7 +27,7 @@ export interface IEarlyAccessProps {
     email?: string;   //Valid email URL like:  'mailto:General - WebPart Dev <0313a49d.yourTenant.onmicrosoft.com@amer.teams.ms>?subject=Drilldown Webpart Feedback&body=Enter your message here :)  \nScreenshots help!'
     messages?: IEarlyAccessItem[];
     links?: IEarlyAccessItem[];
-    farRightIcons?: IEarlyAccessItem[];
+    farRightIcons: IEarlyAccessItem[];
 
     WebpartWidth:   number;    //Size courtesy of https://www.netwoven.com/2018/11/13/resizing-of-spfx-react-web-parts-in-different-scenarios/
 
@@ -158,11 +158,13 @@ export default class EarlyAccess extends React.Component<IEarlyAccessProps, IEar
 
     private buildWidthTrimmedArray( messages: IEarlyAccessItem[] , className: string ) {
         let message: any[] = [];
-        messages.map( mess => {
-            let passMinWidth = !mess.minWidth || ( mess.minWidth && this.props.WebpartWidth >= mess.minWidth ) ? true : false;
-            let passMaxWidth = !mess.maxWidth || ( mess.maxWidth && this.props.WebpartWidth <= mess.maxWidth ) ? true : false;
-            if ( passMinWidth && passMaxWidth ) { message.push( <div className={ className }  style={{whiteSpace: 'nowrap'}}> { mess.item } </div> ) ; }
-        });
+        if ( messages && messages.length > 0 ) {
+            messages.map( mess => {
+                let passMinWidth = !mess.minWidth || ( mess.minWidth && this.props.WebpartWidth >= mess.minWidth ) ? true : false;
+                let passMaxWidth = !mess.maxWidth || ( mess.maxWidth && this.props.WebpartWidth <= mess.maxWidth ) ? true : false;
+                if ( passMinWidth && passMaxWidth ) { message.push( <div className={ className }  style={{whiteSpace: 'nowrap'}}> { mess.item } </div> ) ; }
+            });
+        }
 
         if ( message.length === 0  ) { message = null; }
         return message;
